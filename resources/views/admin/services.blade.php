@@ -1,0 +1,11 @@
+@extends('layouts.app')
+
+@section('title', 'Manage Services | M. Cares')
+
+@section('content')
+<section class="page-hero"><div class="container"><span class="eyebrow">ADMIN · SERVICES</span><h1>Manage beauty services</h1><p>Add services, update pricing, and control availability.</p></div></section>
+<section class="section compact"><div class="container admin-two-col">
+<div class="panel"><span class="eyebrow">ADD SERVICE</span><h2>New service</h2><form method="POST" action="{{ route('admin.services.store') }}" class="form-stack">@csrf<label>Name<input name="name" required></label><label>Description<textarea name="description" rows="4"></textarea></label><div class="form-grid two"><label>Price<input type="number" step="0.01" min="0" name="price" required></label><label>Duration (min)<input type="number" min="15" max="600" name="duration_minutes" value="60" required></label></div><button class="primary-button full">Add service</button></form></div>
+<div class="panel"><span class="eyebrow">SERVICE LIST</span><h2>Current services</h2><div class="admin-list">@forelse($services as $service)<div class="admin-item"><div><strong>{{ $service->name }}</strong><p>₱{{ number_format($service->price,2) }} · {{ $service->duration_minutes }} min · {{ $service->is_available ? 'Available' : 'Hidden' }}</p></div><details><summary>Edit</summary><form method="POST" action="{{ route('admin.services.update', $service) }}" class="form-stack mini">@csrf @method('PUT')<input name="name" value="{{ $service->name }}" required><textarea name="description" rows="2">{{ $service->description }}</textarea><div class="form-grid two"><input type="number" step="0.01" min="0" name="price" value="{{ $service->price }}" required><input type="number" min="15" name="duration_minutes" value="{{ $service->duration_minutes }}" required></div><label class="check-row"><input type="checkbox" name="is_available" value="1" @checked($service->is_available)> Available</label><button class="small-button">Save</button></form><form method="POST" action="{{ route('admin.services.destroy', $service) }}">@csrf @method('DELETE')<button class="danger-link" onclick="return confirm('Delete this service?')">Delete</button></form></details></div>@empty<p>No services yet.</p>@endforelse</div></div>
+</div></section>
+@endsection
