@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+
+use Illuminate\Foundation\Application;
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Configuration\Commands;
+use Illuminate\Foundation\Configuration\Exceptions;
+
+if (file_exists($autoload = __DIR__.'/vendor/autoload.php')) {
+    require $autoload;
+} else {
+    fwrite(STDERR, "Composer dependencies are not installed. Run: composer install\n");
+    exit(1);
+}
+
+$app = require_once __DIR__.'/bootstrap/app.php';
+
+$exitCode = $app->handleCommand(new Symfony\Component\Console\Input\ArgvInput);
+exit($exitCode);

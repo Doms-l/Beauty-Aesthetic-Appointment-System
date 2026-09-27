@@ -1,0 +1,7 @@
+M. CARES BEAUTY SERVICES
+Web-Based Aesthetic Clinic Appointment and Management System
+
+This archive contains the complete application source code prepared for local Laravel + MySQL + React/Vite development.
+
+IMPORTANT: vendor/ and node_modules/ are intentionally not included. They are generated locally with composer install and npm install.
+See INSTALL_WINDOWS.md for the exact setup process.
