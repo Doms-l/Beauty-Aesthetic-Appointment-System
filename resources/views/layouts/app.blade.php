@@ -8,6 +8,8 @@
 <link rel="icon" type="image/png" href="{{ asset('images/round.png') }}?v=1">
 
 @vite(['resources/css/app.css', 'resources/js/app.jsx'])
+    <link rel="icon" type="image/png" href="{{ asset('images/round.png') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </head>
 <body>
 <header class="site-header">
