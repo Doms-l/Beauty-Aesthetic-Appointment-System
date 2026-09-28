@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+<<<<<<< HEAD
     {{-- Allows the website to respond to Light/Dark mode --}}
     <meta name="color-scheme" content="light dark">
 
@@ -13,6 +14,10 @@
     {{-- Browser tab icon --}}
     <link rel="icon" type="image/png" href="{{ asset('images/round.png') }}?v=1">
 
+=======
+@vite(['resources/css/app.css', 'resources/js/app.jsx'])
+    <link rel="icon" type="image/png" href="{{ asset('images/round.png') }}">
+>>>>>>> 63d9ace47290c7defac35861747b4bc3bd8aa985
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </head>
 
