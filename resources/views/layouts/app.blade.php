@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'M. Cares Beauty Services')</title>
+<link rel="icon" type="image/png" href="{{ asset('images/round.png') }}?v=1">
+
+@vite(['resources/css/app.css', 'resources/js/app.jsx'])
     <link rel="icon" type="image/png" href="{{ asset('images/round.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </head>
