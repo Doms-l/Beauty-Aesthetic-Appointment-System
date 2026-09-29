@@ -136,6 +136,6 @@
 
     </div>
 </footer>
-
+    @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </body>
 </html>

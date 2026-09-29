@@ -28,22 +28,7 @@ class AppointmentController extends Controller
         ->orderBy('name')
         ->get();
 
-    // Prepare the service information React needs
-    $serviceData = $services->map(function ($service) {
-        return [
-            'id' => $service->id,
-            'name' => $service->name,
-            'category' => $service->category,
-            'price' => $service->price,
-            'price_display' => $service->price_display,
-            'duration_minutes' => $service->duration_minutes,
-        ];
-    })->values();
-
-    return view('appointments.create', compact(
-        'services',
-        'serviceData'
-    ));
+    return view('appointments.create', compact('services'));
 }
     public function store(Request $request)
     {

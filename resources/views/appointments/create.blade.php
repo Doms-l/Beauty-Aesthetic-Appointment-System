@@ -29,7 +29,7 @@
 
             @csrf
 
-            {{-- Service, Date and Time --}}
+            {{-- React Appointment Picker --}}
             <div
                 id="appointment-picker"
                 data-services='@json($services)'
@@ -48,6 +48,7 @@
                 >{{ old('notes') }}</textarea>
             </label>
 
+            {{-- Submit --}}
             <button
                 class="primary-button full"
                 type="submit"
