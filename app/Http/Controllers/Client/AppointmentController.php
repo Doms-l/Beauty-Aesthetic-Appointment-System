@@ -22,27 +22,14 @@ class AppointmentController extends Controller
 
     public function create()
 {
-    // Get all services that are currently available
+    // Get all available services
     $services = Service::where('is_available', true)
+        ->orderBy('category')
         ->orderBy('name')
         ->get();
 
-    // Prepare only the information React needs
-    $serviceData = $services->map(function ($service) {
-        return [
-            'id' => $service->id,
-            'name' => $service->name,
-            'price' => $service->price,
-            'duration_minutes' => $service->duration_minutes,
-        ];
-    })->values();
-
-    return view('appointments.create', compact(
-        'services',
-        'serviceData'
-    ));
+    return view('appointments.create', compact('services'));
 }
-
     public function store(Request $request)
     {
         $validated = $request->validate([

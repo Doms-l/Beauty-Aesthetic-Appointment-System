@@ -1,40 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- Allows the website to respond to Light/Dark mode --}}
-    <meta name="color-scheme" content="light dark">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>@yield('title', 'M. Cares Beauty Services')</title>
+    <meta
+        name="csrf-token"
+        content="{{ csrf_token() }}"
+    >
+
+    {{-- Light/Dark mode support --}}
+    <meta
+        name="color-scheme"
+        content="light dark"
+    >
+
+    <title>
+        @yield('title', 'M. Cares Beauty Services')
+    </title>
 
     {{-- Browser tab icon --}}
-    <link rel="icon" type="image/png" href="{{ asset('images/round.png') }}?v=1">
+    <link
+        rel="icon"
+        type="image/png"
+        href="{{ asset('images/round.png') }}?v=1"
+    >
 
-@vite(['resources/css/app.css', 'resources/js/app.jsx'])
-    <link rel="icon" type="image/png" href="{{ asset('images/round.png') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.jsx'])
+    {{-- Laravel Vite --}}
+    @viteReactRefresh
+
+@vite([
+    'resources/css/app.css',
+    'resources/js/app.jsx'
+])
+
 </head>
 
+
 <body>
+
+
+{{-- =========================================================
+    NAVIGATION
+========================================================= --}}
+
 <header class="site-header">
+
     <div class="container nav-wrap">
 
-        <a class="brand" href="{{ route('home') }}">
-            <img src="{{ asset('images/logo.png') }}" alt="M. Cares Beauty Services logo">
+
+        {{-- BRAND / LOGO --}}
+
+        <a
+            class="brand"
+            href="{{ route('home') }}"
+        >
+
+            <img
+                src="{{ asset('images/logo.png') }}"
+                alt="M. Cares Beauty Services logo"
+            >
+
             <span>
                 M. CARES<br>
                 <small>BEAUTY SERVICES</small>
             </span>
+
         </a>
 
+
+        {{-- NAVIGATION LINKS --}}
+
         <nav class="main-nav">
-            <a href="{{ route('home') }}">Home</a>
-            <a href="{{ route('services.index') }}">Services</a>
+
+
+            {{-- HOME --}}
+
+            <a href="{{ route('home') }}">
+                Home
+            </a>
+
+
+            {{-- SERVICES --}}
+
+            <a href="{{ route('services.index') }}">
+                Services
+            </a>
+
+
+            {{-- =================================================
+                LOGGED-IN USER
+            ================================================= --}}
 
             @auth
+
+
+                {{-- CLIENT --}}
 
                 @if(auth()->user()->isClient())
 
@@ -46,15 +113,24 @@
                         Profile
                     </a>
 
-                    <a class="nav-cta" href="{{ route('client.appointments.create') }}">
+                    <a
+                        class="nav-cta"
+                        href="{{ route('client.appointments.create') }}"
+                    >
                         Book Now
                     </a>
+
+
+                {{-- ADMIN --}}
 
                 @elseif(auth()->user()->isAdmin())
 
                     <a href="{{ route('admin.dashboard') }}">
                         Admin Dashboard
                     </a>
+
+
+                {{-- STAFF --}}
 
                 @elseif(auth()->user()->isStaff())
 
@@ -64,13 +140,30 @@
 
                 @endif
 
-                <form method="POST" action="{{ route('logout') }}" class="inline-form">
+
+                {{-- LOGOUT --}}
+
+                <form
+                    method="POST"
+                    action="{{ route('logout') }}"
+                    class="inline-form"
+                >
+
                     @csrf
 
-                    <button class="link-button" type="submit">
+                    <button
+                        type="submit"
+                        class="link-button"
+                    >
                         Logout
                     </button>
+
                 </form>
+
+
+            {{-- =================================================
+                LOGGED-OUT USER
+            ================================================= --}}
 
             @else
 
@@ -78,64 +171,123 @@
                     Login
                 </a>
 
-                <a class="nav-cta" href="{{ route('register') }}">
+                <a
+                    class="nav-cta"
+                    href="{{ route('register') }}"
+                >
                     Register
                 </a>
 
             @endauth
+
+
         </nav>
 
     </div>
+
 </header>
 
 
+
+{{-- =========================================================
+    SUCCESS MESSAGE
+========================================================= --}}
+
 @if(session('success'))
+
     <div class="container flash success">
+
         {{ session('success') }}
+
     </div>
+
 @endif
 
 
+
+{{-- =========================================================
+    VALIDATION ERRORS
+========================================================= --}}
+
 @if($errors->any())
+
     <div class="container flash error">
 
-        <strong>Please check the form.</strong>
+        <strong>
+            Please check the form.
+        </strong>
 
         <ul>
+
             @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
+
+                <li>
+                    {{ $error }}
+                </li>
+
             @endforeach
+
         </ul>
 
     </div>
+
 @endif
 
 
+
+{{-- =========================================================
+    MAIN PAGE CONTENT
+========================================================= --}}
+
 <main>
+
     @yield('content')
+
 </main>
 
 
+
+{{-- =========================================================
+    FOOTER
+========================================================= --}}
+
 <footer class="site-footer">
+
     <div class="container footer-grid">
 
-        <div>
-            <h3>M. CARES</h3>
-            <p>Beauty, care, and confidence in one place.</p>
-        </div>
 
         <div>
+
+            <h3>
+                M. CARES
+            </h3>
+
             <p>
-                Web-Based Aesthetic Clinic Appointment and Management System
+                Beauty, care, and confidence in one place.
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <p>
+                Web-Based Aesthetic Clinic Appointment and
+                Management System
             </p>
 
             <p>
-                © {{ date('Y') }} M. Cares Beauty Services
+                © {{ date('Y') }}
+                M. Cares Beauty Services
             </p>
+
         </div>
+
 
     </div>
+
 </footer>
+
 
 </body>
 </html>
