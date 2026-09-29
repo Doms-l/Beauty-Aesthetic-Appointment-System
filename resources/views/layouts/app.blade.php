@@ -1,12 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- Allows the website to respond to Light/Dark mode --}}
-    <meta name="color-scheme" content="light dark">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="csrf-token"
+        content="{{ csrf_token() }}"
+    >
+
+    {{-- Light/Dark mode support --}}
+    <meta
+        name="color-scheme"
+        content="light dark"
+    >
 
     <title>
         @yield('title', 'M. Cares Beauty Services')
@@ -20,20 +33,35 @@
     >
 
     {{-- Laravel Vite --}}
-    @vite(['resources/css/app.css', 'resources/js/app.jsx'])
+    @viteReactRefresh
+
+@vite([
+    'resources/css/app.css',
+    'resources/js/app.jsx'
+])
+
 </head>
 
+
 <body>
+
+
+{{-- =========================================================
+    NAVIGATION
+========================================================= --}}
 
 <header class="site-header">
 
     <div class="container nav-wrap">
 
-        {{-- Brand --}}
+
+        {{-- BRAND / LOGO --}}
+
         <a
             class="brand"
             href="{{ route('home') }}"
         >
+
             <img
                 src="{{ asset('images/logo.png') }}"
                 alt="M. Cares Beauty Services logo"
@@ -43,22 +71,37 @@
                 M. CARES<br>
                 <small>BEAUTY SERVICES</small>
             </span>
+
         </a>
 
 
-        {{-- Navigation --}}
+        {{-- NAVIGATION LINKS --}}
+
         <nav class="main-nav">
+
+
+            {{-- HOME --}}
 
             <a href="{{ route('home') }}">
                 Home
             </a>
+
+
+            {{-- SERVICES --}}
 
             <a href="{{ route('services.index') }}">
                 Services
             </a>
 
 
+            {{-- =================================================
+                LOGGED-IN USER
+            ================================================= --}}
+
             @auth
+
+
+                {{-- CLIENT --}}
 
                 @if(auth()->user()->isClient())
 
@@ -78,12 +121,16 @@
                     </a>
 
 
+                {{-- ADMIN --}}
+
                 @elseif(auth()->user()->isAdmin())
 
                     <a href="{{ route('admin.dashboard') }}">
                         Admin Dashboard
                     </a>
 
+
+                {{-- STAFF --}}
 
                 @elseif(auth()->user()->isStaff())
 
@@ -94,22 +141,29 @@
                 @endif
 
 
-                {{-- Logout --}}
+                {{-- LOGOUT --}}
+
                 <form
                     method="POST"
                     action="{{ route('logout') }}"
                     class="inline-form"
                 >
+
                     @csrf
 
                     <button
-                        class="link-button"
                         type="submit"
+                        class="link-button"
                     >
                         Logout
                     </button>
+
                 </form>
 
+
+            {{-- =================================================
+                LOGGED-OUT USER
+            ================================================= --}}
 
             @else
 
@@ -126,6 +180,7 @@
 
             @endauth
 
+
         </nav>
 
     </div>
@@ -133,7 +188,11 @@
 </header>
 
 
-{{-- Success message --}}
+
+{{-- =========================================================
+    SUCCESS MESSAGE
+========================================================= --}}
+
 @if(session('success'))
 
     <div class="container flash success">
@@ -145,7 +204,11 @@
 @endif
 
 
-{{-- Validation errors --}}
+
+{{-- =========================================================
+    VALIDATION ERRORS
+========================================================= --}}
+
 @if($errors->any())
 
     <div class="container flash error">
@@ -171,6 +234,11 @@
 @endif
 
 
+
+{{-- =========================================================
+    MAIN PAGE CONTENT
+========================================================= --}}
+
 <main>
 
     @yield('content')
@@ -178,9 +246,15 @@
 </main>
 
 
+
+{{-- =========================================================
+    FOOTER
+========================================================= --}}
+
 <footer class="site-footer">
 
     <div class="container footer-grid">
+
 
         <div>
 
@@ -198,18 +272,22 @@
         <div>
 
             <p>
-                Web-Based Aesthetic Clinic Appointment and Management System
+                Web-Based Aesthetic Clinic Appointment and
+                Management System
             </p>
 
             <p>
-                © {{ date('Y') }} M. Cares Beauty Services
+                © {{ date('Y') }}
+                M. Cares Beauty Services
             </p>
 
         </div>
 
+
     </div>
 
 </footer>
+
 
 </body>
 </html>
