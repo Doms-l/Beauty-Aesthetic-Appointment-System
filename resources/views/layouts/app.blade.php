@@ -8,31 +8,55 @@
     {{-- Allows the website to respond to Light/Dark mode --}}
     <meta name="color-scheme" content="light dark">
 
-    <title>@yield('title', 'M. Cares Beauty Services')</title>
+    <title>
+        @yield('title', 'M. Cares Beauty Services')
+    </title>
 
     {{-- Browser tab icon --}}
-    <link rel="icon" type="image/png" href="{{ asset('images/round.png') }}?v=1">
+    <link
+        rel="icon"
+        type="image/png"
+        href="{{ asset('images/round.png') }}?v=1"
+    >
 
-@vite(['resources/css/app.css', 'resources/js/app.jsx'])
-    <link rel="icon" type="image/png" href="{{ asset('images/round.png') }}">
+    {{-- Laravel Vite --}}
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </head>
 
 <body>
+
 <header class="site-header">
+
     <div class="container nav-wrap">
 
-        <a class="brand" href="{{ route('home') }}">
-            <img src="{{ asset('images/logo.png') }}" alt="M. Cares Beauty Services logo">
+        {{-- Brand --}}
+        <a
+            class="brand"
+            href="{{ route('home') }}"
+        >
+            <img
+                src="{{ asset('images/logo.png') }}"
+                alt="M. Cares Beauty Services logo"
+            >
+
             <span>
                 M. CARES<br>
                 <small>BEAUTY SERVICES</small>
             </span>
         </a>
 
+
+        {{-- Navigation --}}
         <nav class="main-nav">
-            <a href="{{ route('home') }}">Home</a>
-            <a href="{{ route('services.index') }}">Services</a>
+
+            <a href="{{ route('home') }}">
+                Home
+            </a>
+
+            <a href="{{ route('services.index') }}">
+                Services
+            </a>
+
 
             @auth
 
@@ -46,15 +70,20 @@
                         Profile
                     </a>
 
-                    <a class="nav-cta" href="{{ route('client.appointments.create') }}">
+                    <a
+                        class="nav-cta"
+                        href="{{ route('client.appointments.create') }}"
+                    >
                         Book Now
                     </a>
+
 
                 @elseif(auth()->user()->isAdmin())
 
                     <a href="{{ route('admin.dashboard') }}">
                         Admin Dashboard
                     </a>
+
 
                 @elseif(auth()->user()->isStaff())
 
@@ -64,13 +93,23 @@
 
                 @endif
 
-                <form method="POST" action="{{ route('logout') }}" class="inline-form">
+
+                {{-- Logout --}}
+                <form
+                    method="POST"
+                    action="{{ route('logout') }}"
+                    class="inline-form"
+                >
                     @csrf
 
-                    <button class="link-button" type="submit">
+                    <button
+                        class="link-button"
+                        type="submit"
+                    >
                         Logout
                     </button>
                 </form>
+
 
             @else
 
@@ -78,53 +117,86 @@
                     Login
                 </a>
 
-                <a class="nav-cta" href="{{ route('register') }}">
+                <a
+                    class="nav-cta"
+                    href="{{ route('register') }}"
+                >
                     Register
                 </a>
 
             @endauth
+
         </nav>
 
     </div>
+
 </header>
 
 
+{{-- Success message --}}
 @if(session('success'))
+
     <div class="container flash success">
+
         {{ session('success') }}
+
     </div>
+
 @endif
 
 
+{{-- Validation errors --}}
 @if($errors->any())
+
     <div class="container flash error">
 
-        <strong>Please check the form.</strong>
+        <strong>
+            Please check the form.
+        </strong>
 
         <ul>
+
             @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
+
+                <li>
+                    {{ $error }}
+                </li>
+
             @endforeach
+
         </ul>
 
     </div>
+
 @endif
 
 
 <main>
+
     @yield('content')
+
 </main>
 
 
 <footer class="site-footer">
+
     <div class="container footer-grid">
 
         <div>
-            <h3>M. CARES</h3>
-            <p>Beauty, care, and confidence in one place.</p>
+
+            <h3>
+                M. CARES
+            </h3>
+
+            <p>
+                Beauty, care, and confidence in one place.
+            </p>
+
         </div>
 
+
         <div>
+
             <p>
                 Web-Based Aesthetic Clinic Appointment and Management System
             </p>
@@ -132,10 +204,12 @@
             <p>
                 © {{ date('Y') }} M. Cares Beauty Services
             </p>
+
         </div>
 
     </div>
+
 </footer>
-    @vite(['resources/css/app.css', 'resources/js/app.jsx'])
+
 </body>
 </html>

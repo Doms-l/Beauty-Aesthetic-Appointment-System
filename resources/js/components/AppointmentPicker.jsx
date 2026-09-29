@@ -5,20 +5,14 @@ export default function AppointmentPicker({
     selectedService = ''
 }) {
 
-    // Selected service
     const [serviceId, setServiceId] = useState(
-        selectedService
-            ? String(selectedService)
-            : ''
+        selectedService ? String(selectedService) : ''
     );
 
-    // Selected appointment date
     const [date, setDate] = useState('');
 
-    // Selected appointment time
     const [time, setTime] = useState('');
 
-    // Get today's date
     const today = new Date()
         .toISOString()
         .split('T')[0];
@@ -26,9 +20,9 @@ export default function AppointmentPicker({
     return (
         <div className="react-booking-box">
 
-            {/* =====================================================
-                STEP 1 - SERVICE
-            ====================================================== */}
+            {/* ================================
+                STEP 1: SELECT SERVICE
+            ================================= */}
 
             <div className="react-heading">
 
@@ -38,31 +32,28 @@ export default function AppointmentPicker({
                     <h3>Select a service</h3>
 
                     <p>
-                        Choose the beauty or aesthetic service
-                        you want.
+                        Choose the beauty or aesthetic service you want.
                     </p>
                 </div>
 
             </div>
 
 
-            {/* Service choices */}
-
             <div className="service-select-grid">
 
                 {services.map((service) => (
 
                     <button
-                        type="button"
                         key={service.id}
+                        type="button"
                         className={
                             String(service.id) === String(serviceId)
                                 ? 'service-choice selected'
                                 : 'service-choice'
                         }
-                        onClick={() =>
-                            setServiceId(String(service.id))
-                        }
+                        onClick={() => {
+                            setServiceId(String(service.id));
+                        }}
                     >
 
                         <strong>
@@ -70,8 +61,10 @@ export default function AppointmentPicker({
                         </strong>
 
                         <span>
-                            {service.price_display ||
-                                `₱${Number(service.price).toLocaleString()}`}
+                            {service.price_display
+                                ? service.price_display
+                                : `₱${Number(service.price).toLocaleString()}`
+                            }
                         </span>
 
                     </button>
@@ -81,7 +74,7 @@ export default function AppointmentPicker({
             </div>
 
 
-            {/* Hidden service ID sent to Laravel */}
+            {/* Laravel receives this value */}
 
             <input
                 type="hidden"
@@ -90,9 +83,9 @@ export default function AppointmentPicker({
             />
 
 
-            {/* =====================================================
-                STEP 2 - DATE AND TIME
-            ====================================================== */}
+            {/* ================================
+                STEP 2: DATE AND TIME
+            ================================= */}
 
             <div className="react-heading">
 
@@ -113,8 +106,6 @@ export default function AppointmentPicker({
 
             <div className="booking-fields">
 
-                {/* Appointment Date */}
-
                 <label>
 
                     Appointment Date
@@ -122,17 +113,16 @@ export default function AppointmentPicker({
                     <input
                         type="date"
                         name="appointment_date"
-                        value={date}
                         min={today}
-                        onChange={(e) =>
-                            setDate(e.target.value)
-                        }
+                        value={date}
+                        onChange={(event) => {
+                            setDate(event.target.value);
+                        }}
+                        required
                     />
 
                 </label>
 
-
-                {/* Appointment Time */}
 
                 <label>
 
@@ -142,9 +132,10 @@ export default function AppointmentPicker({
                         type="time"
                         name="appointment_time"
                         value={time}
-                        onChange={(e) =>
-                            setTime(e.target.value)
-                        }
+                        onChange={(event) => {
+                            setTime(event.target.value);
+                        }}
+                        required
                     />
 
                 </label>
@@ -152,27 +143,23 @@ export default function AppointmentPicker({
             </div>
 
 
-            {/* =====================================================
-                APPOINTMENT SUMMARY
-            ====================================================== */}
+            {/* ================================
+                SUMMARY
+            ================================= */}
 
             {serviceId && date && time && (
 
                 <div className="booking-summary">
 
-                    <div>
+                    <strong>
+                        Appointment Selected
+                    </strong>
 
-                        <strong>
-                            Appointment Selected
-                        </strong>
+                    <br />
 
-                        <br />
-
-                        <span>
-                            {date} at {time}
-                        </span>
-
-                    </div>
+                    <span>
+                        {date} at {time}
+                    </span>
 
                 </div>
 
