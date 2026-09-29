@@ -1,79 +1,162 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from "react";
 
-/**
- * Interactive appointment selector.
- * It updates the hidden form fields used by the Laravel controller.
- */
-export default function AppointmentPicker({ services }) {
-    const [serviceId, setServiceId] = useState('');
-    const [date, setDate] = useState('');
-    const [time, setTime] = useState('');
+export default function AppointmentPicker({ services, selectedService }) {
 
-    const selectedService = useMemo(
-        () => services.find((service) => String(service.id) === String(serviceId)),
-        [services, serviceId]
+    const [serviceId, setServiceId] = useState(
+        selectedService ? String(selectedService) : ""
     );
 
-    const minDate = new Date().toISOString().split('T')[0];
+    const [date, setDate] = useState("");
+    const [time, setTime] = useState("");
+
+    const selected = useMemo(() => {
+        return services.find(
+            service => String(service.id) === String(serviceId)
+        );
+    }, [services, serviceId]);
+
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split("T")[0];
 
     return (
         <div className="react-booking-box">
+
+            {/* Heading */}
             <div className="react-heading">
+
                 <span>01</span>
+
                 <div>
-                    <h3>Choose your service</h3>
-                    <p>Select an available M. Cares service.</p>
+                    <h3>Select a service</h3>
+
+                    <p>
+                        Choose the beauty or aesthetic service you want.
+                    </p>
                 </div>
+
             </div>
 
+            {/* Services */}
             <div className="service-select-grid">
-                {services.map((service) => (
+
+                {services.map(service => (
+
                     <button
-                        key={service.id}
                         type="button"
-                        className={`service-choice ${String(service.id) === String(serviceId) ? 'selected' : ''}`}
-                        onClick={() => setServiceId(service.id)}
+                        key={service.id}
+                        className={
+                            "service-choice " +
+                            (
+                                String(service.id) === String(serviceId)
+                                    ? "selected"
+                                    : ""
+                            )
+                        }
+                        onClick={() => setServiceId(String(service.id))}
                     >
-                        <strong>{service.name}</strong>
-                        <span>₱{Number(service.price).toLocaleString()}</span>
-                        <small>{service.duration_minutes} minutes</small>
+
+                        <strong>
+                            {service.name}
+                        </strong>
+
+                        <span>
+                            {service.price_display || `₱${Number(service.price).toLocaleString()}`}
+                        </span>
+
                     </button>
+
                 ))}
+
             </div>
 
-            <input type="hidden" name="service_id" value={serviceId} />
+            {/* Hidden service ID */}
+            <input
+                type="hidden"
+                name="service_id"
+                value={serviceId}
+                required
+            />
+
+            {/* Date and time */}
+            <div className="react-heading">
+
+                <span>02</span>
+
+                <div>
+                    <h3>Choose date and time</h3>
+
+                    <p>
+                        Select your preferred appointment schedule.
+                    </p>
+                </div>
+
+            </div>
 
             <div className="booking-fields">
+
+                {/* Date */}
                 <label>
-                    Appointment date
+
+                    Appointment Date
+
                     <input
                         type="date"
                         name="appointment_date"
-                        min={minDate}
                         value={date}
-                        onChange={(event) => setDate(event.target.value)}
+                        min={today}
+                        onChange={(event) => {
+                            setDate(event.target.value);
+                        }}
                         required
                     />
+
                 </label>
 
+                {/* Time */}
                 <label>
-                    Preferred time
+
+                    Preferred Time
+
                     <input
                         type="time"
                         name="appointment_time"
                         value={time}
-                        onChange={(event) => setTime(event.target.value)}
+                        onChange={(event) => {
+                            setTime(event.target.value);
+                        }}
                         required
                     />
+
                 </label>
+
             </div>
 
-            {selectedService && (
+            {/* Summary */}
+            {selected && date && time && (
+
                 <div className="booking-summary">
-                    <strong>{selectedService.name}</strong>
-                    <span>₱{Number(selectedService.price).toLocaleString()} · {selectedService.duration_minutes} minutes</span>
+
+                    <div>
+                        <strong>
+                            {selected.name}
+                        </strong>
+
+                        <br />
+
+                        <span>
+                            {date} at {time}
+                        </span>
+                    </div>
+
+                    <strong>
+                        {selected.price_display ||
+                            `₱${Number(selected.price).toLocaleString()}`}
+                    </strong>
+
                 </div>
+
             )}
+
         </div>
     );
 }
