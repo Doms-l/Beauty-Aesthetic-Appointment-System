@@ -1585,3 +1585,98 @@ details summary {
         grid-template-columns: 1fr 1fr;
     }
 }
+/* =========================================================
+   SERVICES PAGE
+   ========================================================= */
+
+.services-category {
+    margin-bottom: 75px;
+}
+
+.services-category:last-child {
+    margin-bottom: 0;
+}
+
+.services-category .section-heading {
+    margin-bottom: 28px;
+}
+
+.service-list-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.service-page-card {
+    display: flex;
+    flex-direction: column;
+
+    min-height: 250px;
+}
+
+.service-page-card h3 {
+    font-size: 22px;
+}
+
+.service-page-card .service-meta {
+    margin-top: auto;
+}
+
+.service-meta strong {
+    color: var(--heading);
+    font-size: 18px;
+}
+
+.service-card-action {
+    margin-top: 20px;
+}
+
+.service-card-action .primary-button {
+    width: 100%;
+}
+
+
+/* =========================================================
+   SERVICES PAGE - DARK MODE
+   ========================================================= */
+
+@media (prefers-color-scheme: dark) {
+
+    .service-page-card {
+        background: var(--surface);
+    }
+
+    .service-page-card .service-icon {
+        background: #3b2d32;
+    }
+
+    .service-meta strong {
+        color: var(--heading);
+    }
+}
+
+
+/* =========================================================
+   SERVICES PAGE - TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .service-list-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+
+/* =========================================================
+   SERVICES PAGE - MOBILE
+   ========================================================= */
+
+@media (max-width: 650px) {
+
+    .service-list-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .services-category {
+        margin-bottom: 55px;
+    }
+}
