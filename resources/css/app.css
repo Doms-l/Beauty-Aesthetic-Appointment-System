@@ -534,22 +534,6 @@ h2 {
     box-shadow: var(--shadow);
 }
 
-.service-icon {
-    width: 45px;
-    height: 45px;
-
-    display: grid;
-
-    place-items: center;
-
-    border-radius: 50%;
-
-    background: var(--cream);
-
-    color: var(--heading);
-
-    font-size: 22px;
-}
 
 .service-card h2,
 .service-card h3 {
@@ -1644,9 +1628,6 @@ details summary {
         background: var(--surface);
     }
 
-    .service-page-card .service-icon {
-        background: #3b2d32;
-    }
 
     .service-meta strong {
         color: var(--heading);

@@ -57,10 +57,6 @@
 
                         <article class="service-card service-page-card">
 
-                            <div class="service-icon">
-                                ✦
-                            </div>
-
                             <h3>
                                 {{ $service->name }}
                             </h3>
