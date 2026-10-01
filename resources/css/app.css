@@ -1680,7 +1680,10 @@ details summary {
         margin-bottom: 55px;
     }
 }
-/* Registration password toggle */
+/* =========================================================
+   PASSWORD INPUT WITH EYE TOGGLE
+   Used on Login and Registration pages
+   ========================================================= */
 
 .password-input-wrapper {
     position: relative;
@@ -1689,29 +1692,77 @@ details summary {
 
 .password-input-wrapper input {
     width: 100%;
-    padding-right: 50px;
+    padding-right: 52px !important;
 }
 
+/* Eye button */
 .password-toggle {
     position: absolute;
-    right: 10px;
+
+    right: 12px;
     top: 50%;
+
     transform: translateY(-50%);
 
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     border: none;
+    border-radius: 50%;
+
     background: transparent;
+
+    color: var(--heading);
 
     cursor: pointer;
 
     font-size: 18px;
+    line-height: 1;
 
-    padding: 5px;
+    padding: 0;
 
-    color: var(--heading);
+    z-index: 5;
+
+    transition:
+        background-color .2s ease,
+        color .2s ease,
+        opacity .2s ease;
 }
 
+/* Hover */
 .password-toggle:hover {
-    opacity: 0.7;
+    background: var(--surface-soft);
+    color: var(--pink);
+    opacity: 1;
+}
+
+/* Click / focus */
+.password-toggle:focus {
+    outline: none;
+
+    background: var(--surface-soft);
+
+    box-shadow:
+        0 0 0 3px rgba(255, 175, 241, .18);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+
+    .password-toggle {
+        color: var(--heading);
+    }
+
+    .password-toggle:hover,
+    .password-toggle:focus {
+        background: #342a2f;
+        color: var(--pink);
+    }
+
 }
 /* =========================================================
    ADMIN DASHBOARD - MOST BOOKED SERVICES
