@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         caption.innerHTML =
             ' ' + (index + 1) + ' of 6 &nbsp; • &nbsp; ';
-
+ 
         currentSlide = index;
     }
 
