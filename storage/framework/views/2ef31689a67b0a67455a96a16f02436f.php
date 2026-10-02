@@ -1,18 +1,18 @@
 
 
-@extends('layouts.app')
 
 
 
-@section('title', 'M. Cares Beauty Services')
+
+<?php $__env->startSection('title', 'M. Cares Beauty Services'); ?>
 
 
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 
 
-{{-- HERO --}}
+
 
 <section class="hero-section">
 
@@ -52,7 +52,7 @@
 
                 <a class="primary-button"
 
-                   href="{{ auth()->check()
+                   href="<?php echo e(auth()->check()
 
                        ? (auth()->user()->isClient()
 
@@ -60,7 +60,7 @@
 
                            : route('home'))
 
-                       : route('register') }}">
+                       : route('register')); ?>">
 
                     Book an Appointment
 
@@ -70,7 +70,7 @@
 
                 <a class="secondary-button"
 
-                   href="{{ route('services.index') }}">
+                   href="<?php echo e(route('services.index')); ?>">
 
                     Explore Services
 
@@ -100,7 +100,7 @@
 
 
 
-            <img src="{{ asset('images/logo.png') }}"
+            <img src="<?php echo e(asset('images/logo.png')); ?>"
 
                  alt="M. Cares Beauty Services logo">
 
@@ -116,7 +116,7 @@
 
 
 
-{{-- MEET THE FOUNDER --}}
+
 
 <section class="founder-section">
 
@@ -128,7 +128,7 @@
 
             <div class="founder-photo-frame">
 
-                <img src="{{ asset('images/owner.png') }}"
+                <img src="<?php echo e(asset('images/owner.png')); ?>"
 
                      alt="Founder of M. Cares Beauty Services">
 
@@ -234,7 +234,7 @@
 
 
 
-{{-- AWARDS AND ACHIEVEMENTS --}}
+
 
 <section class="achievements-section">
 
@@ -244,7 +244,7 @@
 
         <div class="achievement-art achievement-photo">
             <img
-                src="{{ asset('images/awards.jpg') }}"
+                src="<?php echo e(asset('images/awards.jpg')); ?>"
                 alt="M. Cares Beauty Services awards and certificates"
                 loading="lazy"
             >
@@ -322,7 +322,7 @@
 
 
 
-{{-- SERVICES --}}
+
 
 <section class="home-services-section">
 
@@ -352,7 +352,7 @@
 
 
 
-            <a href="{{ route('services.index') }}"
+            <a href="<?php echo e(route('services.index')); ?>"
 
                class="home-category-card">
 
@@ -372,7 +372,7 @@
 
 
 
-            <a href="{{ route('services.index') }}"
+            <a href="<?php echo e(route('services.index')); ?>"
 
                class="home-category-card">
 
@@ -392,7 +392,7 @@
 
 
 
-            <a href="{{ route('services.index') }}"
+            <a href="<?php echo e(route('services.index')); ?>"
 
                class="home-category-card">
 
@@ -412,7 +412,7 @@
 
 
 
-            <a href="{{ route('services.index') }}"
+            <a href="<?php echo e(route('services.index')); ?>"
 
                class="home-category-card">
 
@@ -432,7 +432,7 @@
 
 
 
-            <a href="{{ route('services.index') }}"
+            <a href="<?php echo e(route('services.index')); ?>"
 
                class="home-category-card">
 
@@ -460,7 +460,7 @@
 
             <a class="secondary-button"
 
-               href="{{ route('services.index') }}">
+               href="<?php echo e(route('services.index')); ?>">
 
                 Explore All Services
 
@@ -478,7 +478,7 @@
 
 
 
-{{-- WHY CHOOSE US --}}
+
 
 <section class="why-mcares-section">
 
@@ -570,7 +570,7 @@
 
 
 
-{{-- BOOKING CTA --}}
+
 
 <section class="home-cta-section">
 
@@ -598,7 +598,7 @@
 
         <a class="cta-outline-button"
 
-           href="{{ auth()->check()
+           href="<?php echo e(auth()->check()
 
                ? (auth()->user()->isClient()
 
@@ -606,7 +606,7 @@
 
                    : route('home'))
 
-               : route('register') }}">
+               : route('register')); ?>">
 
             Book Now →
 
@@ -620,4 +620,6 @@
 
 
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Jennely\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/home.blade.php ENDPATH**/ ?>
