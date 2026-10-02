@@ -32,4 +32,4 @@
         </div>
     </body>
 </html>
-<?php /**PATH C:\Users\Jennely\Desktop\Beauty-Aesthetic-Appointment-System\vendor\laravel\framework\src\Illuminate\Foundation\Exceptions/views/minimal.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\vendor\laravel\framework\src\Illuminate\Foundation\Exceptions/views/minimal.blade.php ENDPATH**/ ?>
