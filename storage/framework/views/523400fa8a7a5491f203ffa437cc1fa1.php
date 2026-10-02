@@ -5,7 +5,6 @@
 <head>
 
     <meta charset="UTF-8">
-<<<<<<< HEAD
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <meta name="color-scheme" content="light dark">
@@ -20,7 +19,6 @@
 
 <body>
 
-=======
 
     <meta
         name="viewport"
@@ -65,15 +63,12 @@
 
 
 
->>>>>>> main
 <header class="site-header">
 
     <div class="container nav-wrap">
 
-<<<<<<< HEAD
         <a class="brand" href="<?php echo e(route('home')); ?>">
             <img src="<?php echo e(asset('images/logo.png')); ?>" alt="M. Cares Beauty Services logo">
-=======
 
         
 
@@ -86,16 +81,12 @@
                 src="<?php echo e(asset('images/logo.png')); ?>"
                 alt="M. Cares Beauty Services logo"
             >
->>>>>>> main
 
             <span>
                 M. CARES<br>
                 <small>BEAUTY SERVICES</small>
             </span>
-<<<<<<< HEAD
-=======
 
->>>>>>> main
         </a>
 
 
@@ -103,7 +94,6 @@
 
         <nav class="main-nav">
 
-<<<<<<< HEAD
             <a href="<?php echo e(route('home')); ?>">Home</a>
             <a href="<?php echo e(route('services.index')); ?>">Services</a>
 
@@ -126,7 +116,6 @@
                 <?php endif; ?>
 
                 <form method="POST" action="<?php echo e(route('logout')); ?>" class="inline-form">
-=======
 
             
 
@@ -195,7 +184,6 @@
                     class="inline-form"
                 >
 
->>>>>>> main
                     <?php echo csrf_field(); ?>
 
                     <button
@@ -207,7 +195,6 @@
 
                 </form>
 
-<<<<<<< HEAD
             <?php else: ?>
 
                 <a href="<?php echo e(route('login')); ?>">Login</a>
@@ -215,7 +202,6 @@
 
             <?php endif; ?>
 
-=======
 
             
 
@@ -235,7 +221,6 @@
             <?php endif; ?>
 
 
->>>>>>> main
         </nav>
 
     </div>
@@ -247,12 +232,10 @@
 
 
 <?php if(session('success')): ?>
-<<<<<<< HEAD
     <div class="container flash success">
         <?php echo e(session('success')); ?>
 
     </div>
-=======
 
     <div class="container flash success">
 
@@ -261,7 +244,6 @@
 
     </div>
 
->>>>>>> main
 <?php endif; ?>
 
 
@@ -271,14 +253,11 @@
 <?php if($errors->any()): ?>
 
     <div class="container flash error">
-<<<<<<< HEAD
         <strong>Please check the form.</strong>
-=======
 
         <strong>
             Please check the form.
         </strong>
->>>>>>> main
 
         <ul>
 
@@ -315,10 +294,7 @@
 
     <div class="container footer-grid">
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
         <div>
 
             <h3>
@@ -331,10 +307,7 @@
 
         </div>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
         <div>
 
             <p>
@@ -350,17 +323,11 @@
 
         </div>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
     </div>
 
 </footer>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
 </body>
 </html><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/layouts/app.blade.php ENDPATH**/ ?>

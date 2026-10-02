@@ -5,7 +5,6 @@
 <head>
 
     <meta charset="UTF-8">
-<<<<<<< HEAD
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="color-scheme" content="light dark">
@@ -20,7 +19,6 @@
 
 <body>
 
-=======
 
     <meta
         name="viewport"
@@ -67,15 +65,12 @@
     NAVIGATION
 ========================================================= --}}
 
->>>>>>> main
 <header class="site-header">
 
     <div class="container nav-wrap">
 
-<<<<<<< HEAD
         <a class="brand" href="{{ route('home') }}">
             <img src="{{ asset('images/logo.png') }}" alt="M. Cares Beauty Services logo">
-=======
 
         {{-- BRAND / LOGO --}}
 
@@ -88,16 +83,12 @@
                 src="{{ asset('images/logo.png') }}"
                 alt="M. Cares Beauty Services logo"
             >
->>>>>>> main
 
             <span>
                 M. CARES<br>
                 <small>BEAUTY SERVICES</small>
             </span>
-<<<<<<< HEAD
-=======
 
->>>>>>> main
         </a>
 
 
@@ -105,7 +96,6 @@
 
         <nav class="main-nav">
 
-<<<<<<< HEAD
             <a href="{{ route('home') }}">Home</a>
             <a href="{{ route('services.index') }}">Services</a>
 
@@ -128,7 +118,6 @@
                 @endif
 
                 <form method="POST" action="{{ route('logout') }}" class="inline-form">
-=======
 
             {{-- HOME --}}
 
@@ -199,7 +188,6 @@
                     class="inline-form"
                 >
 
->>>>>>> main
                     @csrf
 
                     <button
@@ -211,7 +199,6 @@
 
                 </form>
 
-<<<<<<< HEAD
             @else
 
                 <a href="{{ route('login') }}">Login</a>
@@ -219,7 +206,6 @@
 
             @endauth
 
-=======
 
             {{-- =================================================
                 LOGGED-OUT USER
@@ -241,7 +227,6 @@
             @endauth
 
 
->>>>>>> main
         </nav>
 
     </div>
@@ -255,11 +240,9 @@
 ========================================================= --}}
 
 @if(session('success'))
-<<<<<<< HEAD
     <div class="container flash success">
         {{ session('success') }}
     </div>
-=======
 
     <div class="container flash success">
 
@@ -267,7 +250,6 @@
 
     </div>
 
->>>>>>> main
 @endif
 
 
@@ -279,14 +261,11 @@
 @if($errors->any())
 
     <div class="container flash error">
-<<<<<<< HEAD
         <strong>Please check the form.</strong>
-=======
 
         <strong>
             Please check the form.
         </strong>
->>>>>>> main
 
         <ul>
 
@@ -326,10 +305,7 @@
 
     <div class="container footer-grid">
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
         <div>
 
             <h3>
@@ -342,10 +318,7 @@
 
         </div>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
         <div>
 
             <p>
@@ -360,17 +333,11 @@
 
         </div>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
     </div>
 
 </footer>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
 </body>
 </html>
