@@ -1,79 +1,170 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
-/**
- * Interactive appointment selector.
- * It updates the hidden form fields used by the Laravel controller.
- */
-export default function AppointmentPicker({ services }) {
-    const [serviceId, setServiceId] = useState('');
-    const [date, setDate] = useState('');
-    const [time, setTime] = useState('');
+export default function AppointmentPicker({
+    services = [],
+    selectedService = ''
+}) {
 
-    const selectedService = useMemo(
-        () => services.find((service) => String(service.id) === String(serviceId)),
-        [services, serviceId]
+    const [serviceId, setServiceId] = useState(
+        selectedService ? String(selectedService) : ''
     );
 
-    const minDate = new Date().toISOString().split('T')[0];
+    const [date, setDate] = useState('');
+
+    const [time, setTime] = useState('');
+
+    const today = new Date()
+        .toISOString()
+        .split('T')[0];
 
     return (
         <div className="react-booking-box">
+
+            {/* ================================
+                STEP 1: SELECT SERVICE
+            ================================= */}
+
             <div className="react-heading">
+
                 <span>01</span>
+
                 <div>
-                    <h3>Choose your service</h3>
-                    <p>Select an available M. Cares service.</p>
+                    <h3>Select a service</h3>
+
+                    <p>
+                        Choose the beauty or aesthetic service you want.
+                    </p>
                 </div>
+
             </div>
 
+
             <div className="service-select-grid">
+
                 {services.map((service) => (
+
                     <button
                         key={service.id}
                         type="button"
-                        className={`service-choice ${String(service.id) === String(serviceId) ? 'selected' : ''}`}
-                        onClick={() => setServiceId(service.id)}
+                        className={
+                            String(service.id) === String(serviceId)
+                                ? 'service-choice selected'
+                                : 'service-choice'
+                        }
+                        onClick={() => {
+                            setServiceId(String(service.id));
+                        }}
                     >
-                        <strong>{service.name}</strong>
-                        <span>₱{Number(service.price).toLocaleString()}</span>
-                        <small>{service.duration_minutes} minutes</small>
+
+                        <strong>
+                            {service.name}
+                        </strong>
+
+                        <span>
+                            {service.price_display
+                                ? service.price_display
+                                : `₱${Number(service.price).toLocaleString()}`
+                            }
+                        </span>
+
                     </button>
+
                 ))}
+
             </div>
 
-            <input type="hidden" name="service_id" value={serviceId} />
+
+            {/* Laravel receives this value */}
+
+            <input
+                type="hidden"
+                name="service_id"
+                value={serviceId}
+            />
+
+
+            {/* ================================
+                STEP 2: DATE AND TIME
+            ================================= */}
+
+            <div className="react-heading">
+
+                <span>02</span>
+
+                <div>
+
+                    <h3>Choose date and time</h3>
+
+                    <p>
+                        Select your preferred appointment schedule.
+                    </p>
+
+                </div>
+
+            </div>
+
 
             <div className="booking-fields">
+
                 <label>
-                    Appointment date
+
+                    Appointment Date
+
                     <input
                         type="date"
                         name="appointment_date"
-                        min={minDate}
+                        min={today}
                         value={date}
-                        onChange={(event) => setDate(event.target.value)}
+                        onChange={(event) => {
+                            setDate(event.target.value);
+                        }}
                         required
                     />
+
                 </label>
 
+
                 <label>
-                    Preferred time
+
+                    Preferred Time
+
                     <input
                         type="time"
                         name="appointment_time"
                         value={time}
-                        onChange={(event) => setTime(event.target.value)}
+                        onChange={(event) => {
+                            setTime(event.target.value);
+                        }}
                         required
                     />
+
                 </label>
+
             </div>
 
-            {selectedService && (
+
+            {/* ================================
+                SUMMARY
+            ================================= */}
+
+            {serviceId && date && time && (
+
                 <div className="booking-summary">
-                    <strong>{selectedService.name}</strong>
-                    <span>₱{Number(selectedService.price).toLocaleString()} · {selectedService.duration_minutes} minutes</span>
+
+                    <strong>
+                        Appointment Selected
+                    </strong>
+
+                    <br />
+
+                    <span>
+                        {date} at {time}
+                    </span>
+
                 </div>
+
             )}
+
         </div>
     );
 }

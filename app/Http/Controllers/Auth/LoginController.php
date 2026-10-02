@@ -20,14 +20,19 @@ class LoginController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        // Laravel compares the submitted password with the stored hash.
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+        $remember = $request->boolean('remember');
+
+        
+       
+
+        if (!Auth::attempt($credentials, $remember)) {
             return back()
-                ->withErrors(['email' => 'The email or password is incorrect.'])
+                ->withErrors([
+                    'email' => 'The email or password is incorrect.'
+                ])
                 ->onlyInput('email');
         }
 
-        // Prevent session fixation after successful authentication.
         $request->session()->regenerate();
 
         $user = $request->user();

@@ -21,14 +21,15 @@ class AppointmentController extends Controller
     }
 
     public function create()
-    {
-        $services = Service::where('is_available', true)
-            ->orderBy('name')
-            ->get();
+{
+    // Get all available services
+    $services = Service::where('is_available', true)
+        ->orderBy('category')
+        ->orderBy('name')
+        ->get();
 
-        return view('appointments.create', compact('services'));
-    }
-
+    return view('appointments.create', compact('services'));
+}
     public function store(Request $request)
     {
         $validated = $request->validate([
