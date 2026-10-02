@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,55 +10,21 @@
 
     <title>@yield('title', 'M. Cares Beauty Services')</title>
 
-    <link rel="icon" type="image/png" href="{{ asset('images/round.png') }}">
-
-    @viteReactRefresh
-    @vite(['resources/css/app.css', 'resources/js/app.jsx'])
-</head>
-
-<body>
-
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="csrf-token"
-        content="{{ csrf_token() }}"
-    >
-
-    {{-- Light/Dark mode support --}}
-    <meta
-        name="color-scheme"
-        content="light dark"
-    >
-
-    <title>
-        @yield('title', 'M. Cares Beauty Services')
-    </title>
-
-    {{-- Browser tab icon --}}
     <link
         rel="icon"
         type="image/png"
-        href="{{ asset('images/round.png') }}?v=1"
+        href="{{ asset('images/round.png') }}"
     >
 
-    {{-- Laravel Vite --}}
     @viteReactRefresh
-
-@vite([
-    'resources/css/app.css',
-    'resources/js/app.jsx'
-])
+    @vite([
+        'resources/css/app.css',
+        'resources/js/app.jsx'
+    ])
 
 </head>
 
-
 <body>
-
 
 {{-- =========================================================
     NAVIGATION
@@ -68,9 +33,6 @@
 <header class="site-header">
 
     <div class="container nav-wrap">
-
-        <a class="brand" href="{{ route('home') }}">
-            <img src="{{ asset('images/logo.png') }}" alt="M. Cares Beauty Services logo">
 
         {{-- BRAND / LOGO --}}
 
@@ -96,49 +58,16 @@
 
         <nav class="main-nav">
 
-            <a href="{{ route('home') }}">Home</a>
-            <a href="{{ route('services.index') }}">Services</a>
-
-            @auth
-
-                @if(auth()->user()->isClient())
-
-                    <a href="{{ route('client.appointments') }}">Appointments</a>
-                    <a href="{{ route('client.profile') }}">Profile</a>
-                    <a class="nav-cta" href="{{ route('client.appointments.create') }}">Book Now</a>
-
-                @elseif(auth()->user()->isAdmin())
-
-                    <a href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
-
-                @elseif(auth()->user()->isStaff())
-
-                    <a href="{{ route('staff.dashboard') }}">Staff Dashboard</a>
-
-                @endif
-
-                <form method="POST" action="{{ route('logout') }}" class="inline-form">
-
-            {{-- HOME --}}
-
             <a href="{{ route('home') }}">
                 Home
             </a>
-
-
-            {{-- SERVICES --}}
 
             <a href="{{ route('services.index') }}">
                 Services
             </a>
 
 
-            {{-- =================================================
-                LOGGED-IN USER
-            ================================================= --}}
-
             @auth
-
 
                 {{-- CLIENT --}}
 
@@ -199,19 +128,10 @@
 
                 </form>
 
-            @else
-
-                <a href="{{ route('login') }}">Login</a>
-                <a class="nav-cta" href="{{ route('register') }}">Register</a>
-
-            @endauth
-
-
-            {{-- =================================================
-                LOGGED-OUT USER
-            ================================================= --}}
 
             @else
+
+                {{-- GUEST --}}
 
                 <a href="{{ route('login') }}">
                     Login
@@ -226,7 +146,6 @@
 
             @endauth
 
-
         </nav>
 
     </div>
@@ -234,24 +153,17 @@
 </header>
 
 
-
 {{-- =========================================================
     SUCCESS MESSAGE
 ========================================================= --}}
 
 @if(session('success'))
-    <div class="container flash success">
-        {{ session('success') }}
-    </div>
 
     <div class="container flash success">
-
         {{ session('success') }}
-
     </div>
 
 @endif
-
 
 
 {{-- =========================================================
@@ -261,7 +173,6 @@
 @if($errors->any())
 
     <div class="container flash error">
-        <strong>Please check the form.</strong>
 
         <strong>
             Please check the form.
@@ -284,7 +195,6 @@
 @endif
 
 
-
 {{-- =========================================================
     MAIN PAGE CONTENT
 ========================================================= --}}
@@ -296,7 +206,6 @@
 </main>
 
 
-
 {{-- =========================================================
     FOOTER
 ========================================================= --}}
@@ -304,7 +213,6 @@
 <footer class="site-footer">
 
     <div class="container footer-grid">
-
 
         <div>
 
@@ -332,7 +240,6 @@
             </p>
 
         </div>
-
 
     </div>
 

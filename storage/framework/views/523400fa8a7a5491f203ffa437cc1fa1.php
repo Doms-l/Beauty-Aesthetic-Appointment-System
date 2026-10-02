@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,64 +10,27 @@
 
     <title><?php echo $__env->yieldContent('title', 'M. Cares Beauty Services'); ?></title>
 
-    <link rel="icon" type="image/png" href="<?php echo e(asset('images/round.png')); ?>">
-
-    <?php echo app('Illuminate\Foundation\Vite')->reactRefresh(); ?>
-    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.jsx']); ?>
-</head>
-
-<body>
-
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="csrf-token"
-        content="<?php echo e(csrf_token()); ?>"
-    >
-
-    
-    <meta
-        name="color-scheme"
-        content="light dark"
-    >
-
-    <title>
-        <?php echo $__env->yieldContent('title', 'M. Cares Beauty Services'); ?>
-    </title>
-
-    
     <link
         rel="icon"
         type="image/png"
-        href="<?php echo e(asset('images/round.png')); ?>?v=1"
+        href="<?php echo e(asset('images/round.png')); ?>"
     >
 
-    
     <?php echo app('Illuminate\Foundation\Vite')->reactRefresh(); ?>
-
-<?php echo app('Illuminate\Foundation\Vite')([
-    'resources/css/app.css',
-    'resources/js/app.jsx'
-]); ?>
+    <?php echo app('Illuminate\Foundation\Vite')([
+        'resources/css/app.css',
+        'resources/js/app.jsx'
+    ]); ?>
 
 </head>
 
-
 <body>
-
 
 
 
 <header class="site-header">
 
     <div class="container nav-wrap">
-
-        <a class="brand" href="<?php echo e(route('home')); ?>">
-            <img src="<?php echo e(asset('images/logo.png')); ?>" alt="M. Cares Beauty Services logo">
 
         
 
@@ -94,47 +56,16 @@
 
         <nav class="main-nav">
 
-            <a href="<?php echo e(route('home')); ?>">Home</a>
-            <a href="<?php echo e(route('services.index')); ?>">Services</a>
-
-            <?php if(auth()->guard()->check()): ?>
-
-                <?php if(auth()->user()->isClient()): ?>
-
-                    <a href="<?php echo e(route('client.appointments')); ?>">Appointments</a>
-                    <a href="<?php echo e(route('client.profile')); ?>">Profile</a>
-                    <a class="nav-cta" href="<?php echo e(route('client.appointments.create')); ?>">Book Now</a>
-
-                <?php elseif(auth()->user()->isAdmin()): ?>
-
-                    <a href="<?php echo e(route('admin.dashboard')); ?>">Admin Dashboard</a>
-
-                <?php elseif(auth()->user()->isStaff()): ?>
-
-                    <a href="<?php echo e(route('staff.dashboard')); ?>">Staff Dashboard</a>
-
-                <?php endif; ?>
-
-                <form method="POST" action="<?php echo e(route('logout')); ?>" class="inline-form">
-
-            
-
             <a href="<?php echo e(route('home')); ?>">
                 Home
             </a>
-
-
-            
 
             <a href="<?php echo e(route('services.index')); ?>">
                 Services
             </a>
 
 
-            
-
             <?php if(auth()->guard()->check()): ?>
-
 
                 
 
@@ -195,17 +126,10 @@
 
                 </form>
 
-            <?php else: ?>
-
-                <a href="<?php echo e(route('login')); ?>">Login</a>
-                <a class="nav-cta" href="<?php echo e(route('register')); ?>">Register</a>
-
-            <?php endif; ?>
-
-
-            
 
             <?php else: ?>
+
+                
 
                 <a href="<?php echo e(route('login')); ?>">
                     Login
@@ -220,7 +144,6 @@
 
             <?php endif; ?>
 
-
         </nav>
 
     </div>
@@ -230,17 +153,10 @@
 
 
 
-
 <?php if(session('success')): ?>
-    <div class="container flash success">
-        <?php echo e(session('success')); ?>
-
-    </div>
 
     <div class="container flash success">
-
         <?php echo e(session('success')); ?>
-
 
     </div>
 
@@ -249,11 +165,9 @@
 
 
 
-
 <?php if($errors->any()): ?>
 
     <div class="container flash error">
-        <strong>Please check the form.</strong>
 
         <strong>
             Please check the form.
@@ -279,7 +193,6 @@
 
 
 
-
 <main>
 
     <?php echo $__env->yieldContent('content'); ?>
@@ -289,11 +202,9 @@
 
 
 
-
 <footer class="site-footer">
 
     <div class="container footer-grid">
-
 
         <div>
 
@@ -322,7 +233,6 @@
             </p>
 
         </div>
-
 
     </div>
 

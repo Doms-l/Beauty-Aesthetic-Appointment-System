@@ -1,16 +1,10 @@
 
 
-
 <?php $__env->startSection('title', 'Login | M. Cares'); ?>
 
 <?php $__env->startSection('content'); ?>
 
 <div class="auth-page">
-    <div class="auth-card">
-
-
-<div class="auth-page">
-
     <div class="auth-card">
 
         <div class="auth-logo">
@@ -23,17 +17,17 @@
         <span class="eyebrow">WELCOME BACK</span>
 
         <h1>Login to your account</h1>
-        <span class="eyebrow">
-            WELCOME BACK
-        </span>
-
-        <h1>
-            Login to your account
-        </h1>
 
         <p class="muted">
             Manage your appointments and profile from one place.
         </p>
+
+        <?php if($errors->any()): ?>
+            <div class="form-error">
+                <?php echo e($errors->first()); ?>
+
+            </div>
+        <?php endif; ?>
 
         <form
             method="POST"
@@ -41,9 +35,6 @@
             class="form-stack"
             id="loginForm"
         >
-            <?php echo csrf_field(); ?>
-
-
             <?php echo csrf_field(); ?>
 
             
@@ -79,19 +70,8 @@
                         type="button"
                         class="password-toggle"
                         id="loginPasswordToggle"
-                        onclick="toggleLoginPassword()"
                         aria-label="Show password"
                         title="Show password"
-                    >
-                        👁
-                    </button>
-                </div>
-            </label>
-
-            <label class="check-row">
-                        id="passwordToggle"
-                        aria-label="Show password"
-                        aria-controls="loginPassword"
                     >
                         👁
                     </button>
@@ -101,7 +81,6 @@
 
             
             <label class="check-row">
-
                 <input
                     type="checkbox"
                     name="remember"
@@ -109,9 +88,6 @@
                     id="rememberMe"
                 >
                 Remember me
-
-                Remember me
-
             </label>
 
             <button
@@ -126,9 +102,6 @@
         <p class="auth-bottom">
             Don't have an account?
             <a href="<?php echo e(route('register')); ?>">Create one</a>
-            <a href="<?php echo e(route('register')); ?>">
-                Create one
-            </a>
         </p>
 
         <div class="demo-box">
@@ -141,106 +114,47 @@
         </div>
 
     </div>
-
 </div>
 
 <script>
-function toggleLoginPassword() {
-    const password = document.getElementById('loginPassword');
-    const button = document.getElementById('loginPasswordToggle');
-
-    if (password.type === 'password') {
-        password.type = 'text';
-        button.textContent = '🙈';
-        button.setAttribute('aria-label', 'Hide password');
-        button.setAttribute('title', 'Hide password');
-    } else {
-        password.type = 'password';
-        button.textContent = '👁';
-        button.setAttribute('aria-label', 'Show password');
-        button.setAttribute('title', 'Show password');
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    const emailInput = document.getElementById('loginEmail');
-    const rememberCheckbox = document.getElementById('rememberMe');
-    const loginForm = document.getElementById('loginForm');
-
 document.addEventListener('DOMContentLoaded', function () {
 
     const emailInput = document.getElementById('loginEmail');
     const passwordInput = document.getElementById('loginPassword');
-    const passwordToggle = document.getElementById('passwordToggle');
+    const passwordToggle = document.getElementById('loginPasswordToggle');
     const rememberCheckbox = document.getElementById('rememberMe');
     const loginForm = document.getElementById('loginForm');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Show / Hide Password
-    |--------------------------------------------------------------------------
-    */
-
+    // Show / Hide Password
     passwordToggle.addEventListener('click', function () {
 
         if (passwordInput.type === 'password') {
-
             passwordInput.type = 'text';
-
             passwordToggle.textContent = '🙈';
-
-            passwordToggle.setAttribute(
-                'aria-label',
-                'Hide password'
-            );
-
+            passwordToggle.setAttribute('aria-label', 'Hide password');
+            passwordToggle.setAttribute('title', 'Hide password');
         } else {
-
             passwordInput.type = 'password';
-
             passwordToggle.textContent = '👁';
-
-            passwordToggle.setAttribute(
-                'aria-label',
-                'Show password'
-            );
-
+            passwordToggle.setAttribute('aria-label', 'Show password');
+            passwordToggle.setAttribute('title', 'Show password');
         }
 
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Restore Remember Me Settings
-    |--------------------------------------------------------------------------
-    */
+    // Restore Remember Me Settings
+    const savedEmail = localStorage.getItem('mcares_remembered_email');
+    const savedRemember = localStorage.getItem('mcares_remember_me');
 
-    const savedEmail = localStorage.getItem(
-        'mcares_remembered_email'
-    );
-
-    const savedRemember = localStorage.getItem(
-        'mcares_remember_me'
-    );
-
-    // Restore the saved email
     if (savedEmail && !emailInput.value) {
         emailInput.value = savedEmail;
     }
 
-    // Restore the checkbox
     if (savedRemember === 'true') {
         rememberCheckbox.checked = true;
     }
 
-    loginForm.addEventListener('submit', function () {
-        if (rememberCheckbox.checked) {
-    /*
-    |--------------------------------------------------------------------------
-    | Save Email and Remember Me Choice
-    |--------------------------------------------------------------------------
-    */
-
+    // Save Email and Remember Me Choice
     loginForm.addEventListener('submit', function () {
 
         if (rememberCheckbox.checked) {
@@ -254,23 +168,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 'mcares_remember_me',
                 'true'
             );
-        } else {
 
         } else {
 
-            localStorage.removeItem(
-                'mcares_remembered_email'
-            );
-
-            localStorage.removeItem(
-                'mcares_remember_me'
-            );
-        }
-    });
-});
-</script>
-
-<?php $__env->stopSection(); ?>
+            localStorage.removeItem('mcares_remembered_email');
+            localStorage.removeItem('mcares_remember_me');
 
         }
 
@@ -280,5 +182,6 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <?php $__env->stopSection(); ?>
+
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/auth/login.blade.php ENDPATH**/ ?>
