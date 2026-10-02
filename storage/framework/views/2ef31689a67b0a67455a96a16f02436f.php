@@ -244,10 +244,12 @@
 
         <div class="achievement-art achievement-photo">
             <img
-                src="<?php echo e(asset('images/awards.jpg')); ?>"
-                alt="M. Cares Beauty Services awards and certificates"
-                loading="lazy"
-            >
+            src="<?php echo e(asset('images/awards.jpg')); ?>"
+            alt="M. Cares Beauty Services awards and certificates"
+            width="1200"
+            height="900"
+            loading="lazy"
+        >
         </div>
 
         <div class="achievement-content">

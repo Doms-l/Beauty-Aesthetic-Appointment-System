@@ -929,7 +929,9 @@ details summary { cursor: pointer; color: var(--mauve); font-weight: 700; }
 }
 
 
-/* FIX AWARDS IMAGE OVERFLOW */
+
+
+/* FIX AWARDS IMAGE SIZE */
 
 .awards-section {
     width: 100%;
@@ -939,20 +941,21 @@ details summary { cursor: pointer; color: var(--mauve); font-weight: 700; }
 }
 
 .awards-grid {
-    display: grid;
-    grid-template-columns: 280px minmax(0, 1fr);
+    display: grid !important;
+    grid-template-columns: minmax(0, 240px) minmax(0, 1fr) !important;
     align-items: center;
-    gap: 30px;
+    gap: 28px;
     width: 100%;
-    max-width: 1150px;
+    max-width: 900px;
     margin: 0 auto;
     box-sizing: border-box;
 }
 
 .awards-image {
     width: 100%;
-    max-width: 280px;
+    max-width: 240px;
     min-width: 0;
+    margin: 0 auto;
     overflow: hidden;
     border-radius: 14px;
 }
@@ -960,8 +963,8 @@ details summary { cursor: pointer; color: var(--mauve); font-weight: 700; }
 .awards-image img {
     display: block;
     width: 100% !important;
-    max-width: 280px !important;
-    height: 190px !important;
+    max-width: 240px !important;
+    height: 180px !important;
     object-fit: cover;
     object-position: center;
     border-radius: 14px;
@@ -990,19 +993,21 @@ details summary { cursor: pointer; color: var(--mauve); font-weight: 700; }
 /* MOBILE */
 @media (max-width: 700px) {
     .awards-grid {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 20px;
     }
 
     .awards-image {
-        max-width: 260px;
-        margin: 0 auto;
+        max-width: 280px;
     }
 
     .awards-image img {
-        max-width: 260px !important;
-        height: 175px !important;
+        max-width: 280px !important;
+        height: 200px !important;
     }
 }
+
+
 /* =====================================
    RESPONSIVE
 ===================================== */
@@ -1036,5 +1041,85 @@ details summary { cursor: pointer; color: var(--mauve); font-weight: 700; }
 
     .founder-image img {
         height: 350px;
+    }
+}
+
+
+/* =========================================
+   M. CARES - ACHIEVEMENTS PHOTO SIZE FIX
+   ========================================= */
+
+/* Keep the achievements section within the page */
+.achievements-section {
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Set a smaller image column and preserve text columns */
+.achievements-section .achievements-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 320px) minmax(0, 1fr) minmax(0, 180px) !important;
+    align-items: center;
+    gap: 25px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Image container */
+.achievements-section .achievement-photo {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Actual certificates photo */
+.achievements-section .achievement-photo img {
+    display: block;
+    width: 100% !important;
+    max-width: 300px !important;
+    height: 230px !important;
+    min-width: 0;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+}
+
+/* Tablet */
+@media (max-width: 850px) {
+    .achievements-section .achievements-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 25px;
+    }
+
+    .achievements-section .achievement-photo {
+        max-width: 340px;
+        margin: 0 auto;
+    }
+
+    .achievements-section .achievement-photo img {
+        max-width: 320px !important;
+        height: 240px !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .achievements-section .achievement-photo {
+        max-width: 290px;
+    }
+
+    .achievements-section .achievement-photo img {
+        max-width: 270px !important;
+        height: 200px !important;
     }
 }
