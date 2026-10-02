@@ -2,6 +2,11 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import AppointmentPicker from './components/AppointmentPicker';
 
+<<<<<<< HEAD
+const appointmentRoot = document.getElementById('appointment-picker');
+
+if (appointmentRoot) {
+=======
 console.log('M. Cares React app loaded');
 
 const appointmentRoot = document.getElementById('appointment-picker');
@@ -10,14 +15,18 @@ if (appointmentRoot) {
 
     console.log('Appointment picker found');
 
+>>>>>>> main
     const services = JSON.parse(
         appointmentRoot.dataset.services || '[]'
     );
 
     const selectedService =
         appointmentRoot.dataset.selectedService || '';
+<<<<<<< HEAD
+=======
 
     console.log('Services:', services);
+>>>>>>> main
 
     createRoot(appointmentRoot).render(
         <AppointmentPicker
@@ -25,4 +34,9 @@ if (appointmentRoot) {
             selectedService={selectedService}
         />
     );
+<<<<<<< HEAD
 }
+
+=======
+}
+>>>>>>> main
