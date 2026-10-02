@@ -234,6 +234,150 @@
 
 
 
+<section class="mcares-slideshow-section">
+    <div class="container">
+
+        <div class="mcares-slideshow-header">
+            <span class="eyebrow">M. CARES BEAUTY SERVICES</span>
+            <h2>A Look Inside M. Cares</h2>
+            <p>Experience our space, services, and beauty care.</p>
+        </div>
+
+        <div class="mcares-slideshow">
+
+            <div class="mcares-slide active">
+                <img
+                    src="<?php echo e(asset('images/m.care1.jpg')); ?>"
+                    alt="M. Cares Beauty Services"
+                >
+            </div>
+
+            <div class="mcares-slide">
+                <img
+                    src="<?php echo e(asset('images/m.care2.jpg')); ?>"
+                    alt="M. Cares Beauty Services"
+                >
+            </div>
+
+            <div class="mcares-slide">
+                <img
+                    src="<?php echo e(asset('images/m.care3.jpg')); ?>"
+                    alt="M. Cares Beauty Services"
+                >
+            </div>
+
+            <div class="mcares-slide">
+                <img
+                    src="<?php echo e(asset('images/m.care4.jpg')); ?>"
+                    alt="M. Cares Beauty Services"
+                >
+            </div>
+
+            <div class="mcares-slide">
+                <img
+                    src="<?php echo e(asset('images/m.care5.jpg')); ?>"
+                    alt="M. Cares Beauty Services"
+                >
+            </div>
+
+            <div class="mcares-slide">
+                <img
+                    src="<?php echo e(asset('images/m.care6.jpg')); ?>"
+                    alt="M. Cares Beauty Services"
+                >
+            </div>
+
+            <button class="mcares-slide-btn prev" type="button" aria-label="Previous photo">
+                &#10094;
+            </button>
+
+            <button class="mcares-slide-btn next" type="button" aria-label="Next photo">
+                &#10095;
+            </button>
+
+        </div>
+
+        <div class="mcares-slide-dots">
+            <button class="mcares-dot active" type="button" aria-label="Photo 1"></button>
+            <button class="mcares-dot" type="button" aria-label="Photo 2"></button>
+            <button class="mcares-dot" type="button" aria-label="Photo 3"></button>
+            <button class="mcares-dot" type="button" aria-label="Photo 4"></button>
+            <button class="mcares-dot" type="button" aria-label="Photo 5"></button>
+            <button class="mcares-dot" type="button" aria-label="Photo 6"></button>
+        </div>
+
+        <p class="mcares-slide-caption">
+            Photo 1 of 6 &nbsp; • &nbsp; Changes every 10 seconds
+        </p>
+
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const slides = document.querySelectorAll('.mcares-slide');
+    const dots = document.querySelectorAll('.mcares-dot');
+    const prevButton = document.querySelector('.mcares-slide-btn.prev');
+    const nextButton = document.querySelector('.mcares-slide-btn.next');
+    const caption = document.querySelector('.mcares-slide-caption');
+
+    if (!slides.length) return;
+
+    let currentSlide = 0;
+    let slideshowTimer;
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === index);
+        });
+
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === index);
+        });
+
+        caption.innerHTML =
+            ' ' + (index + 1) + ' of 6 &nbsp; • &nbsp; ';
+ 
+        currentSlide = index;
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }
+
+    function previousSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide);
+    }
+
+    function startSlideshow() {
+        clearInterval(slideshowTimer);
+        slideshowTimer = setInterval(nextSlide, 10000);
+    }
+
+    nextButton.addEventListener('click', function () {
+        nextSlide();
+        startSlideshow();
+    });
+
+    prevButton.addEventListener('click', function () {
+        previousSlide();
+        startSlideshow();
+    });
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', function () {
+            showSlide(index);
+            startSlideshow();
+        });
+    });
+
+    showSlide(0);
+    startSlideshow();
+});
+</script>
+
 
 
 <section class="achievements-section">

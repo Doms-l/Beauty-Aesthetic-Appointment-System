@@ -2777,3 +2777,165 @@ details summary {
         font-size: 14px;
     }
 }
+/* =========================================
+   M. CARES PHOTO SLIDESHOW
+   ========================================= */
+
+.mcares-slideshow-section {
+    padding: 70px 20px;
+    background: linear-gradient(180deg, #fdeff5 0%, #fff 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.mcares-slideshow-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.mcares-slideshow-header .eyebrow {
+    color: #e91e8c;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.mcares-slideshow-header h2 {
+    margin: 8px 0;
+    color: #62444d;
+    font-size: 32px;
+}
+
+.mcares-slideshow-header p {
+    margin: 0;
+    color: #666;
+    font-size: 16px;
+}
+
+.mcares-slideshow {
+    width: min(100%, 900px);
+    height: 500px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(98, 68, 77, 0.15);
+    background: #f8dce8;
+}
+
+.mcares-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease-in-out;
+}
+
+.mcares-slide.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mcares-slide img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.mcares-slide-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: #e91e8c;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 5;
+    transition: all 0.3s ease;
+}
+
+.mcares-slide-btn:hover {
+    background: #62444d;
+    transform: translateY(-50%) scale(1.08);
+}
+
+.mcares-slide-btn.prev {
+    left: 20px;
+}
+
+.mcares-slide-btn.next {
+    right: 20px;
+}
+
+.mcares-slide-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+    margin-top: 20px;
+}
+
+.mcares-dot {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #e5c7d4;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mcares-dot.active {
+    width: 12px;
+    height: 12px;
+    background: #e91e8c;
+}
+
+.mcares-slide-caption {
+    text-align: center;
+    margin: 12px 0 0;
+    color: #62444d;
+    font-size: 14px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .mcares-slideshow-section {
+        padding: 50px 15px;
+    }
+
+    .mcares-slideshow-header h2 {
+        font-size: 26px;
+    }
+
+    .mcares-slideshow {
+        height: 350px;
+        border-radius: 15px;
+    }
+
+    .mcares-slide-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+    }
+
+    .mcares-slide-btn.prev {
+        left: 12px;
+    }
+
+    .mcares-slide-btn.next {
+        right: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mcares-slideshow {
+        height: 280px;
+    }
+}
