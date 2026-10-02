@@ -5,44 +5,42 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <meta name="color-scheme" content="light dark">
 
-    <title>@yield('title', 'M. Cares Beauty Services')</title>
+    <title><?php echo $__env->yieldContent('title', 'M. Cares Beauty Services'); ?></title>
 
     <link
         rel="icon"
         type="image/png"
-        href="{{ asset('images/round.png') }}"
+        href="<?php echo e(asset('images/round.png')); ?>"
     >
 
-    @viteReactRefresh
-    @vite([
+    <?php echo app('Illuminate\Foundation\Vite')->reactRefresh(); ?>
+    <?php echo app('Illuminate\Foundation\Vite')([
         'resources/css/app.css',
         'resources/js/app.jsx'
-    ])
+    ]); ?>
 
 </head>
 
 <body>
 
-{{-- =========================================================
-    NAVIGATION
-========================================================= --}}
+
 
 <header class="site-header">
 
     <div class="container nav-wrap">
 
-        {{-- BRAND / LOGO --}}
+        
 
         <a
             class="brand"
-            href="{{ route('home') }}"
+            href="<?php echo e(route('home')); ?>"
         >
 
             <img
-                src="{{ asset('images/logo.png') }}"
+                src="<?php echo e(asset('images/logo.png')); ?>"
                 alt="M. Cares Beauty Services logo"
             >
 
@@ -54,70 +52,70 @@
         </a>
 
 
-        {{-- NAVIGATION LINKS --}}
+        
 
         <nav class="main-nav">
 
-            <a href="{{ route('home') }}">
+            <a href="<?php echo e(route('home')); ?>">
                 Home
             </a>
 
-            <a href="{{ route('services.index') }}">
+            <a href="<?php echo e(route('services.index')); ?>">
                 Services
             </a>
 
 
-            @auth
+            <?php if(auth()->guard()->check()): ?>
 
-                {{-- CLIENT --}}
+                
 
-                @if(auth()->user()->isClient())
+                <?php if(auth()->user()->isClient()): ?>
 
-                    <a href="{{ route('client.appointments') }}">
+                    <a href="<?php echo e(route('client.appointments')); ?>">
                         Appointments
                     </a>
 
-                    <a href="{{ route('client.profile') }}">
+                    <a href="<?php echo e(route('client.profile')); ?>">
                         Profile
                     </a>
 
                     <a
                         class="nav-cta"
-                        href="{{ route('client.appointments.create') }}"
+                        href="<?php echo e(route('client.appointments.create')); ?>"
                     >
                         Book Now
                     </a>
 
 
-                {{-- ADMIN --}}
+                
 
-                @elseif(auth()->user()->isAdmin())
+                <?php elseif(auth()->user()->isAdmin()): ?>
 
-                    <a href="{{ route('admin.dashboard') }}">
+                    <a href="<?php echo e(route('admin.dashboard')); ?>">
                         Admin Dashboard
                     </a>
 
 
-                {{-- STAFF --}}
+                
 
-                @elseif(auth()->user()->isStaff())
+                <?php elseif(auth()->user()->isStaff()): ?>
 
-                    <a href="{{ route('staff.dashboard') }}">
+                    <a href="<?php echo e(route('staff.dashboard')); ?>">
                         Staff Dashboard
                     </a>
 
-                @endif
+                <?php endif; ?>
 
 
-                {{-- LOGOUT --}}
+                
 
                 <form
                     method="POST"
-                    action="{{ route('logout') }}"
+                    action="<?php echo e(route('logout')); ?>"
                     class="inline-form"
                 >
 
-                    @csrf
+                    <?php echo csrf_field(); ?>
 
                     <button
                         type="submit"
@@ -129,22 +127,22 @@
                 </form>
 
 
-            @else
+            <?php else: ?>
 
-                {{-- GUEST --}}
+                
 
-                <a href="{{ route('login') }}">
+                <a href="<?php echo e(route('login')); ?>">
                     Login
                 </a>
 
                 <a
                     class="nav-cta"
-                    href="{{ route('register') }}"
+                    href="<?php echo e(route('register')); ?>"
                 >
                     Register
                 </a>
 
-            @endauth
+            <?php endif; ?>
 
         </nav>
 
@@ -153,24 +151,21 @@
 </header>
 
 
-{{-- =========================================================
-    SUCCESS MESSAGE
-========================================================= --}}
 
-@if(session('success'))
+
+<?php if(session('success')): ?>
 
     <div class="container flash success">
-        {{ session('success') }}
+        <?php echo e(session('success')); ?>
+
     </div>
 
-@endif
+<?php endif; ?>
 
 
-{{-- =========================================================
-    VALIDATION ERRORS
-========================================================= --}}
 
-@if($errors->any())
+
+<?php if($errors->any()): ?>
 
     <div class="container flash error">
 
@@ -180,35 +175,32 @@
 
         <ul>
 
-            @foreach($errors->all() as $error)
+            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
                 <li>
-                    {{ $error }}
+                    <?php echo e($error); ?>
+
                 </li>
 
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
         </ul>
 
     </div>
 
-@endif
+<?php endif; ?>
 
 
-{{-- =========================================================
-    MAIN PAGE CONTENT
-========================================================= --}}
+
 
 <main>
 
-    @yield('content')
+    <?php echo $__env->yieldContent('content'); ?>
 
 </main>
 
 
-{{-- =========================================================
-    FOOTER
-========================================================= --}}
+
 
 <footer class="site-footer">
 
@@ -235,7 +227,8 @@
             </p>
 
             <p>
-                © {{ date('Y') }}
+                © <?php echo e(date('Y')); ?>
+
                 M. Cares Beauty Services
             </p>
 
@@ -247,4 +240,4 @@
 
 
 </body>
-</html>
+</html><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/layouts/app.blade.php ENDPATH**/ ?>

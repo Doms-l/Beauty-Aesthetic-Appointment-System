@@ -1,15 +1,15 @@
-@extends('layouts.app')
 
-@section('title', 'Login | M. Cares')
 
-@section('content')
+<?php $__env->startSection('title', 'Login | M. Cares'); ?>
+
+<?php $__env->startSection('content'); ?>
 
 <div class="auth-page">
     <div class="auth-card">
 
         <div class="auth-logo">
             <img
-                src="{{ asset('images/logo.png') }}"
+                src="<?php echo e(asset('images/logo.png')); ?>"
                 alt="M. Cares logo"
             >
         </div>
@@ -22,21 +22,22 @@
             Manage your appointments and profile from one place.
         </p>
 
-        @if ($errors->any())
+        <?php if($errors->any()): ?>
             <div class="form-error">
-                {{ $errors->first() }}
+                <?php echo e($errors->first()); ?>
+
             </div>
-        @endif
+        <?php endif; ?>
 
         <form
             method="POST"
-            action="{{ route('login.store') }}"
+            action="<?php echo e(route('login.store')); ?>"
             class="form-stack"
             id="loginForm"
         >
-            @csrf
+            <?php echo csrf_field(); ?>
 
-            {{-- Email --}}
+            
             <label>
                 Email address
 
@@ -44,14 +45,14 @@
                     type="email"
                     name="email"
                     id="loginEmail"
-                    value="{{ old('email') }}"
+                    value="<?php echo e(old('email')); ?>"
                     required
                     autofocus
                     autocomplete="username"
                 >
             </label>
 
-            {{-- Password --}}
+            
             <label>
                 Password
 
@@ -78,7 +79,7 @@
                 </div>
             </label>
 
-            {{-- Remember Me --}}
+            
             <label class="check-row">
                 <input
                     type="checkbox"
@@ -100,7 +101,7 @@
 
         <p class="auth-bottom">
             Don't have an account?
-            <a href="{{ route('register') }}">Create one</a>
+            <a href="<?php echo e(route('register')); ?>">Create one</a>
         </p>
 
         <div class="demo-box">
@@ -180,5 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/auth/login.blade.php ENDPATH**/ ?>
