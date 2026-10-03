@@ -122,15 +122,15 @@
 
     <div class="container founder-grid">
 
-
-
+        
         <div class="founder-photo-wrap">
 
             <div class="founder-photo-frame">
 
-                <img src="<?php echo e(asset('images/owner.png')); ?>"
-
-                     alt="Founder of M. Cares Beauty Services">
+                <img
+                    src="<?php echo e(asset('images/owner.png')); ?>"
+                    alt="Founder of M. Cares Beauty Services"
+                >
 
             </div>
 
@@ -139,98 +139,60 @@
         </div>
 
 
-
+        
         <div class="founder-content">
-
-
 
             <span class="eyebrow">MEET THE FOUNDER</span>
 
-
-
             <h2>Marjilie Preciados Tomines</h2>
 
-
-
             <blockquote class="founder-quote">
-
                 “Beauty is not about being perfect.
-
                 It is about feeling confident, cared for,
-
                 and beautiful in your own way.”
-
             </blockquote>
-
-
 
             <div class="founder-signature">
 
                 <span></span>
 
                 <div>
-
                     <h3>Founder & Aesthetician</h3>
-
                     <p>M. Cares Beauty Services</p>
-
                 </div>
 
             </div>
 
-
-
         </div>
 
 
-
+        
         <div class="founder-message">
 
             <h3>A Message from Our Founder</h3>
 
-
-
             <p>
-
                 At M. Cares Beauty Services, we believe that every
-
                 client deserves to feel confident, comfortable,
-
                 and cared for.
-
             </p>
-
-
 
             <p>
-
                 Our goal is to provide beauty services that help
-
                 you look and feel your best while giving you
-
                 a relaxing and welcoming experience.
-
             </p>
-
-
 
             <div class="founder-sign">
-
                 M. Cares
-
                 <span>♡</span>
-
             </div>
 
         </div>
 
-
-
     </div>
 
 </section>
-
-
 
 
 
