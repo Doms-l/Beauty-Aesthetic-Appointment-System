@@ -2939,3 +2939,109 @@ details summary {
         height: 280px;
     }
 }
+/* =========================================
+   FOUNDER SECTION - LARGER PHOTO
+   ========================================= */
+
+.founder-grid {
+    display: grid;
+    grid-template-columns: minmax(500px, 1fr) minmax(600px, 1.2fr);
+    grid-template-rows: auto auto;
+    column-gap: 70px;
+    row-gap: 35px;
+    align-items: start;
+}
+
+/* LEFT - LARGER OWNER PHOTO */
+.founder-photo-wrap {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+}
+
+.founder-photo-frame {
+    width: 600px !important;
+    height: 600px !important;
+    max-width: none !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.founder-photo-frame img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    object-fit: cover !important;
+    display: block;
+}
+
+/* RIGHT - FOUNDER INFORMATION */
+.founder-content {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+/* RIGHT - MESSAGE */
+.founder-message {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.founder-message h3 {
+    margin-top: 0;
+}
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 1100px) {
+    .founder-grid {
+        grid-template-columns: minmax(400px, 1fr) minmax(0, 1fr);
+        column-gap: 40px;
+    }
+
+    .founder-photo-frame {
+        max-width: 520px;
+    }
+}
+
+@media (max-width: 900px) {
+    .founder-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        gap: 35px;
+    }
+
+    .founder-photo-wrap {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .founder-content {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .founder-message {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .founder-photo-frame {
+        width: 100%;
+        max-width: 550px;
+    }
+}
+
+@media (max-width: 600px) {
+    .founder-photo-frame {
+        width: 100%;
+        max-width: 100%;
+    }
+}
