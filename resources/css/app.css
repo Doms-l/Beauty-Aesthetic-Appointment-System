@@ -2272,34 +2272,36 @@ details summary {
 
 .site-footer {
     background: var(--mauve);
-
     color: #fff;
 
-    padding: 45px 0;
+    /* smaller footer */
+    padding: 25px 0;
 
-    margin-top: 30px;
+    /* remove the extra gap above footer */
+    margin-top: 0;
+
+    /* remove any divider/line */
+    border-top: none;
 }
 
 .footer-grid {
     display: flex;
-
     justify-content: space-between;
-
-    gap: 30px;
+    align-items: center;
+    gap: 20px;
 }
 
 .footer-grid h3 {
     font-family: 'Playfair Display', serif;
-
     letter-spacing: 2px;
+    margin: 0 0 5px;
 }
 
 .footer-grid p {
     color: var(--footer-text);
-
     max-width: 500px;
+    margin: 3px 0;
 }
-
 
 /* =========================================================
    DARK MODE SPECIFIC ADJUSTMENTS
