@@ -5,6 +5,76 @@
 @section('content')
 
 {{-- =========================================================
+     AUTO IMAGE MATCHER
+     Scans the image folders once and matches each service
+     name to its picture automatically.
+     ========================================================= --}}
+@php
+    $norm = fn ($s) => preg_replace('/[^a-z0-9]/', '', strtolower($s));
+
+    // Build an index of every image in the three folders
+    $imageIndex = [];
+
+    foreach (['Facial Services', 'Lash and Brows Services', 'Other Services'] as $folder) {
+        $dir = public_path('images/' . $folder);
+
+        if (is_dir($dir)) {
+            foreach (\Illuminate\Support\Facades\File::files($dir) as $file) {
+                $key = $norm($file->getFilenameWithoutExtension());
+                $imageIndex[$key] = 'images/' . $folder . '/' . $file->getFilename();
+            }
+        }
+    }
+
+    // Service name on the site => image file name (without extension)
+    // Add a line here whenever a service name differs from its file name.
+    $aliases = [
+        'Brow Lamination W/Tint'  => 'Brow Lamination with Tint',
+        'Upper Lip Wax'           => 'Upper Lip Removal',
+        'Melano Out Melasma Meso' => 'Melasma Treatment',
+    ];
+
+    $aliasIndex = [];
+    foreach ($aliases as $serviceName => $fileName) {
+        $aliasIndex[$norm($serviceName)] = $norm($fileName);
+    }
+
+    $findServiceImage = function ($name) use ($imageIndex, $aliasIndex, $norm) {
+        $key = $norm($name);
+
+        // 0. Manual alias
+        if (isset($aliasIndex[$key], $imageIndex[$aliasIndex[$key]])) {
+            return $imageIndex[$aliasIndex[$key]];
+        }
+
+        // 1. Exact match (ignoring case, spaces and symbols)
+        if (isset($imageIndex[$key])) {
+            return $imageIndex[$key];
+        }
+
+        // 2. Fallback: longest file name that the service name starts with (or vice versa)
+        $best = null;
+        $bestLen = 0;
+
+        foreach ($imageIndex as $k => $path) {
+            $match = (strlen($k) >= 5 && str_starts_with($key, $k))
+                  || (strlen($key) >= 6 && str_starts_with($k, $key));
+
+            if ($match && strlen($k) > $bestLen) {
+                $best = $path;
+                $bestLen = strlen($k);
+            }
+        }
+
+        return $best;
+    };
+
+    // Safely encode a path for a URL (handles spaces, +, parentheses, etc.)
+    $encodePath = fn ($path) => implode('/', array_map('rawurlencode', explode('/', $path)));
+@endphp
+
+
+{{-- =========================================================
      SERVICES HERO
      ========================================================= --}}
 <section class="page-hero">
@@ -56,6 +126,23 @@
                     @foreach($categoryServices as $service)
 
                         <article class="service-card service-page-card">
+
+                            {{-- SERVICE IMAGE --}}
+                            @php
+                                $serviceImage = $findServiceImage($service->name);
+                            @endphp
+
+                            @if($serviceImage)
+                                <div class="service-card-image"
+                                     style="width:100%; height:160px; overflow:hidden; border-radius:12px; margin-bottom:14px;">
+                                    <img
+                                        src="{{ asset($encodePath($serviceImage)) }}"
+                                        alt="{{ $service->name }}"
+                                        loading="lazy"
+                                        style="display:block; width:100%; height:100%; max-width:100%; object-fit:cover;"
+                                    >
+                                </div>
+                            @endif
 
                             <h3>
                                 {{ $service->name }}
