@@ -53,11 +53,11 @@ class ProfileController extends Controller
             ],
 
             'profile_picture' => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:2048'
-            ],
+    'nullable',
+    'file',
+    'mimetypes:image/jpeg,image/png,image/webp',
+    'max:5120',
+],
         ]);
 
         if ($request->hasFile('profile_picture')) {

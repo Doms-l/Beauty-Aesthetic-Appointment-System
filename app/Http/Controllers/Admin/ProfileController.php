@@ -31,11 +31,11 @@ class ProfileController extends Controller
             'phone' => ['nullable', 'string', 'max:30'],
             'address' => ['nullable', 'string', 'max:1000'],
             'profile_picture' => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:2048',
-            ],
+    'nullable',
+    'file',
+    'mimetypes:image/jpeg,image/png,image/webp',
+    'max:5120',
+],
         ]);
 
         if ($request->hasFile('profile_picture')) {

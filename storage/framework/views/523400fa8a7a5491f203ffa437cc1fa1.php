@@ -1,3 +1,7 @@
+<?php
+    use Illuminate\Support\Facades\Storage;
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -110,7 +114,7 @@
                         <?php if(auth()->user()->profile_picture): ?>
 
                             <img
-                                src="<?php echo e(asset('storage/' . auth()->user()->profile_picture)); ?>"
+                                src="<?php echo e(Storage::disk('public')->url(auth()->user()->profile_picture)); ?>"
                                 alt="Profile Picture"
                             >
 
@@ -130,36 +134,36 @@
 
                 <?php elseif(auth()->user()->isAdmin()): ?>
 
-    <a href="<?php echo e(route('admin.dashboard')); ?>">
-        Admin Dashboard
-    </a>
+                    <a href="<?php echo e(route('admin.dashboard')); ?>">
+                        Admin Dashboard
+                    </a>
 
-    
+                    
 
-    <a
-        href="<?php echo e(route('admin.profile')); ?>"
-        class="nav-profile"
-        title="Admin Profile"
-        aria-label="Admin Profile"
-    >
+                    <a
+                        href="<?php echo e(route('admin.profile')); ?>"
+                        class="nav-profile"
+                        title="Admin Profile"
+                        aria-label="Admin Profile"
+                    >
 
-        <?php if(auth()->user()->profile_picture): ?>
+                        <?php if(auth()->user()->profile_picture): ?>
 
-            <img
-                src="<?php echo e(asset('storage/' . auth()->user()->profile_picture)); ?>"
-                alt="Admin Profile Picture"
-            >
+                            <img
+                                src="<?php echo e(Storage::disk('public')->url(auth()->user()->profile_picture)); ?>"
+                                alt="Admin Profile Picture"
+                            >
 
-        <?php else: ?>
+                        <?php else: ?>
 
-            <span>
-                <?php echo e(strtoupper(substr(auth()->user()->first_name, 0, 1))); ?>
+                            <span>
+                                <?php echo e(strtoupper(substr(auth()->user()->first_name, 0, 1))); ?>
 
-            </span>
+                            </span>
 
-        <?php endif; ?>
+                        <?php endif; ?>
 
-    </a>
+                    </a>
 
 
                 

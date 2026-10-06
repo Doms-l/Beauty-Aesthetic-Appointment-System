@@ -1,3 +1,7 @@
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -114,7 +118,7 @@
                         @if(auth()->user()->profile_picture)
 
                             <img
-                                src="{{ asset('storage/' . auth()->user()->profile_picture) }}"
+                                src="{{ Storage::disk('public')->url(auth()->user()->profile_picture) }}"
                                 alt="Profile Picture"
                             >
 
@@ -135,35 +139,35 @@
 
                 @elseif(auth()->user()->isAdmin())
 
-    <a href="{{ route('admin.dashboard') }}">
-        Admin Dashboard
-    </a>
+                    <a href="{{ route('admin.dashboard') }}">
+                        Admin Dashboard
+                    </a>
 
-    {{-- ADMIN PROFILE PICTURE --}}
+                    {{-- ADMIN PROFILE PICTURE --}}
 
-    <a
-        href="{{ route('admin.profile') }}"
-        class="nav-profile"
-        title="Admin Profile"
-        aria-label="Admin Profile"
-    >
+                    <a
+                        href="{{ route('admin.profile') }}"
+                        class="nav-profile"
+                        title="Admin Profile"
+                        aria-label="Admin Profile"
+                    >
 
-        @if(auth()->user()->profile_picture)
+                        @if(auth()->user()->profile_picture)
 
-            <img
-                src="{{ asset('storage/' . auth()->user()->profile_picture) }}"
-                alt="Admin Profile Picture"
-            >
+                            <img
+                                src="{{ Storage::disk('public')->url(auth()->user()->profile_picture) }}"
+                                alt="Admin Profile Picture"
+                            >
 
-        @else
+                        @else
 
-            <span>
-                {{ strtoupper(substr(auth()->user()->first_name, 0, 1)) }}
-            </span>
+                            <span>
+                                {{ strtoupper(substr(auth()->user()->first_name, 0, 1)) }}
+                            </span>
 
-        @endif
+                        @endif
 
-    </a>
+                    </a>
 
 
                 {{-- =================================================
