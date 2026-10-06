@@ -229,8 +229,14 @@
         class="mcares-chat-toggle"
         aria-label="Open M. Cares chatbot"
         aria-expanded="false"
+        style="width:62px;height:62px;padding:0;overflow:hidden;background:transparent;border-radius:50%;"
     >
-        💬
+        <img
+            src="<?php echo e(asset('images/chatbot.png')); ?>"
+            alt=""
+            class="mcares-chat-toggle-img"
+            style="width:100%;height:100%;max-width:none;object-fit:cover;border-radius:50%;display:block;"
+        >
     </button>
 
 
@@ -249,11 +255,11 @@
             <div class="mcares-chat-header-info">
 
                 <div class="mcares-chat-avatar">
-    <img
-        src="<?php echo e(asset('images/chatbot.png')); ?>"
-        alt="M. Cares Assistant"
-    >
-</div>
+                    <img
+                        src="<?php echo e(asset('images/chatbot.png')); ?>"
+                        alt="M. Cares Assistant"
+                    >
+                </div>
 
                 <div>
 
