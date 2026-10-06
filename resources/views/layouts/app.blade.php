@@ -135,9 +135,35 @@
 
                 @elseif(auth()->user()->isAdmin())
 
-                    <a href="{{ route('admin.dashboard') }}">
-                        Admin Dashboard
-                    </a>
+    <a href="{{ route('admin.dashboard') }}">
+        Admin Dashboard
+    </a>
+
+    {{-- ADMIN PROFILE PICTURE --}}
+
+    <a
+        href="{{ route('admin.profile') }}"
+        class="nav-profile"
+        title="Admin Profile"
+        aria-label="Admin Profile"
+    >
+
+        @if(auth()->user()->profile_picture)
+
+            <img
+                src="{{ asset('storage/' . auth()->user()->profile_picture) }}"
+                alt="Admin Profile Picture"
+            >
+
+        @else
+
+            <span>
+                {{ strtoupper(substr(auth()->user()->first_name, 0, 1)) }}
+            </span>
+
+        @endif
+
+    </a>
 
 
                 {{-- =================================================
