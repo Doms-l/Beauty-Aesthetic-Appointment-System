@@ -17,6 +17,10 @@ export default function AppointmentPicker({
         .toISOString()
         .split('T')[0];
 
+    const selectedServiceData = services.find(
+        (service) => String(service.id) === String(serviceId)
+    );
+
     return (
         <div className="react-booking-box">
 
@@ -39,48 +43,72 @@ export default function AppointmentPicker({
             </div>
 
 
-            <div className="service-select-grid">
+            {/* SERVICE DROPDOWN */}
 
-                {services.map((service) => (
+            <div className="service-dropdown-wrapper">
 
-                    <button
-                        key={service.id}
-                        type="button"
-                        className={
-                            String(service.id) === String(serviceId)
-                                ? 'service-choice selected'
-                                : 'service-choice'
-                        }
-                        onClick={() => {
-                            setServiceId(String(service.id));
-                        }}
-                    >
+                <label htmlFor="service_id">
+                    Service
+                </label>
 
-                        <strong>
+                <select
+                    id="service_id"
+                    name="service_id"
+                    value={serviceId}
+                    onChange={(event) => {
+                        setServiceId(event.target.value);
+                    }}
+                    required
+                >
+
+                    <option value="">
+                        -- Select a service --
+                    </option>
+
+                    {services.map((service) => (
+
+                        <option
+                            key={service.id}
+                            value={service.id}
+                        >
                             {service.name}
-                        </strong>
-
-                        <span>
                             {service.price_display
-                                ? service.price_display
-                                : `₱${Number(service.price).toLocaleString()}`
+                                ? ` — ${service.price_display}`
+                                : ` — ₱${Number(service.price).toLocaleString()}`
                             }
-                        </span>
+                        </option>
 
-                    </button>
+                    ))}
 
-                ))}
+                </select>
 
             </div>
 
 
-            {/* Laravel receives this value */}
+            {/* SELECTED SERVICE INFORMATION */}
 
-            <input
-                type="hidden"
-                name="service_id"
-                value={serviceId}
-            />
+            {selectedServiceData && (
+
+                <div className="selected-service-info">
+
+                    <strong>
+                        Selected Service
+                    </strong>
+
+                    <span>
+                        {selectedServiceData.name}
+                    </span>
+
+                    <span>
+                        {selectedServiceData.price_display
+                            ? selectedServiceData.price_display
+                            : `₱${Number(selectedServiceData.price).toLocaleString()}`
+                        }
+                    </span>
+
+                </div>
+
+            )}
 
 
             {/* ================================
@@ -154,6 +182,12 @@ export default function AppointmentPicker({
                     <strong>
                         Appointment Selected
                     </strong>
+
+                    <br />
+
+                    <span>
+                        {selectedServiceData?.name}
+                    </span>
 
                     <br />
 
