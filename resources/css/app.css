@@ -3082,3 +3082,36 @@ details summary {
 .service-page-card p {
     min-height: 0;   /* your global .service-card p forces 75px */
 }
+
+/* =========================================
+   REMOVE LINE BETWEEN CTA AND FOOTER
+   ========================================= */
+
+.home-cta-section {
+    border: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+}
+
+.home-cta-section::before,
+.home-cta-section::after {
+    content: none !important;
+    display: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.site-footer {
+    border: none !important;
+    border-top: none !important;
+    box-shadow: none !important;
+    margin-top: 0 !important;
+}
+
+.site-footer::before,
+.site-footer::after {
+    content: none !important;
+    display: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
