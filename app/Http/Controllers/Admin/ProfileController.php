@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -10,8 +10,8 @@ class ProfileController extends Controller
 {
     public function edit(Request $request)
     {
-        return view('client.profile', [
-            'user' => $request->user()
+        return view('admin.profile', [
+            'user' => $request->user(),
         ]);
     }
 
@@ -20,43 +20,21 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'first_name' => [
-                'required',
-                'string',
-                'max:100'
-            ],
-
-            'last_name' => [
-                'required',
-                'string',
-                'max:100'
-            ],
-
+            'first_name' => ['required', 'string', 'max:100'],
+            'last_name' => ['required', 'string', 'max:100'],
             'email' => [
                 'required',
                 'email',
                 'max:255',
-                'unique:users,email,' . $user->id
+                'unique:users,email,' . $user->id,
             ],
-
-            'phone' => ['required', 'digits:11'],
-            'date_of_birth' => [
-                'nullable',
-                'date',
-                'before:today'
-            ],
-
-            'address' => [
-                'nullable',
-                'string',
-                'max:1000'
-            ],
-
+            'phone' => ['nullable', 'string', 'max:30'],
+            'address' => ['nullable', 'string', 'max:1000'],
             'profile_picture' => [
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,webp',
-                'max:2048'
+                'max:2048',
             ],
         ]);
 
@@ -77,7 +55,7 @@ class ProfileController extends Controller
 
         return back()->with(
             'success',
-            'Profile updated successfully.'
+            'Admin profile updated successfully.'
         );
     }
 }

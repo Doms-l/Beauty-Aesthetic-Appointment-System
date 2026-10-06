@@ -1,29 +1,20 @@
 
 
-<?php $__env->startSection('title', 'My Profile | M. Cares'); ?>
+<?php $__env->startSection('title', 'Admin Profile | M. Cares'); ?>
 
 <?php $__env->startSection('content'); ?>
 
 <section class="page-hero">
-
     <div class="container">
+        <span class="eyebrow">ADMIN PROFILE</span>
 
-        <span class="eyebrow">
-            MY PROFILE
-        </span>
-
-        <h1>
-            Keep your client information updated.
-        </h1>
+        <h1>Manage your admin profile.</h1>
 
         <p>
-            This information is used when managing your appointments.
+            Update your administrator information and profile picture.
         </p>
-
     </div>
-
 </section>
-
 
 <section class="section compact">
 
@@ -31,17 +22,13 @@
 
         <form
             method="POST"
-            action="<?php echo e(route('client.profile.update')); ?>"
+            action="<?php echo e(route('admin.profile.update')); ?>"
             class="form-stack profile-form"
             enctype="multipart/form-data"
         >
 
             <?php echo csrf_field(); ?>
-
             <?php echo method_field('PUT'); ?>
-
-
-            
 
             <div class="profile-picture-section">
 
@@ -51,7 +38,7 @@
 
                         <img
                             src="<?php echo e(asset('storage/' . $user->profile_picture)); ?>"
-                            alt="Profile Picture"
+                            alt="Admin Profile Picture"
                             id="profile-preview"
                         >
 
@@ -69,16 +56,12 @@
 
                 </div>
 
-
                 <div class="profile-picture-info">
 
-                    <h3>
-                        Profile Picture
-                    </h3>
+                    <h3>Admin Profile Picture</h3>
 
                     <p>
-                        Upload a profile picture that will appear
-                        in the navigation bar.
+                        Upload a picture that will appear in the admin navigation.
                     </p>
 
                     <label class="profile-upload-button">
@@ -103,43 +86,35 @@
 
             </div>
 
-
-            
-
             <div class="form-grid two">
 
                 <label>
-
                     First name
 
                     <input
+                        type="text"
                         name="first_name"
                         value="<?php echo e(old('first_name', $user->first_name)); ?>"
                         required
                     >
-
                 </label>
 
-
                 <label>
-
                     Last name
 
                     <input
+                        type="text"
                         name="last_name"
                         value="<?php echo e(old('last_name', $user->last_name)); ?>"
                         required
                     >
-
                 </label>
 
             </div>
 
-
             <div class="form-grid two">
 
                 <label>
-
                     Email
 
                     <input
@@ -148,56 +123,37 @@
                         value="<?php echo e(old('email', $user->email)); ?>"
                         required
                     >
-
                 </label>
 
-
                 <label>
-
                     Phone
 
                     <input
-                        name="phone"
-                        value="<?php echo e(old('phone', $user->phone)); ?>"
-                        required
-                    >
-
+    type="tel"
+    name="phone"
+    value="<?php echo e(old('phone', $user->phone)); ?>"
+    required
+    maxlength="11"
+    minlength="11"
+    inputmode="numeric"
+    pattern="[0-9]{11}"
+    placeholder="09XXXXXXXXX"
+    oninput="this.value = this.value.replace(/\D/g, '').slice(0, 11);"
+    onkeydown="return event.key >= '0' && event.key <= '9' || ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(event.key);"
+>
                 </label>
 
             </div>
 
+            <label>
+                Address
 
-            <div class="form-grid two">
-
-                <label>
-
-                    Date of birth
-
-                    <input
-                        type="date"
-                        name="date_of_birth"
-                        value="<?php echo e(old(
-                            'date_of_birth',
-                            optional($user->date_of_birth)->format('Y-m-d')
-                        )); ?>"
-                    >
-
-                </label>
-
-
-                <label>
-
-                    Address
-
-                    <input
-                        name="address"
-                        value="<?php echo e(old('address', $user->address)); ?>"
-                    >
-
-                </label>
-
-            </div>
-
+                <input
+                    type="text"
+                    name="address"
+                    value="<?php echo e(old('address', $user->address)); ?>"
+                >
+            </label>
 
             <button
                 class="primary-button"
@@ -212,9 +168,7 @@
 
 </section>
 
-
 <script>
-
 document.addEventListener('DOMContentLoaded', function () {
 
     const input = document.getElementById('profile-picture-input');
@@ -241,11 +195,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const placeholder =
                 document.getElementById('profile-placeholder');
 
-
             if (placeholder) {
                 placeholder.remove();
             }
-
 
             if (!preview) {
 
@@ -253,17 +205,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 preview.id = 'profile-preview';
 
-                preview.alt = 'Profile Picture';
+                preview.alt = 'Admin Profile Picture';
 
                 document
                     .querySelector('.profile-picture-preview')
                     .appendChild(preview);
-
             }
 
-
             preview.src = e.target.result;
-
         };
 
         reader.readAsDataURL(file);
@@ -271,8 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
-
 </script>
 
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/client/profile.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/admin/profile.blade.php ENDPATH**/ ?>
