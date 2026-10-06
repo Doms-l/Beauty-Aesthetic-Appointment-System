@@ -90,15 +90,39 @@
                         Appointments
                     </a>
 
-                    <a href="<?php echo e(route('client.profile')); ?>">
-                        Profile
-                    </a>
-
                     <a
                         class="nav-cta"
                         href="<?php echo e(route('client.appointments.create')); ?>"
                     >
                         Book Now
+                    </a>
+
+
+                    
+
+                    <a
+                        href="<?php echo e(route('client.profile')); ?>"
+                        class="nav-profile"
+                        title="Edit Profile"
+                        aria-label="Edit Profile"
+                    >
+
+                        <?php if(auth()->user()->profile_picture): ?>
+
+                            <img
+                                src="<?php echo e(asset('storage/' . auth()->user()->profile_picture)); ?>"
+                                alt="Profile Picture"
+                            >
+
+                        <?php else: ?>
+
+                            <span>
+                                <?php echo e(strtoupper(substr(auth()->user()->first_name, 0, 1))); ?>
+
+                            </span>
+
+                        <?php endif; ?>
+
                     </a>
 
 
@@ -229,14 +253,14 @@
         class="mcares-chat-toggle"
         aria-label="Open M. Cares chatbot"
         aria-expanded="false"
-        style="width:62px;height:62px;padding:0;overflow:hidden;background:transparent;border-radius:50%;"
     >
+
         <img
             src="<?php echo e(asset('images/chatbot.png')); ?>"
-            alt=""
+            alt="M. Cares Chatbot"
             class="mcares-chat-toggle-img"
-            style="width:100%;height:100%;max-width:none;object-fit:cover;border-radius:50%;display:block;"
         >
+
     </button>
 
 
@@ -255,10 +279,12 @@
             <div class="mcares-chat-header-info">
 
                 <div class="mcares-chat-avatar">
+
                     <img
                         src="<?php echo e(asset('images/chatbot.png')); ?>"
                         alt="M. Cares Assistant"
                     >
+
                 </div>
 
                 <div>
