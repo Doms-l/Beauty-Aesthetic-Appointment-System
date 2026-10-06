@@ -4,11 +4,25 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
-    <meta name="color-scheme" content="light dark">
 
-    <title><?php echo $__env->yieldContent('title', 'M. Cares Beauty Services'); ?></title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="csrf-token"
+        content="<?php echo e(csrf_token()); ?>"
+    >
+
+    <meta
+        name="color-scheme"
+        content="light dark"
+    >
+
+    <title>
+        <?php echo $__env->yieldContent('title', 'M. Cares Beauty Services'); ?>
+    </title>
 
     <link
         rel="icon"
@@ -17,6 +31,7 @@
     >
 
     <?php echo app('Illuminate\Foundation\Vite')->reactRefresh(); ?>
+
     <?php echo app('Illuminate\Foundation\Vite')([
         'resources/css/app.css',
         'resources/js/app.jsx'
@@ -156,7 +171,9 @@
 <?php if(session('success')): ?>
 
     <div class="container flash success">
+
         <?php echo e(session('success')); ?>
+
 
     </div>
 
@@ -202,6 +219,164 @@
 
 
 
+<div class="mcares-chatbot">
+
+    
+
+    <button
+        type="button"
+        id="mcares-chat-toggle"
+        class="mcares-chat-toggle"
+        aria-label="Open M. Cares chatbot"
+        aria-expanded="false"
+    >
+        💬
+    </button>
+
+
+    
+
+    <div
+        id="mcares-chat-window"
+        class="mcares-chat-window"
+        aria-hidden="true"
+    >
+
+        
+
+        <div class="mcares-chat-header">
+
+            <div class="mcares-chat-header-info">
+
+                <div class="mcares-chat-avatar">
+    <img
+        src="<?php echo e(asset('images/chatbot.png')); ?>"
+        alt="M. Cares Assistant"
+    >
+</div>
+
+                <div>
+
+                    <strong>
+                        M. Cares Assistant
+                    </strong>
+
+                    <small>
+                        We're here to help
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="mcares-chat-close"
+                class="mcares-chat-close"
+                aria-label="Close chatbot"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        
+
+        <div
+            id="mcares-chat-messages"
+            class="mcares-chat-messages"
+        >
+
+            <div class="mcares-chat-message bot">
+
+                <div class="mcares-chat-bubble">
+
+                    Hi! 👋
+
+                    <br><br>
+
+                    Welcome to
+                    <strong>M. Cares Beauty Services</strong>.
+
+                    <br><br>
+
+                    How can I help you today?
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        
+
+        <div class="mcares-chat-quick">
+
+            <button
+                type="button"
+                data-question="What services do you offer?"
+            >
+                Services
+            </button>
+
+            <button
+                type="button"
+                data-question="How can I book an appointment?"
+            >
+                Book Appointment
+            </button>
+
+            <button
+                type="button"
+                data-question="What amenities are available?"
+            >
+                Amenities
+            </button>
+
+            <button
+                type="button"
+                data-question="What are your clinic hours?"
+            >
+                Clinic Hours
+            </button>
+
+        </div>
+
+
+        
+
+        <form
+            id="mcares-chat-form"
+            class="mcares-chat-form"
+        >
+
+            <input
+                type="text"
+                id="mcares-chat-input"
+                placeholder="Type your question..."
+                autocomplete="off"
+                maxlength="500"
+            >
+
+            <button
+                type="submit"
+                aria-label="Send message"
+            >
+                Send
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+
 <footer class="site-footer">
 
     <div class="container footer-grid">
@@ -240,4 +415,5 @@
 
 
 </body>
+
 </html><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/layouts/app.blade.php ENDPATH**/ ?>
