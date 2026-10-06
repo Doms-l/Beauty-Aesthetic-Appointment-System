@@ -3828,3 +3828,268 @@ details summary {
         color: #dddddd !important;
     }
 }
+/* =========================================================
+   CLIENT PROFILE PICTURE IN NAVIGATION
+========================================================= */
+
+.nav-profile {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border-radius: 50% !important;
+    overflow: hidden !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    background: #e91e8c;
+
+    border: 2px solid #ffffff;
+
+    text-decoration: none !important;
+
+    transition: transform 0.2s ease,
+                border-color 0.2s ease;
+}
+
+.nav-profile:hover {
+    transform: scale(1.06);
+    border-color: #e91e8c;
+}
+
+.nav-profile img {
+    width: 100% !important;
+    height: 100% !important;
+
+    max-width: none !important;
+    max-height: none !important;
+
+    object-fit: cover !important;
+
+    display: block !important;
+
+    border-radius: 50% !important;
+}
+
+.nav-profile span {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   CHATBOT BUTTON IMAGE
+========================================================= */
+
+.mcares-chat-toggle {
+    width: 62px !important;
+    height: 62px !important;
+
+    padding: 0 !important;
+
+    overflow: hidden !important;
+
+    border-radius: 50% !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.mcares-chat-toggle-img {
+    width: 100% !important;
+    height: 100% !important;
+
+    max-width: none !important;
+    max-height: none !important;
+
+    object-fit: cover !important;
+
+    border-radius: 50% !important;
+
+    display: block !important;
+}
+
+
+/* =========================================================
+   CHATBOT HEADER IMAGE
+========================================================= */
+
+.mcares-chat-avatar {
+    width: 42px !important;
+    height: 42px !important;
+
+    min-width: 42px !important;
+    min-height: 42px !important;
+
+    padding: 0 !important;
+
+    overflow: hidden !important;
+
+    border-radius: 50% !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.mcares-chat-avatar img {
+    width: 100% !important;
+    height: 100% !important;
+
+    max-width: none !important;
+    max-height: none !important;
+
+    object-fit: cover !important;
+
+    border-radius: 50% !important;
+
+    display: block !important;
+}
+
+
+/* =========================================================
+   PROFILE PAGE
+========================================================= */
+
+.profile-picture-section {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+
+    padding: 20px;
+    margin-bottom: 30px;
+
+    border-radius: 14px;
+
+    background: rgba(233, 30, 140, 0.06);
+}
+
+.profile-picture-preview {
+    width: 110px;
+    height: 110px;
+
+    min-width: 110px;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    background: #e91e8c;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-picture-preview img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+.profile-picture-placeholder {
+    color: #ffffff;
+    font-size: 40px;
+    font-weight: 700;
+}
+
+.profile-picture-info h3 {
+    margin: 0 0 5px;
+}
+
+.profile-picture-info p {
+    margin: 0 0 12px;
+}
+
+.profile-picture-info small {
+    display: block;
+    margin-top: 8px;
+    opacity: 0.7;
+}
+
+.profile-upload-button {
+    display: inline-block;
+
+    padding: 9px 16px;
+
+    border-radius: 8px;
+
+    background: #e91e8c;
+
+    color: #ffffff;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.profile-upload-button:hover {
+    background: #2b2b2b;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+@media (prefers-color-scheme: dark) {
+
+    .profile-picture-section {
+        background: rgba(255, 175, 241, 0.08);
+    }
+
+    .profile-picture-info h3 {
+        color: #ffffff;
+    }
+
+    .profile-picture-info p,
+    .profile-picture-info small {
+        color: #dddddd;
+    }
+
+    .nav-profile {
+        border-color: #444444;
+    }
+
+    .nav-profile:hover {
+        border-color: #ffaff1;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .profile-picture-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-picture-preview {
+        width: 100px;
+        height: 100px;
+        min-width: 100px;
+    }
+
+}
