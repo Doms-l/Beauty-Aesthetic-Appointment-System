@@ -156,11 +156,18 @@
                     Phone
 
                     <input
-                        name="phone"
-                        value="{{ old('phone', $user->phone) }}"
-                        required
-                    >
-
+    type="tel"
+    name="phone"
+    value="{{ old('phone', $user->phone) }}"
+    required
+    maxlength="11"
+    minlength="11"
+    inputmode="numeric"
+    pattern="[0-9]{11}"
+    placeholder="09XXXXXXXXX"
+    oninput="this.value = this.value.replace(/\D/g, '').slice(0, 11);"
+    onkeydown="return event.key >= '0' && event.key <= '9' || ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(event.key);"
+>
                 </label>
 
             </div>

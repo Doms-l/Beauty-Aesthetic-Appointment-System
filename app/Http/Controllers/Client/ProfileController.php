@@ -39,12 +39,7 @@ class ProfileController extends Controller
                 'unique:users,email,' . $user->id
             ],
 
-            'phone' => [
-                'required',
-                'string',
-                'max:30'
-            ],
-
+            'phone' => ['required', 'digits:11'],
             'date_of_birth' => [
                 'nullable',
                 'date',
