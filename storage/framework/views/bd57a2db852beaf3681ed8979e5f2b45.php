@@ -2,8 +2,6 @@
 
 
 
-
-
 <?php $__env->startSection('title', 'M. Cares Beauty Services'); ?>
 
 
@@ -14,40 +12,129 @@
 
 
 
+<?php
+    /*
+    |--------------------------------------------------------------------------
+    | HERO PHOTOS
+    | The 3 pop-up photos are picked RANDOMLY from these folders
+    | (inside public/images) every time a service slide appears.
+    | New photos you add to these folders are included automatically.
+    |--------------------------------------------------------------------------
+    */
+    $heroFolders = [
+        'facial' => 'Facial Services',
+        'lash'   => 'Lash and Brows Services',
+        'other'  => 'Other Services',
+    ];
+
+    // makes file names with spaces safe for the browser
+    $heroSrc = function ($path) {
+        return asset('images/' . implode('/', array_map('rawurlencode', explode('/', $path))));
+    };
+
+    $heroPools  = [];
+    $heroPhotos = [];
+
+    foreach ($heroFolders as $key => $folder) {
+
+        $dir   = public_path('images/' . $folder);
+        $files = [];
+
+        if (is_dir($dir)) {
+            foreach (scandir($dir) as $file) {
+                $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+
+                if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                    $files[] = $heroSrc($folder . '/' . $file);
+                }
+            }
+        }
+
+        shuffle($files);
+
+        $heroPools[$key]  = $files;
+        $heroPhotos[$key] = array_slice($files, 0, 3);
+    }
+?>
+
 <section class="hero-section">
 
     <div class="container hero-grid">
 
 
-
         <div class="hero-copy">
 
+            
             <span class="eyebrow">BEAUTY · CARE · CONFIDENCE</span>
 
 
+            
+            <div class="hero-text-slider" id="hero-text-slider">
 
-            <h1>
+                <div class="hero-text-slide active">
 
-                Enhance your beauty.<br>
+                    <h1>
+                        Enhance your beauty.<br>
+                        <em>Feel your best.</em>
+                    </h1>
 
-                <em>Feel your best.</em>
+                    <p>
+                        Discover personalized aesthetic and beauty services
+                        with an easy online appointment experience at
+                        M. Cares Beauty Services.
+                    </p>
 
-            </h1>
-
-
-
-            <p>
-
-                Discover personalized aesthetic and beauty services
-
-                with an easy online appointment experience at
-
-                M. Cares Beauty Services.
-
-            </p>
+                </div>
 
 
+                <div class="hero-text-slide" aria-hidden="true">
 
+                    <h1>
+                        M. CARES<br>
+                        <em>Facial Services</em>
+                    </h1>
+
+                    <p>
+                        Cleanse, rejuvenate and glow with personalized
+                        facial treatments made for your skin.
+                    </p>
+
+                </div>
+
+
+                <div class="hero-text-slide" aria-hidden="true">
+
+                    <h1>
+                        M. CARES<br>
+                        <em>Lash and Brows Services</em>
+                    </h1>
+
+                    <p>
+                        Longer, fuller and beautifully defined lashes
+                        and brows that frame your best look.
+                    </p>
+
+                </div>
+
+
+                <div class="hero-text-slide" aria-hidden="true">
+
+                    <h1>
+                        M. CARES<br>
+                        <em>Other Services</em>
+                    </h1>
+
+                    <p>
+                        Body and advanced aesthetic treatments to help
+                        you feel smooth, firm and renewed.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            
             <div class="hero-actions">
 
                 <a class="primary-button"
@@ -67,7 +154,6 @@
                 </a>
 
 
-
                 <a class="secondary-button"
 
                    href="<?php echo e(route('services.index')); ?>">
@@ -79,7 +165,7 @@
             </div>
 
 
-
+            
             <div class="hero-note">
 
                 <span>✦</span>
@@ -91,13 +177,40 @@
         </div>
 
 
-
+        
         <div class="hero-art">
 
             <div class="logo-orbit orbit-one"></div>
 
             <div class="logo-orbit orbit-two"></div>
 
+
+            
+            <div class="hero-photo-set" data-slide="1" data-pool="facial">
+                <?php $__currentLoopData = $heroPhotos['facial']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $photo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <img class="hero-photo hero-photo-<?php echo e($i + 1); ?>"
+                         src="<?php echo e($photo); ?>"
+                         alt="M. Cares facial services">
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
+
+            
+            <div class="hero-photo-set" data-slide="2" data-pool="lash">
+                <?php $__currentLoopData = $heroPhotos['lash']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $photo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <img class="hero-photo hero-photo-<?php echo e($i + 1); ?>"
+                         src="<?php echo e($photo); ?>"
+                         alt="M. Cares lash and brows services">
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
+
+            
+            <div class="hero-photo-set" data-slide="3" data-pool="other">
+                <?php $__currentLoopData = $heroPhotos['other']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $photo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <img class="hero-photo hero-photo-<?php echo e($i + 1); ?>"
+                         src="<?php echo e($photo); ?>"
+                         alt="M. Cares other services">
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
 
 
             <img src="<?php echo e(asset('images/logo.png')); ?>"
@@ -107,10 +220,234 @@
         </div>
 
 
-
     </div>
 
 </section>
+
+
+<style>
+
+/* =========================================================
+   HERO TEXT SLIDER (logo, buttons and note stay fixed)
+   ========================================================= */
+
+.hero-text-slider {
+    display: grid;
+}
+
+.hero-text-slide {
+    grid-area: 1 / 1;
+
+    opacity: 0;
+    transform: translateX(90px);
+
+    transition:
+        transform .9s ease,
+        opacity .9s ease;
+
+    pointer-events: none;
+}
+
+.hero-text-slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+/* slides that already played leave toward the LEFT */
+.hero-text-slide.past {
+    transform: translateX(-90px);
+}
+
+.hero-text-slide h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(48px, 6vw, 78px);
+    line-height: 1.03;
+    margin: 16px 0 24px;
+    color: var(--heading);
+}
+
+.hero-text-slide h1 em {
+    color: #9a6478;
+    font-weight: 500;
+}
+
+.hero-text-slide p {
+    max-width: 590px;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   POP-UP PHOTOS BEHIND THE LOGO
+   ========================================================= */
+
+.hero-photo-set {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* .hero-art img (main CSS) styles the big round logo, so this
+   selector is more specific to keep the photos as small cards */
+.hero-art .hero-photo {
+    position: absolute;
+    z-index: auto;
+
+    width: clamp(110px, 14vw, 175px);
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+
+    border-radius: 18px;
+    border: 4px solid rgba(255, 255, 255, .88);
+    box-shadow: var(--shadow);
+
+    opacity: 0;
+    transform: scale(.4) rotate(var(--rot));
+
+    transition:
+        opacity .35s ease,
+        transform .35s ease;
+}
+
+.hero-art .hero-photo-1 { top: -10px;    left: -45px;  --rot: -8deg; }
+.hero-art .hero-photo-2 { top: 130px;    right: -50px; --rot: 7deg;  }
+.hero-art .hero-photo-3 { bottom: -15px; left: -25px;  --rot: -4deg; }
+
+/* pop in one after another */
+.hero-art .hero-photo-set.active .hero-photo {
+    opacity: 1;
+    transform: scale(1) rotate(var(--rot));
+
+    transition:
+        opacity .6s ease,
+        transform .7s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.hero-art .hero-photo-set.active .hero-photo-1 { transition-delay: .35s; }
+.hero-art .hero-photo-set.active .hero-photo-2 { transition-delay: .6s;  }
+.hero-art .hero-photo-set.active .hero-photo-3 { transition-delay: .85s; }
+
+
+@media (max-width: 900px) {
+
+    .hero-art .hero-photo {
+        width: clamp(90px, 22vw, 130px);
+    }
+
+    .hero-art .hero-photo-1 { left: -15px;  }
+    .hero-art .hero-photo-2 { right: -15px; }
+    .hero-art .hero-photo-3 { left: -5px;   }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .hero-text-slide,
+    .hero-photo {
+        transition-duration: .01s !important;
+        transition-delay: 0s !important;
+    }
+
+}
+
+</style>
+
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const textSlides = document.querySelectorAll('.hero-text-slide');
+    const photoSets  = document.querySelectorAll('.hero-photo-set');
+
+    // all photos found in each service folder
+    const pools = <?php echo json_encode($heroPools, 15, 512) ?>;
+
+    if (textSlides.length < 2) {
+        return;
+    }
+
+    const slideDuration = 5500;   // time on each text (ms)
+    let current = 0;
+
+
+    // pick 3 different random photos from the folder
+    function randomizePhotos(set) {
+
+        const pool = (pools[set.dataset.pool] || []).slice();
+
+        // shuffle
+        for (let i = pool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+
+        set.querySelectorAll('.hero-photo').forEach(function (img, i) {
+
+            if (pool[i]) {
+                img.src = pool[i];
+                img.style.display = '';
+            } else {
+                img.style.display = 'none';
+            }
+
+        });
+    }
+
+
+    function showSlide(index) {
+
+        textSlides.forEach(function (slide, i) {
+
+            slide.classList.toggle('active', i === index);
+            slide.classList.toggle('past', i < index);
+            slide.setAttribute('aria-hidden', i === index ? 'false' : 'true');
+
+        });
+
+        // photos pop up only on the service slides
+        photoSets.forEach(function (set) {
+
+            set.classList.toggle(
+                'active',
+                Number(set.dataset.slide) === index
+            );
+
+        });
+
+        current = index;
+
+        // after the old photos have faded out, choose new random ones
+        // for the NEXT time those slides appear
+        setTimeout(function () {
+
+            photoSets.forEach(function (set) {
+
+                if (!set.classList.contains('active')) {
+                    randomizePhotos(set);
+                }
+
+            });
+
+        }, 1200);
+    }
+
+    showSlide(0);
+
+    setInterval(function () {
+
+        showSlide((current + 1) % textSlides.length);
+
+    }, slideDuration);
+
+});
+
+</script>
 
 
 
@@ -729,5 +1066,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 <?php $__env->stopSection(); ?>
-
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/home.blade.php ENDPATH**/ ?>
