@@ -1320,6 +1320,92 @@ html:not(.dark-mode) .mcares-chat-form input::placeholder {
 
 }
 
+
+
+/* PROFILE PAGE (client + admin) */
+
+html:not(.dark-mode) .profile-picture-section {
+
+    background: rgba(233, 30, 140, 0.06);
+
+}
+
+html:not(.dark-mode) .profile-picture-info h3 {
+
+    color: var(--heading);
+
+}
+
+html:not(.dark-mode) .profile-picture-info p,
+html:not(.dark-mode) .profile-picture-info small {
+
+    color: var(--text-muted);
+
+}
+
+html:not(.dark-mode) .nav-profile {
+
+    border-color: #ffffff;
+
+}
+
+html:not(.dark-mode) .nav-profile:hover {
+
+    border-color: #e91e8c;
+
+}
+
+
+/* HERO "Feel your best." LINE */
+
+html:not(.dark-mode) .hero-copy h1 em,
+html:not(.dark-mode) .hero-text-slide h1 em {
+
+    color: #9a6478;
+
+}
+
+
+
+/* PROFILE "Choose Picture" BUTTON
+   (".form-stack label" was making its text dark and stretching it) */
+
+.form-stack label.profile-upload-button {
+
+    display: inline-block;
+
+    width: auto;
+
+    color: #ffffff;
+
+}
+
+
+
+/* MAIN BUTTONS IN LIGHT MODE
+   (Save Changes, + New appointment, Send appointment request,
+    Book Now, Book an Appointment ... same look as "Explore All Services") */
+
+html:not(.dark-mode) .primary-button {
+
+    background: rgba(255, 255, 255, .72);
+
+    color: var(--heading);
+
+    border-color: rgba(98, 68, 77, .18);
+
+}
+
+html:not(.dark-mode) .primary-button:hover {
+
+    background: var(--surface);
+
+    color: var(--heading);
+
+    border-color: var(--gold);
+
+}
+
 </style>
 
 
@@ -1542,6 +1628,51 @@ html.dark-mode .mcares-slideshow-header p,
 html.dark-mode .mcares-slide-caption {
 
     color: #d7c5cd;
+
+}
+
+
+
+/* PROFILE PAGE (client + admin) */
+
+html.dark-mode .profile-picture-section {
+
+    background: rgba(255, 175, 241, 0.08);
+
+}
+
+html.dark-mode .profile-picture-info h3 {
+
+    color: #ffffff;
+
+}
+
+html.dark-mode .profile-picture-info p,
+html.dark-mode .profile-picture-info small {
+
+    color: #dddddd;
+
+}
+
+html.dark-mode .nav-profile {
+
+    border-color: #444444;
+
+}
+
+html.dark-mode .nav-profile:hover {
+
+    border-color: #ffaff1;
+
+}
+
+
+/* HERO "Feel your best." LINE */
+
+html.dark-mode .hero-copy h1 em,
+html.dark-mode .hero-text-slide h1 em {
+
+    color: #d99ab4;
 
 }
 
