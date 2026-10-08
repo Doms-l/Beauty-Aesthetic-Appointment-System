@@ -1,24 +1,29 @@
-@php
-    use Illuminate\Support\Facades\Storage;
-@endphp
 
-@extends('layouts.app')
 
-@section('title', 'Admin Profile | M. Cares')
+<?php $__env->startSection('title', 'My Profile | M. Cares'); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <section class="page-hero">
-    <div class="container">
-        <span class="eyebrow">ADMIN PROFILE</span>
 
-        <h1>Manage your admin profile.</h1>
+    <div class="container">
+
+        <span class="eyebrow">
+            MY PROFILE
+        </span>
+
+        <h1>
+            Keep your client information updated.
+        </h1>
 
         <p>
-            Update your administrator information and profile picture.
+            This information is used when managing your appointments.
         </p>
+
     </div>
+
 </section>
+
 
 <section class="section compact">
 
@@ -26,46 +31,54 @@
 
         <form
             method="POST"
-            action="{{ route('admin.profile.update') }}"
+            action="<?php echo e(route('client.profile.update')); ?>"
             class="form-stack profile-form"
             enctype="multipart/form-data"
         >
 
-            @csrf
-            @method('PUT')
+            <?php echo csrf_field(); ?>
 
-            {{-- PROFILE PICTURE --}}
+            <?php echo method_field('PUT'); ?>
+
+
+            
+
             <div class="profile-picture-section">
 
                 <div class="profile-picture-preview">
 
-                    @if($user->profile_picture)
+                    <?php if($user->profile_picture): ?>
 
                         <img
-                            src="{{ Storage::disk('public')->url($user->profile_picture) }}"
-                            alt="Admin Profile Picture"
+                            src="<?php echo e(asset('storage/' . $user->profile_picture)); ?>"
+                            alt="Profile Picture"
                             id="profile-preview"
                         >
 
-                    @else
+                    <?php else: ?>
 
                         <div
                             class="profile-picture-placeholder"
                             id="profile-placeholder"
                         >
-                            {{ strtoupper(substr($user->first_name, 0, 1)) }}
+                            <?php echo e(strtoupper(substr($user->first_name, 0, 1))); ?>
+
                         </div>
 
-                    @endif
+                    <?php endif; ?>
 
                 </div>
 
+
                 <div class="profile-picture-info">
 
-                    <h3>Admin Profile Picture</h3>
+                    <h3>
+                        Profile Picture
+                    </h3>
 
                     <p>
-                        Upload a picture that will appear in the admin navigation.
+                        Upload a profile picture that will appear
+                        in the navigation bar.
                     </p>
 
                     <label class="profile-upload-button">
@@ -75,7 +88,7 @@
                         <input
                             type="file"
                             name="profile_picture"
-                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                            accept="image/png,image/jpeg,image/webp"
                             id="profile-picture-input"
                             hidden
                         >
@@ -83,86 +96,116 @@
                     </label>
 
                     <small>
-                        JPG, PNG, or WEBP. Maximum 5MB.
+                        JPG, PNG, or WEBP. Maximum 2MB.
                     </small>
 
                 </div>
 
             </div>
 
-            {{-- FIRST NAME AND LAST NAME --}}
+
+            
+
             <div class="form-grid two">
 
                 <label>
+
                     First name
 
                     <input
-                        type="text"
                         name="first_name"
-                        value="{{ old('first_name', $user->first_name) }}"
+                        value="<?php echo e(old('first_name', $user->first_name)); ?>"
                         required
                     >
+
                 </label>
 
+
                 <label>
+
                     Last name
 
                     <input
-                        type="text"
                         name="last_name"
-                        value="{{ old('last_name', $user->last_name) }}"
+                        value="<?php echo e(old('last_name', $user->last_name)); ?>"
                         required
                     >
+
                 </label>
 
             </div>
 
-            {{-- EMAIL AND PHONE --}}
+
             <div class="form-grid two">
 
                 <label>
+
                     Email
 
                     <input
                         type="email"
                         name="email"
-                        value="{{ old('email', $user->email) }}"
+                        value="<?php echo e(old('email', $user->email)); ?>"
                         required
                     >
+
                 </label>
 
+
                 <label>
+
                     Phone
 
                     <input
-                        type="tel"
-                        name="phone"
-                        value="{{ old('phone', $user->phone) }}"
-                        required
-                        maxlength="11"
-                        minlength="11"
-                        inputmode="numeric"
-                        pattern="[0-9]{11}"
-                        placeholder="09XXXXXXXXX"
-                        oninput="this.value = this.value.replace(/\D/g, '').slice(0, 11);"
-                        onkeydown="return event.key >= '0' && event.key <= '9' || ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(event.key);"
-                    >
+    type="tel"
+    name="phone"
+    value="<?php echo e(old('phone', $user->phone)); ?>"
+    required
+    maxlength="11"
+    minlength="11"
+    inputmode="numeric"
+    pattern="[0-9]{11}"
+    placeholder="09XXXXXXXXX"
+    oninput="this.value = this.value.replace(/\D/g, '').slice(0, 11);"
+    onkeydown="return event.key >= '0' && event.key <= '9' || ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(event.key);"
+>
                 </label>
 
             </div>
 
-            {{-- ADDRESS --}}
-            <label>
-                Address
 
-                <input
-                    type="text"
-                    name="address"
-                    value="{{ old('address', $user->address) }}"
-                >
-            </label>
+            <div class="form-grid two">
 
-            {{-- SAVE BUTTON --}}
+                <label>
+
+                    Date of birth
+
+                    <input
+                        type="date"
+                        name="date_of_birth"
+                        value="<?php echo e(old(
+                            'date_of_birth',
+                            optional($user->date_of_birth)->format('Y-m-d')
+                        )); ?>"
+                    >
+
+                </label>
+
+
+                <label>
+
+                    Address
+
+                    <input
+                        name="address"
+                        value="<?php echo e(old('address', $user->address)); ?>"
+                    >
+
+                </label>
+
+            </div>
+
+
             <button
                 class="primary-button"
                 type="submit"
@@ -176,7 +219,9 @@
 
 </section>
 
+
 <script>
+
 document.addEventListener('DOMContentLoaded', function () {
 
     const input = document.getElementById('profile-picture-input');
@@ -193,24 +238,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        const allowedTypes = [
-            'image/jpeg',
-            'image/png',
-            'image/webp'
-        ];
-
-        if (!allowedTypes.includes(file.type)) {
-            alert('Please select a JPG, PNG, or WEBP image.');
-            input.value = '';
-            return;
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-            alert('The image must not be larger than 5MB.');
-            input.value = '';
-            return;
-        }
-
         const reader = new FileReader();
 
         reader.onload = function (e) {
@@ -221,9 +248,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const placeholder =
                 document.getElementById('profile-placeholder');
 
+
             if (placeholder) {
                 placeholder.remove();
             }
+
 
             if (!preview) {
 
@@ -231,12 +260,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 preview.id = 'profile-preview';
 
-                preview.alt = 'Admin Profile Picture';
+                preview.alt = 'Profile Picture';
 
                 document
                     .querySelector('.profile-picture-preview')
                     .appendChild(preview);
+
             }
+
 
             preview.src = e.target.result;
 
@@ -247,6 +278,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/client/profile.blade.php ENDPATH**/ ?>

@@ -1,18 +1,18 @@
-@extends('layouts.app')
 
 
 
-@section('title', 'M. Cares Beauty Services')
+
+<?php $__env->startSection('title', 'M. Cares Beauty Services'); ?>
 
 
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 
 
-{{-- HERO --}}
 
-@php
+
+<?php
     /*
     |--------------------------------------------------------------------------
     | HERO PHOTOS
@@ -55,7 +55,7 @@
         $heroPools[$key]  = $files;
         $heroPhotos[$key] = array_slice($files, 0, 3);
     }
-@endphp
+?>
 
 <section class="hero-section">
 
@@ -64,11 +64,11 @@
 
         <div class="hero-copy">
 
-            {{-- FIXED --}}
+            
             <span class="eyebrow">BEAUTY · CARE · CONFIDENCE</span>
 
 
-            {{-- ONLY THIS PART SLIDES --}}
+            
             <div class="hero-text-slider" id="hero-text-slider">
 
                 <div class="hero-text-slide active">
@@ -134,12 +134,12 @@
             </div>
 
 
-            {{-- FIXED --}}
+            
             <div class="hero-actions">
 
                 <a class="primary-button"
 
-                   href="{{ auth()->check()
+                   href="<?php echo e(auth()->check()
 
                        ? (auth()->user()->isClient()
 
@@ -147,7 +147,7 @@
 
                            : route('home'))
 
-                       : route('register') }}">
+                       : route('register')); ?>">
 
                     Book an Appointment
 
@@ -156,7 +156,7 @@
 
                 <a class="secondary-button"
 
-                   href="{{ route('services.index') }}">
+                   href="<?php echo e(route('services.index')); ?>">
 
                     Explore Services
 
@@ -165,7 +165,7 @@
             </div>
 
 
-            {{-- FIXED --}}
+            
             <div class="hero-note">
 
                 <span>✦</span>
@@ -177,7 +177,7 @@
         </div>
 
 
-        {{-- FIXED LOGO + POP-UP PHOTOS --}}
+        
         <div class="hero-art">
 
             <div class="logo-orbit orbit-one"></div>
@@ -185,35 +185,35 @@
             <div class="logo-orbit orbit-two"></div>
 
 
-            {{-- Photos for slide 2: Facial --}}
+            
             <div class="hero-photo-set" data-slide="1" data-pool="facial">
-                @foreach($heroPhotos['facial'] as $i => $photo)
-                    <img class="hero-photo hero-photo-{{ $i + 1 }}"
-                         src="{{ $photo }}"
+                <?php $__currentLoopData = $heroPhotos['facial']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $photo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <img class="hero-photo hero-photo-<?php echo e($i + 1); ?>"
+                         src="<?php echo e($photo); ?>"
                          alt="M. Cares facial services">
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
-            {{-- Photos for slide 3: Lash and Brows --}}
+            
             <div class="hero-photo-set" data-slide="2" data-pool="lash">
-                @foreach($heroPhotos['lash'] as $i => $photo)
-                    <img class="hero-photo hero-photo-{{ $i + 1 }}"
-                         src="{{ $photo }}"
+                <?php $__currentLoopData = $heroPhotos['lash']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $photo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <img class="hero-photo hero-photo-<?php echo e($i + 1); ?>"
+                         src="<?php echo e($photo); ?>"
                          alt="M. Cares lash and brows services">
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
-            {{-- Photos for slide 4: Other Services --}}
+            
             <div class="hero-photo-set" data-slide="3" data-pool="other">
-                @foreach($heroPhotos['other'] as $i => $photo)
-                    <img class="hero-photo hero-photo-{{ $i + 1 }}"
-                         src="{{ $photo }}"
+                <?php $__currentLoopData = $heroPhotos['other']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $photo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <img class="hero-photo hero-photo-<?php echo e($i + 1); ?>"
+                         src="<?php echo e($photo); ?>"
                          alt="M. Cares other services">
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
 
-            <img src="{{ asset('images/logo.png') }}"
+            <img src="<?php echo e(asset('images/logo.png')); ?>"
 
                  alt="M. Cares Beauty Services logo">
 
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const photoSets  = document.querySelectorAll('.hero-photo-set');
 
     // all photos found in each service folder
-    const pools = @json($heroPools);
+    const pools = <?php echo json_encode($heroPools, 15, 512) ?>;
 
     if (textSlides.length < 2) {
         return;
@@ -453,19 +453,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-{{-- MEET THE FOUNDER --}}
+
 
 <section class="founder-section">
 
     <div class="container founder-grid">
 
-        {{-- LEFT: FOUNDER PHOTO --}}
+        
         <div class="founder-photo-wrap">
 
             <div class="founder-photo-frame">
 
                 <img
-                    src="{{ asset('images/owner.png') }}"
+                    src="<?php echo e(asset('images/owner.png')); ?>"
                     alt="Founder of M. Cares Beauty Services"
                 >
 
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
 
 
-        {{-- RIGHT TOP: FOUNDER INFORMATION --}}
+        
         <div class="founder-content">
 
             <span class="eyebrow">MEET THE FOUNDER</span>
@@ -503,7 +503,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
 
 
-        {{-- RIGHT BOTTOM: MESSAGE --}}
+        
         <div class="founder-message">
 
             <h3>A Message from Our Founder</h3>
@@ -532,7 +532,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </section>
 
 
-{{-- M. Cares Photo Slideshow --}}
+
 <section class="mcares-slideshow-section">
     <div class="container">
 
@@ -546,42 +546,42 @@ document.addEventListener('DOMContentLoaded', function () {
 
             <div class="mcares-slide active">
                 <img
-                    src="{{ asset('images/m.care1.jpg') }}"
+                    src="<?php echo e(asset('images/m.care1.jpg')); ?>"
                     alt="M. Cares Beauty Services"
                 >
             </div>
 
             <div class="mcares-slide">
                 <img
-                    src="{{ asset('images/m.care2.jpg') }}"
+                    src="<?php echo e(asset('images/m.care2.jpg')); ?>"
                     alt="M. Cares Beauty Services"
                 >
             </div>
 
             <div class="mcares-slide">
                 <img
-                    src="{{ asset('images/m.care3.jpg') }}"
+                    src="<?php echo e(asset('images/m.care3.jpg')); ?>"
                     alt="M. Cares Beauty Services"
                 >
             </div>
 
             <div class="mcares-slide">
                 <img
-                    src="{{ asset('images/m.care4.jpg') }}"
+                    src="<?php echo e(asset('images/m.care4.jpg')); ?>"
                     alt="M. Cares Beauty Services"
                 >
             </div>
 
             <div class="mcares-slide">
                 <img
-                    src="{{ asset('images/m.care5.jpg') }}"
+                    src="<?php echo e(asset('images/m.care5.jpg')); ?>"
                     alt="M. Cares Beauty Services"
                 >
             </div>
 
             <div class="mcares-slide">
                 <img
-                    src="{{ asset('images/m.care6.jpg') }}"
+                    src="<?php echo e(asset('images/m.care6.jpg')); ?>"
                     alt="M. Cares Beauty Services"
                 >
             </div>
@@ -677,7 +677,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-{{-- AWARDS AND ACHIEVEMENTS --}}
+
 
 <section class="achievements-section">
 
@@ -687,7 +687,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         <div class="achievement-art achievement-photo">
             <img
-            src="{{ asset('images/awards.jpg') }}"
+            src="<?php echo e(asset('images/awards.jpg')); ?>"
             alt="M. Cares Beauty Services awards and certificates"
             width="1200"
             height="900"
@@ -767,7 +767,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-{{-- SERVICES --}}
+
 
 <section class="home-services-section">
 
@@ -797,7 +797,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-            <a href="{{ route('services.index') }}"
+            <a href="<?php echo e(route('services.index')); ?>"
 
                class="home-category-card">
 
@@ -817,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-            <a href="{{ route('services.index') }}"
+            <a href="<?php echo e(route('services.index')); ?>"
 
                class="home-category-card">
 
@@ -837,7 +837,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-            <a href="{{ route('services.index') }}"
+            <a href="<?php echo e(route('services.index')); ?>"
 
                class="home-category-card">
 
@@ -857,7 +857,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-            <a href="{{ route('services.index') }}"
+            <a href="<?php echo e(route('services.index')); ?>"
 
                class="home-category-card">
 
@@ -877,7 +877,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-            <a href="{{ route('services.index') }}"
+            <a href="<?php echo e(route('services.index')); ?>"
 
                class="home-category-card">
 
@@ -905,7 +905,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             <a class="secondary-button"
 
-               href="{{ route('services.index') }}">
+               href="<?php echo e(route('services.index')); ?>">
 
                 Explore All Services
 
@@ -923,7 +923,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-{{-- WHY CHOOSE US --}}
+
 
 <section class="why-mcares-section">
 
@@ -1015,7 +1015,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-{{-- BOOKING CTA --}}
+
 
 <section class="home-cta-section">
 
@@ -1043,7 +1043,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         <a class="cta-outline-button"
 
-           href="{{ auth()->check()
+           href="<?php echo e(auth()->check()
 
                ? (auth()->user()->isClient()
 
@@ -1051,7 +1051,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                    : route('home'))
 
-               : route('register') }}">
+               : route('register')); ?>">
 
             Book Now →
 
@@ -1065,4 +1065,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/home.blade.php ENDPATH**/ ?>

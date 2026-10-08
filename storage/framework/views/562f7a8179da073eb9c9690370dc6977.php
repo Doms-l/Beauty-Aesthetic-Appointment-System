@@ -1,3 +1,7 @@
+<?php
+    use Illuminate\Support\Facades\Storage;
+?>
+
 
 
 <?php $__env->startSection('title', 'Admin Profile | M. Cares'); ?>
@@ -30,6 +34,7 @@
             <?php echo csrf_field(); ?>
             <?php echo method_field('PUT'); ?>
 
+            
             <div class="profile-picture-section">
 
                 <div class="profile-picture-preview">
@@ -37,7 +42,7 @@
                     <?php if($user->profile_picture): ?>
 
                         <img
-                            src="<?php echo e(asset('storage/' . $user->profile_picture)); ?>"
+                            src="<?php echo e(Storage::disk('public')->url($user->profile_picture)); ?>"
                             alt="Admin Profile Picture"
                             id="profile-preview"
                         >
@@ -71,7 +76,7 @@
                         <input
                             type="file"
                             name="profile_picture"
-                            accept="image/png,image/jpeg,image/webp"
+                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                             id="profile-picture-input"
                             hidden
                         >
@@ -79,13 +84,14 @@
                     </label>
 
                     <small>
-                        JPG, PNG, or WEBP. Maximum 2MB.
+                        JPG, PNG, or WEBP. Maximum 5MB.
                     </small>
 
                 </div>
 
             </div>
 
+            
             <div class="form-grid two">
 
                 <label>
@@ -112,6 +118,7 @@
 
             </div>
 
+            
             <div class="form-grid two">
 
                 <label>
@@ -129,22 +136,23 @@
                     Phone
 
                     <input
-    type="tel"
-    name="phone"
-    value="<?php echo e(old('phone', $user->phone)); ?>"
-    required
-    maxlength="11"
-    minlength="11"
-    inputmode="numeric"
-    pattern="[0-9]{11}"
-    placeholder="09XXXXXXXXX"
-    oninput="this.value = this.value.replace(/\D/g, '').slice(0, 11);"
-    onkeydown="return event.key >= '0' && event.key <= '9' || ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(event.key);"
->
+                        type="tel"
+                        name="phone"
+                        value="<?php echo e(old('phone', $user->phone)); ?>"
+                        required
+                        maxlength="11"
+                        minlength="11"
+                        inputmode="numeric"
+                        pattern="[0-9]{11}"
+                        placeholder="09XXXXXXXXX"
+                        oninput="this.value = this.value.replace(/\D/g, '').slice(0, 11);"
+                        onkeydown="return event.key >= '0' && event.key <= '9' || ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(event.key);"
+                    >
                 </label>
 
             </div>
 
+            
             <label>
                 Address
 
@@ -155,6 +163,7 @@
                 >
             </label>
 
+            
             <button
                 class="primary-button"
                 type="submit"
@@ -182,6 +191,24 @@ document.addEventListener('DOMContentLoaded', function () {
         const file = event.target.files[0];
 
         if (!file) {
+            return;
+        }
+
+        const allowedTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/webp'
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please select a JPG, PNG, or WEBP image.');
+            input.value = '';
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert('The image must not be larger than 5MB.');
+            input.value = '';
             return;
         }
 
@@ -213,6 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             preview.src = e.target.result;
+
         };
 
         reader.readAsDataURL(file);
