@@ -606,7 +606,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
 
         <p class="mcares-slide-caption">
-            Photo 1 of 6 &nbsp; • &nbsp; Changes every 10 seconds
+            Photo 1 of 6 &nbsp; • &nbsp; Changes every 5 seconds
         </p>
 
     </div>
@@ -652,7 +652,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function startSlideshow() {
         clearInterval(slideshowTimer);
-        slideshowTimer = setInterval(nextSlide, 10000);
+        slideshowTimer = setInterval(nextSlide, 5000);
     }
 
     nextButton.addEventListener('click', function () {
