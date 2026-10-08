@@ -47,6 +47,9 @@
         </div>
 
 
+        {{-- Active promotion --}}
+        @include('partials.promo-banner', ['compact' => true, 'admin' => true])
+
         {{-- Admin Quick Links --}}
         <div class="admin-links">
 

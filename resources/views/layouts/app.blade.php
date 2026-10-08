@@ -67,6 +67,38 @@
 <body>
 
 {{-- =========================================================
+    PROMO ANNOUNCEMENT BAR (shows on every page, admin and client)
+========================================================= --}}
+
+@php
+    $barLink = auth()->check()
+        ? (auth()->user()->isClient()
+            ? route('client.appointments.create')
+            : route('home'))
+        : route('register');
+@endphp
+
+<div class="promo-bar" id="promo-bar">
+
+    <a href="{{ $barLink }}">
+        &#127872; <strong>PROMO:</strong>
+        Retouch/Recolor Microbrows only <strong>&#8369;999</strong>
+        with FREE Lashes &mdash; Book now &rarr;
+    </a>
+
+    <button
+        type="button"
+        id="promo-bar-close"
+        class="promo-bar-close"
+        aria-label="Close promo bar"
+    >
+        &times;
+    </button>
+
+</div>
+
+
+{{-- =========================================================
     NAVIGATION
 ========================================================= --}}
 
@@ -1704,6 +1736,308 @@ html.dark-mode .hero-text-slide h1 em {
 }
 
 </style>
+
+
+{{-- =========================================================
+    PROMO (announcement bar + promo card)
+========================================================= --}}
+
+<style>
+
+/* ---------- ANNOUNCEMENT BAR ---------- */
+
+.promo-bar {
+
+    position: relative;
+
+    padding: 9px 46px;
+
+    background: linear-gradient(110deg, #70475e, #b46e91, #70475e);
+
+    color: #ffffff;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    line-height: 1.4;
+
+}
+
+.promo-bar a {
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+}
+
+.promo-bar a:hover {
+
+    text-decoration: underline;
+
+}
+
+.promo-bar strong {
+
+    color: #ffe9a8;
+
+}
+
+.promo-bar-close {
+
+    position: absolute;
+
+    top: 50%;
+
+    right: 12px;
+
+    transform: translateY(-50%);
+
+    padding: 2px 8px;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #ffffff;
+
+    font-size: 22px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    opacity: .8;
+
+}
+
+.promo-bar-close:hover {
+
+    opacity: 1;
+
+}
+
+.promo-bar.is-hidden {
+
+    display: none;
+
+}
+
+
+/* ---------- PROMO CARD ---------- */
+
+.promo-section {
+
+    padding: 55px 0;
+
+    background: linear-gradient(180deg, #fff8fb, #fff1f6);
+
+}
+
+.promo-section.is-compact {
+
+    padding: 0;
+
+    margin: 0 0 28px;
+
+    background: none;
+
+}
+
+.promo-card {
+
+    max-width: 1000px;
+
+    margin: 0 auto;
+
+    overflow: hidden;
+
+    border: 1px solid var(--line);
+
+    border-radius: 22px;
+
+    background: var(--surface);
+
+    box-shadow: var(--shadow);
+
+}
+
+.promo-poster {
+
+    display: block;
+
+}
+
+.promo-poster img {
+
+    display: block;
+
+    width: 100%;
+
+    height: auto;
+
+}
+
+.promo-caption {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    flex-wrap: wrap;
+
+    gap: 16px;
+
+    padding: 18px 24px;
+
+}
+
+.promo-caption h3 {
+
+    margin: 4px 0 0;
+
+    color: var(--heading);
+
+    font-family: 'Playfair Display', Georgia, serif;
+
+    font-size: 20px;
+
+    line-height: 1.3;
+
+}
+
+.promo-cta {
+
+    display: inline-block;
+
+    padding: 11px 24px;
+
+    border-radius: 999px;
+
+    background: #e91e8c;
+
+    color: #ffffff !important;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition: .2s;
+
+}
+
+.promo-cta:hover {
+
+    background: #c4177a;
+
+    transform: translateY(-1px);
+
+}
+
+.promo-live {
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    background: #e4f7e9;
+
+    color: #2d6b38;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+}
+
+html.dark-mode .promo-section {
+
+    background: linear-gradient(180deg, #1b161a, #221b20);
+
+}
+
+html.dark-mode .promo-section.is-compact {
+
+    background: none;
+
+}
+
+html.dark-mode .promo-live {
+
+    background: #1e3024;
+
+    color: #a8d8af;
+
+}
+
+@media (max-width: 600px) {
+
+    .promo-bar {
+
+        padding: 9px 38px 9px 14px;
+
+        font-size: 12px;
+
+    }
+
+    .promo-caption {
+
+        flex-direction: column;
+
+        text-align: center;
+
+    }
+
+    .promo-section {
+
+        padding: 40px 0;
+
+    }
+
+}
+
+</style>
+
+
+{{-- PROMO BAR: close button --}}
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const bar   = document.getElementById('promo-bar');
+    const close = document.getElementById('promo-bar-close');
+
+    if (!bar || !close) {
+        return;
+    }
+
+    try {
+        if (sessionStorage.getItem('mcares-promo-bar') === 'closed') {
+            bar.classList.add('is-hidden');
+        }
+    } catch (e) {}
+
+    close.addEventListener('click', function () {
+
+        bar.classList.add('is-hidden');
+
+        try {
+            sessionStorage.setItem('mcares-promo-bar', 'closed');
+        } catch (e) {}
+
+    });
+
+});
+
+</script>
 
 
 {{-- =========================================================

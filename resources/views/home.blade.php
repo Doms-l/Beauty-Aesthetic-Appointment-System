@@ -1,3 +1,5 @@
+
+
 @extends('layouts.app')
 
 
@@ -452,6 +454,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+
+{{-- PROMO --}}
+@include('partials.promo-banner')
 
 {{-- MEET THE FOUNDER --}}
 
