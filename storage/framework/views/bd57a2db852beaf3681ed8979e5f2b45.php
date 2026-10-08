@@ -2,6 +2,8 @@
 
 
 
+
+
 <?php $__env->startSection('title', 'M. Cares Beauty Services'); ?>
 
 
@@ -452,6 +454,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+
+
+<?php echo $__env->make('partials.promo-banner', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 
 
@@ -1066,4 +1071,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/home.blade.php ENDPATH**/ ?>
