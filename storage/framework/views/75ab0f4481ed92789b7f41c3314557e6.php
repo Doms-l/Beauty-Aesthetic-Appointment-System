@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'Manage Services | M. Cares')
 
-@section('content')
+<?php $__env->startSection('title', 'Manage Services | M. Cares'); ?>
+
+<?php $__env->startSection('content'); ?>
 
 <section class="page-hero">
     <div class="container">
@@ -16,35 +16,33 @@
 
     <div class="container admin-two-col">
 
-        {{-- =====================================================
-             ADD A NEW SERVICE
-             ===================================================== --}}
+        
         <div class="panel">
 
             <span class="eyebrow">ADD SERVICE</span>
             <h2>New service</h2>
 
             <form method="POST"
-                  action="{{ route('admin.services.store') }}"
+                  action="<?php echo e(route('admin.services.store')); ?>"
                   class="form-stack"
                   enctype="multipart/form-data">
 
-                @csrf
+                <?php echo csrf_field(); ?>
 
                 <label>Category
                     <select name="category" required>
-                        @foreach($categories as $category)
-                            <option value="{{ $category }}" @selected(old('category') === $category)>{{ $category }}</option>
-                        @endforeach
+                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($category); ?>" <?php if(old('category') === $category): echo 'selected'; endif; ?>><?php echo e($category); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </label>
 
                 <label>Name
-                    <input name="name" value="{{ old('name') }}" required>
+                    <input name="name" value="<?php echo e(old('name')); ?>" required>
                 </label>
 
                 <label>Description
-                    <textarea name="description" rows="4">{{ old('description') }}</textarea>
+                    <textarea name="description" rows="4"><?php echo e(old('description')); ?></textarea>
                 </label>
 
                 <div class="svc-photo-field">
@@ -67,16 +65,16 @@
 
                 <div class="form-grid two">
                     <label>Price
-                        <input type="number" step="0.01" min="0" name="price" value="{{ old('price') }}" required>
+                        <input type="number" step="0.01" min="0" name="price" value="<?php echo e(old('price')); ?>" required>
                     </label>
 
                     <label>Duration (min)
-                        <input type="number" min="15" max="600" name="duration_minutes" value="{{ old('duration_minutes', 60) }}" required>
+                        <input type="number" min="15" max="600" name="duration_minutes" value="<?php echo e(old('duration_minutes', 60)); ?>" required>
                     </label>
                 </div>
 
                 <label>Price label <small>(optional, shown to clients, e.g. ₱999 + FREE lashes)</small>
-                    <input name="price_display" value="{{ old('price_display') }}" maxlength="60" placeholder="Leave empty to show the price">
+                    <input name="price_display" value="<?php echo e(old('price_display')); ?>" maxlength="60" placeholder="Leave empty to show the price">
                 </label>
 
                 <button class="primary-button full">Add service</button>
@@ -86,9 +84,7 @@
         </div>
 
 
-        {{-- =====================================================
-             CURRENT SERVICES
-             ===================================================== --}}
+        
         <div class="panel">
 
             <span class="eyebrow">SERVICE LIST</span>
@@ -96,26 +92,28 @@
 
             <div class="admin-list">
 
-                @forelse($services as $service)
+                <?php $__empty_1 = true; $__currentLoopData = $services; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $service): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
 
                     <div class="admin-item svc-item">
 
                         <div class="svc-summary">
 
-                            @if($service->image_url)
-                                <img class="svc-thumb" src="{{ $service->image_url }}" alt="{{ $service->name }}" loading="lazy">
-                            @else
+                            <?php if($service->image_url): ?>
+                                <img class="svc-thumb" src="<?php echo e($service->image_url); ?>" alt="<?php echo e($service->name); ?>" loading="lazy">
+                            <?php else: ?>
                                 <span class="svc-thumb svc-thumb-empty">No photo</span>
-                            @endif
+                            <?php endif; ?>
 
                             <div>
-                                <strong>{{ $service->name }}</strong>
+                                <strong><?php echo e($service->name); ?></strong>
                                 <p>
-                                    ₱{{ number_format($service->price, 2) }}
-                                    · {{ $service->duration_minutes }} min
-                                    · {{ $service->is_available ? 'Available' : 'Hidden' }}
+                                    ₱<?php echo e(number_format($service->price, 2)); ?>
+
+                                    · <?php echo e($service->duration_minutes); ?> min
+                                    · <?php echo e($service->is_available ? 'Available' : 'Hidden'); ?>
+
                                 </p>
-                                <small>{{ $service->category }}</small>
+                                <small><?php echo e($service->category); ?></small>
                             </div>
 
                         </div>
@@ -124,36 +122,36 @@
 
                             <summary>Edit</summary>
 
-                            {{-- the same photo + description clients see on the Services page --}}
+                            
                             <div class="svc-preview">
 
-                                @if($service->image_url)
-                                    <img src="{{ $service->image_url }}" alt="{{ $service->name }}" loading="lazy">
-                                @else
+                                <?php if($service->image_url): ?>
+                                    <img src="<?php echo e($service->image_url); ?>" alt="<?php echo e($service->name); ?>" loading="lazy">
+                                <?php else: ?>
                                     <div class="svc-preview-empty">No photo yet</div>
-                                @endif
+                                <?php endif; ?>
 
-                                <p>{{ $service->effective_description ?: 'No description yet.' }}</p>
+                                <p><?php echo e($service->effective_description ?: 'No description yet.'); ?></p>
 
                             </div>
 
                             <form method="POST"
-                                  action="{{ route('admin.services.update', $service) }}"
+                                  action="<?php echo e(route('admin.services.update', $service)); ?>"
                                   class="form-stack mini"
                                   enctype="multipart/form-data">
 
-                                @csrf
-                                @method('PUT')
+                                <?php echo csrf_field(); ?>
+                                <?php echo method_field('PUT'); ?>
 
                                 <select name="category" required>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category }}" @selected($service->category === $category)>{{ $category }}</option>
-                                    @endforeach
+                                    <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($category); ?>" <?php if($service->category === $category): echo 'selected'; endif; ?>><?php echo e($category); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
 
-                                <input name="name" value="{{ $service->name }}" required>
+                                <input name="name" value="<?php echo e($service->name); ?>" required>
 
-                                <textarea name="description" rows="5" placeholder="Description">{{ $service->effective_description }}</textarea>
+                                <textarea name="description" rows="5" placeholder="Description"><?php echo e($service->effective_description); ?></textarea>
 
                                 <div class="svc-photo-field">
                                     <span class="svc-photo-label">Change photo</span>
@@ -161,14 +159,14 @@
                                 </div>
 
                                 <div class="form-grid two">
-                                    <input type="number" step="0.01" min="0" name="price" value="{{ $service->price }}" required>
-                                    <input type="number" min="15" name="duration_minutes" value="{{ $service->duration_minutes }}" required>
+                                    <input type="number" step="0.01" min="0" name="price" value="<?php echo e($service->price); ?>" required>
+                                    <input type="number" min="15" name="duration_minutes" value="<?php echo e($service->duration_minutes); ?>" required>
                                 </div>
 
-                                <input name="price_display" value="{{ $service->price_display }}" maxlength="60" placeholder="Price label shown to clients (optional)">
+                                <input name="price_display" value="<?php echo e($service->price_display); ?>" maxlength="60" placeholder="Price label shown to clients (optional)">
 
                                 <label class="check-row">
-                                    <input type="checkbox" name="is_available" value="1" @checked($service->is_available)>
+                                    <input type="checkbox" name="is_available" value="1" <?php if($service->is_available): echo 'checked'; endif; ?>>
                                     Available
                                 </label>
 
@@ -176,9 +174,9 @@
 
                             </form>
 
-                            <form method="POST" action="{{ route('admin.services.destroy', $service) }}">
-                                @csrf
-                                @method('DELETE')
+                            <form method="POST" action="<?php echo e(route('admin.services.destroy', $service)); ?>">
+                                <?php echo csrf_field(); ?>
+                                <?php echo method_field('DELETE'); ?>
                                 <button class="danger-link"
                                         onclick="return confirm('Delete this service? This cannot be undone.')">
                                     Delete
@@ -189,15 +187,15 @@
 
                     </div>
 
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
 
                     <p>No services yet.</p>
 
-                @endforelse
+                <?php endif; ?>
 
             </div>
 
-            <div class="pagination">{{ $services->links() }}</div>
+            <div class="pagination"><?php echo e($services->links()); ?></div>
 
         </div>
 
@@ -307,4 +305,6 @@
     })();
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/admin/services.blade.php ENDPATH**/ ?>

@@ -134,6 +134,12 @@ Route::middleware(['auth', 'role:admin'])
         Route::patch('/appointments/{appointment}', [AdminAppointmentController::class, 'update'])
             ->name('appointments.update');
 
+        Route::patch('/appointments/{appointment}/archive', [AdminAppointmentController::class, 'archive'])
+            ->name('appointments.archive');
+
+        Route::patch('/appointments/{appointment}/restore', [AdminAppointmentController::class, 'restore'])
+            ->name('appointments.restore');
+
 
         // SERVICES
         Route::get('/services', [AdminServiceController::class, 'index'])

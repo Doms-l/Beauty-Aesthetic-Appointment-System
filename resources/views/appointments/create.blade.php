@@ -21,6 +21,8 @@
 
     <div class="container narrow-panel">
 
+        @include('partials.perks-banner')
+
         <form
     method="POST"
     action="{{ route('client.appointments.store') }}"
@@ -34,6 +36,8 @@
         data-services='@json($services)'
         data-selected-service="{{ request('service') }}"
     ></div>
+
+    @include('partials.provider-picker')
 
     <label>
         Additional notes

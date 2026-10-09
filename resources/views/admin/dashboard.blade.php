@@ -57,6 +57,10 @@
                 Staff →
             </a>
 
+            <a href="#" class="raffle-open-btn">
+                🎡 Raffle Wheel →
+            </a>
+
         </div>
 
 
@@ -150,6 +154,10 @@
             @endif
 
         </div>
+
+
+        {{-- INCOME SUMMARY + WEEKLY / MONTHLY / QUARTERLY / ANNUAL CHART --}}
+        @include('partials.income-analytics')
 
 
         {{-- =====================================================
@@ -248,5 +256,7 @@
     </div>
 
 </section> 
+
+@include('partials.raffle-wheel')
 
 @endsection

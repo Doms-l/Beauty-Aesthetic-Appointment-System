@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ServiceCatalog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,6 +14,7 @@ class Service extends Model
         'category',
         'name',
         'description',
+        'image',
         'price',
         'price_display',
         'duration_minutes',
@@ -42,5 +44,30 @@ class Service extends Model
         }
 
         return '₱' . number_format((float) $this->price, 0);
+    }
+
+    /**
+     * Path of the photo inside /public (uploaded photo first,
+     * otherwise the matching photo from the category folder).
+     */
+    public function getImagePathAttribute(): ?string
+    {
+        return $this->image ?: ServiceCatalog::imageFor($this->name);
+    }
+
+    /**
+     * Full URL of the photo, or null if the service has none.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        return ServiceCatalog::url($this->image_path);
+    }
+
+    /**
+     * Description typed in the admin, or the built-in one for this service.
+     */
+    public function getEffectiveDescriptionAttribute(): ?string
+    {
+        return $this->description ?: ServiceCatalog::descriptionFor($this->name);
     }
 }

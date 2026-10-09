@@ -21,6 +21,8 @@
 
     <div class="container narrow-panel">
 
+        <?php echo $__env->make('partials.perks-banner', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
         <form
     method="POST"
     action="<?php echo e(route('client.appointments.store')); ?>"
@@ -34,6 +36,8 @@
         data-services='<?php echo json_encode($services, 15, 512) ?>'
         data-selected-service="<?php echo e(request('service')); ?>"
     ></div>
+
+    <?php echo $__env->make('partials.provider-picker', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <label>
         Additional notes
