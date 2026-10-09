@@ -4,17 +4,12 @@
  
 @section('content') 
 
-<section class="dashboard-header">
-    <div class="container">
-        <span class="eyebrow">ADMINISTRATION</span>
-
-        <h1>Clinic overview</h1>
-
-        <p>
-            Monitor appointments, clients, services, and daily clinic activity.
-        </p>
-    </div>
-</section>
+@include('partials.dashboard-slider', [
+    'eyebrow' => 'ADMINISTRATION',
+    'title'   => 'Clinic overview',
+    'text'    => 'Monitor appointments, clients, services, and daily clinic activity.',
+    'admin'   => true,
+])
 
 
 <section class="section compact">
@@ -60,6 +55,14 @@
 
             <a href="{{ route('admin.staff') }}">
                 Staff →
+            </a>
+
+            <a href="{{ route('admin.promo') }}">
+                📣 Promo →
+            </a>
+
+            <a href="#" class="raffle-open-btn">
+                🎡 Raffle Wheel →
             </a>
 
         </div>
@@ -155,6 +158,10 @@
             @endif
 
         </div>
+
+
+        {{-- INCOME SUMMARY + WEEKLY / MONTHLY / QUARTERLY / ANNUAL CHART --}}
+        @include('partials.income-analytics')
 
 
         {{-- =====================================================
@@ -253,5 +260,7 @@
     </div>
 
 </section> 
+
+@include('partials.raffle-wheel')
 
 @endsection

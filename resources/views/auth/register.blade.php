@@ -58,6 +58,7 @@
 
                 <label>
                     Phone number
+
                     <input
                         type="tel"
                         name="phone"
@@ -68,9 +69,11 @@
                         inputmode="numeric"
                         pattern="[0-9]{11}"
                         placeholder="09XXXXXXXXX"
-                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);"
+                        oninput="this.value = this.value.replace(/\D/g, '').slice(0, 11);"
+                        onkeydown="return event.key >= '0' && event.key <= '9' || ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(event.key);"
                     >
-                </label> 
+
+                </label>
 
             </div> 
 

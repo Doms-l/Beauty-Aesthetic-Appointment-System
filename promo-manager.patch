@@ -1,0 +1,503 @@
+diff --git a/app/Http/Controllers/Admin/PromoController.php b/app/Http/Controllers/Admin/PromoController.php
+new file mode 100644
+index 0000000..2733979
+--- /dev/null
++++ b/app/Http/Controllers/Admin/PromoController.php
+@@ -0,0 +1,71 @@
++<?php
++
++namespace App\Http\Controllers\Admin;
++
++use App\Http\Controllers\Controller;
++use App\Models\Promo;
++use Illuminate\Http\Request;
++use Illuminate\Http\UploadedFile;
++
++class PromoController extends Controller
++{
++    public function edit()
++    {
++        return view('admin.promo', ['promo' => Promo::current()]);
++    }
++
++    public function update(Request $request)
++    {
++        $validated = $request->validate([
++            'title'        => ['required', 'string', 'max:150'],
++            'bar_text'     => ['nullable', 'string', 'max:150'],
++            'image'        => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
++            'remove_image' => ['nullable', 'boolean'],
++            'is_active'    => ['nullable', 'boolean'],
++        ]);
++
++        $promo = Promo::query()->first() ?? new Promo();
++
++        $data = [
++            'title'     => $validated['title'],
++            'bar_text'  => $validated['bar_text'] ?? null,
++            'is_active' => $request->boolean('is_active'),
++        ];
++
++        if ($request->hasFile('image')) {
++            $this->deleteImage($promo->image);
++            $data['image'] = $this->saveImage($request->file('image'));
++        } elseif ($request->boolean('remove_image')) {
++            // go back to the original poster
++            $this->deleteImage($promo->image);
++            $data['image'] = null;
++        }
++
++        $promo->fill($data)->save();
++
++        return back()->with('success', 'Promo updated. It is now live on the website and dashboards.');
++    }
++
++    private function saveImage(UploadedFile $file): string
++    {
++        $directory = public_path('images/promos');
++
++        if (!is_dir($directory)) {
++            mkdir($directory, 0755, true);
++        }
++
++        $filename = 'promo-' . time() . '.' . $file->extension();
++
++        $file->move($directory, $filename);
++
++        return 'images/promos/' . $filename;
++    }
++
++    /** Only uploaded promos are deleted; the original promo.jpg is never touched. */
++    private function deleteImage(?string $path): void
++    {
++        if ($path && str_starts_with($path, 'images/promos/')) {
++            @unlink(public_path($path));
++        }
++    }
++}
+diff --git a/app/Models/Promo.php b/app/Models/Promo.php
+new file mode 100644
+index 0000000..3407168
+--- /dev/null
++++ b/app/Models/Promo.php
+@@ -0,0 +1,38 @@
++<?php
++
++namespace App\Models;
++
++use Illuminate\Database\Eloquent\Model;
++
++class Promo extends Model
++{
++    public const DEFAULT_IMAGE = 'images/promo.jpg';
++
++    protected $fillable = ['title', 'bar_text', 'image', 'is_active'];
++
++    protected $casts = ['is_active' => 'boolean'];
++
++    private static ?self $current = null;
++
++    /**
++     * The one promo row (a default one if the table is still empty).
++     */
++    public static function current(): self
++    {
++        return self::$current ??= static::query()->first() ?? new static([
++            'title'     => 'Retouch/Recolor Microbrows — ₱999 with FREE Lashes',
++            'bar_text'  => 'Retouch/Recolor Microbrows only ₱999 with FREE Lashes',
++            'is_active' => true,
++        ]);
++    }
++
++    public function getImageUrlAttribute(): string
++    {
++        return asset($this->image ?: self::DEFAULT_IMAGE);
++    }
++
++    public function getBarLineAttribute(): string
++    {
++        return $this->bar_text ?: $this->title;
++    }
++}
+diff --git a/database/migrations/2026_10_09_000002_create_promos_table.php b/database/migrations/2026_10_09_000002_create_promos_table.php
+new file mode 100644
+index 0000000..6b92084
+--- /dev/null
++++ b/database/migrations/2026_10_09_000002_create_promos_table.php
+@@ -0,0 +1,40 @@
++<?php
++
++use Illuminate\Database\Migrations\Migration;
++use Illuminate\Database\Schema\Blueprint;
++use Illuminate\Support\Facades\DB;
++use Illuminate\Support\Facades\Schema;
++
++return new class extends Migration
++{
++    /**
++     * The promo shown in the home banner, the dashboard slideshow
++     * and the top announcement bar. Only one row is used.
++     */
++    public function up(): void
++    {
++        Schema::create('promos', function (Blueprint $table) {
++            $table->id();
++            $table->string('title', 150);
++            $table->string('bar_text', 150)->nullable();
++            $table->string('image')->nullable();   // path inside /public, empty = images/promo.jpg
++            $table->boolean('is_active')->default(true);
++            $table->timestamps();
++        });
++
++        // the promo that is already live today
++        DB::table('promos')->insert([
++            'title'      => 'Retouch/Recolor Microbrows — ₱999 with FREE Lashes',
++            'bar_text'   => 'Retouch/Recolor Microbrows only ₱999 with FREE Lashes',
++            'image'      => null,
++            'is_active'  => true,
++            'created_at' => now(),
++            'updated_at' => now(),
++        ]);
++    }
++
++    public function down(): void
++    {
++        Schema::dropIfExists('promos');
++    }
++};
+diff --git a/resources/views/admin/dashboard.blade.php b/resources/views/admin/dashboard.blade.php
+index 130be00..9a0df27 100644
+--- a/resources/views/admin/dashboard.blade.php
++++ b/resources/views/admin/dashboard.blade.php
+@@ -57,6 +57,10 @@
+                 Staff →
+             </a>
+ 
++            <a href="{{ route('admin.promo') }}">
++                📣 Promo →
++            </a>
++
+             <a href="#" class="raffle-open-btn">
+                 🎡 Raffle Wheel →
+             </a>
+diff --git a/resources/views/admin/promo.blade.php b/resources/views/admin/promo.blade.php
+new file mode 100644
+index 0000000..4dc3f3b
+--- /dev/null
++++ b/resources/views/admin/promo.blade.php
+@@ -0,0 +1,154 @@
++@extends('layouts.app')
++
++@section('title', 'Manage Promo | M. Cares')
++
++@section('content')
++
++<section class="page-hero">
++    <div class="container">
++        <span class="eyebrow">ADMIN · PROMO</span>
++        <h1>Manage promo banner</h1>
++        <p>Change the poster and text shown on the home page, the dashboard slideshow, and the top announcement bar.</p>
++    </div>
++</section>
++
++<section class="section compact">
++
++    <div class="container admin-two-col">
++
++        {{-- EDIT FORM --}}
++        <div class="panel">
++
++            <span class="eyebrow">EDIT PROMO</span>
++            <h2>Current promo</h2>
++
++            <form method="POST"
++                  action="{{ route('admin.promo.update') }}"
++                  class="form-stack"
++                  enctype="multipart/form-data">
++
++                @csrf
++                @method('PUT')
++
++                <label>Promo title <small>(shown under the poster)</small>
++                    <input name="title" value="{{ old('title', $promo->title) }}" maxlength="150" required>
++                </label>
++
++                <label>Announcement bar text <small>(short line at the very top of every page; leave empty to reuse the title)</small>
++                    <input name="bar_text" value="{{ old('bar_text', $promo->bar_text) }}" maxlength="150">
++                </label>
++
++                <div class="svc-photo-field">
++
++                    <span class="svc-photo-label">Promo poster</span>
++
++                    <div class="svc-photo-preview" id="promo-preview">
++                        <img src="{{ $promo->image_url }}" alt="Current promo poster">
++                    </div>
++
++                    <input type="file"
++                           name="image"
++                           id="promo-image"
++                           accept="image/jpeg,image/png,image/webp"
++                           class="svc-file-input">
++
++                    <small>JPG, PNG or WEBP · up to 5 MB · a wide poster (about 3:1) fits the slideshow best</small>
++
++                    @if($promo->image)
++                        <label class="promo-check">
++                            <input type="checkbox" name="remove_image" value="1">
++                            Go back to the original poster
++                        </label>
++                    @endif
++
++                </div>
++
++                <label class="promo-check">
++                    <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $promo->is_active))>
++                    Show this promo on the website (untick to hide it everywhere)
++                </label>
++
++                <button class="primary-button full">Save promo</button>
++
++            </form>
++
++        </div>
++
++
++        {{-- LIVE PREVIEW --}}
++        <div class="panel">
++
++            <span class="eyebrow">PREVIEW</span>
++            <h2>What clients see</h2>
++
++            @if($promo->is_active)
++                <p class="promo-status on">&#9679; Live on the website and client pages</p>
++            @else
++                <p class="promo-status off">&#9679; Hidden. Clients do not see a promo right now</p>
++            @endif
++
++            <div class="promo-bar-preview">
++                &#127872; <strong>PROMO:</strong> {{ $promo->bar_line }} &mdash; Book now &rarr;
++            </div>
++
++            @include('partials.promo-banner', ['compact' => true, 'admin' => true])
++
++        </div>
++
++    </div>
++
++</section>
++
++<style>
++    .promo-check { display: flex; align-items: center; gap: 10px; font-weight: 600; }
++    .promo-check input { width: auto; }
++    .promo-status { font-weight: 700; margin: 0 0 14px; }
++    .promo-status.on { color: #2e8b57; }
++    .promo-status.off { color: #b4534f; }
++    .promo-bar-preview {
++        margin-bottom: 14px;
++        padding: 10px 16px;
++        border-radius: 12px;
++        background: linear-gradient(110deg, #70475e, #b46e91, #70475e);
++        color: #fff;
++        text-align: center;
++        font-size: 13px;
++        font-weight: 600;
++    }
++    .promo-bar-preview strong { color: #ffe9a8; }
++    .svc-photo-field { display: grid; gap: 8px; }
++    .svc-photo-label { font-weight: 700; color: var(--heading, #62444D); }
++    .svc-photo-field small { color: var(--text-muted, #7d7074); }
++    .svc-photo-preview {
++        display: grid; place-items: center; overflow: hidden;
++        border-radius: 18px; border: 2px dashed var(--line, #ccc);
++        background: var(--surface-soft, #fff1f7);
++    }
++    .svc-photo-preview img { width: 100%; max-height: 240px; object-fit: contain; display: block; }
++    .svc-file-input {
++        padding: 10px; border-radius: 14px; width: 100%;
++        border: 1px solid var(--input-border, #ded5d9);
++        background: var(--input-bg, #fff); color: var(--text, #222);
++    }
++</style>
++
++<script>
++    // shows the chosen poster before saving
++    (function () {
++        const input = document.getElementById('promo-image');
++        const box = document.getElementById('promo-preview');
++        if (!input || !box) { return; }
++
++        input.addEventListener('change', function () {
++            const file = input.files && input.files[0];
++            if (!file) { return; }
++            const img = document.createElement('img');
++            img.src = URL.createObjectURL(file);
++            img.alt = 'Selected poster';
++            box.innerHTML = '';
++            box.appendChild(img);
++        });
++    })();
++</script>
++
++@endsection
+diff --git a/resources/views/layouts/app.blade.php b/resources/views/layouts/app.blade.php
+index 6374837..160f779 100644
+--- a/resources/views/layouts/app.blade.php
++++ b/resources/views/layouts/app.blade.php
+@@ -210,6 +210,8 @@
+ ========================================================= --}}
+ 
+ @php
++    $barPromo = \App\Models\Promo::current();
++
+     $barLink = auth()->check()
+         ? (auth()->user()->isClient()
+             ? route('client.appointments.create')
+@@ -217,12 +219,12 @@
+         : route('register');
+ @endphp
+ 
++@if($barPromo->is_active)
+ <div class="promo-bar" id="promo-bar">
+ 
+     <a href="{{ $barLink }}">
+         &#127872; <strong>PROMO:</strong>
+-        Retouch/Recolor Microbrows only <strong>&#8369;999</strong>
+-        with FREE Lashes &mdash; Book now &rarr;
++        {{ $barPromo->bar_line }} &mdash; Book now &rarr;
+     </a>
+ 
+     <button
+@@ -235,6 +237,7 @@
+     </button>
+ 
+ </div>
++@endif
+ 
+ 
+ {{-- =========================================================
+diff --git a/resources/views/partials/dashboard-slider.blade.php b/resources/views/partials/dashboard-slider.blade.php
+index 086f659..b63fbcb 100644
+--- a/resources/views/partials/dashboard-slider.blade.php
++++ b/resources/views/partials/dashboard-slider.blade.php
+@@ -14,6 +14,8 @@
+ @php
+     $admin = $admin ?? false;
+ 
++    $promo = \App\Models\Promo::current();
++
+     $promoLink = auth()->check()
+         ? (auth()->user()->isClient()
+             ? route('client.appointments.create')
+@@ -40,20 +42,22 @@
+     </div>
+ 
+ 
+-    {{-- SLIDE 2: PROMO POSTER --}}
++    {{-- SLIDE 2: PROMO POSTER (hidden when the promo is switched off) --}}
++
++    @if($promo->is_active)
+ 
+     <div class="dash-slide dash-slide-promo">
+ 
+         <div
+             class="dash-promo-bg"
+-            style="background-image: url('{{ asset('images/promo.jpg') }}');"
++            style="background-image: url('{{ $promo->image_url }}');"
+         ></div>
+ 
+         <a href="{{ $admin ? route('home') : $promoLink }}" class="dash-promo-link">
+ 
+             <img
+-                src="{{ asset('images/promo.jpg') }}"
+-                alt="Macayla Cares Retouch/Recolor Microbrows promo: P999 with free lashes"
++                src="{{ $promo->image_url }}"
++                alt="{{ $promo->title }}"
+             >
+ 
+         </a>
+@@ -68,6 +72,8 @@
+ 
+     </div>
+ 
++    @endif
++
+ </section>
+ 
+ 
+diff --git a/resources/views/partials/promo-banner.blade.php b/resources/views/partials/promo-banner.blade.php
+index 556b736..74fe353 100644
+--- a/resources/views/partials/promo-banner.blade.php
++++ b/resources/views/partials/promo-banner.blade.php
+@@ -2,6 +2,8 @@
+     $compact = $compact ?? false;
+     $admin   = $admin   ?? false;
+ 
++    $promo = \App\Models\Promo::current();
++
+     $promoLink = auth()->check()
+         ? (auth()->user()->isClient()
+             ? route('client.appointments.create')
+@@ -9,6 +11,7 @@
+         : route('register');
+ @endphp
+ 
++@if($promo->is_active)
+ <section class="promo-section {{ $compact ? 'is-compact' : '' }}">
+ 
+     @unless($compact)<div class="container">@endunless
+@@ -18,8 +21,8 @@
+             <a class="promo-poster" href="{{ $admin ? route('home') : $promoLink }}">
+ 
+                 <img
+-                    src="{{ asset('images/promo.jpg') }}"
+-                    alt="Macayla Cares Retouch/Recolor Microbrows promo: P999 with free lashes"
++                    src="{{ $promo->image_url }}"
++                    alt="{{ $promo->title }}"
+                     loading="lazy"
+                 >
+ 
+@@ -33,10 +36,7 @@
+                         {{ $admin ? 'ACTIVE PROMOTION' : 'LIMITED-TIME PROMO' }}
+                     </span>
+ 
+-                    <h3>
+-                        Retouch/Recolor Microbrows
+-                        &mdash; &#8369;999 with FREE Lashes
+-                    </h3>
++                    <h3>{{ $promo->title }}</h3>
+ 
+                 </div>
+ 
+@@ -61,3 +61,4 @@
+     @unless($compact)</div>@endunless
+ 
+ </section>
++@endif
+diff --git a/routes/web.php b/routes/web.php
+index 2277f91..7ba6b21 100644
+--- a/routes/web.php
++++ b/routes/web.php
+@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentControll
+ use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
+ use App\Http\Controllers\Admin\StaffController as AdminStaffController;
+ use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
++use App\Http\Controllers\Admin\PromoController as AdminPromoController;
+ 
+ Route::get('/', [HomeController::class, 'index'])->name('home');
+ 
+@@ -155,6 +156,14 @@ Route::middleware(['auth', 'role:admin'])
+             ->name('services.destroy');
+ 
+ 
++        // PROMO BANNER
++        Route::get('/promo', [AdminPromoController::class, 'edit'])
++            ->name('promo');
++
++        Route::put('/promo', [AdminPromoController::class, 'update'])
++            ->name('promo.update');
++
++
+         // STAFF
+         Route::get('/staff', [AdminStaffController::class, 'index'])
+             ->name('staff');
