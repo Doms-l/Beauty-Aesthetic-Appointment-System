@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
@@ -18,6 +19,11 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/services', [ServiceController::class, 'index'])
     ->name('services.index');
+
+// Chatbot (multilingual). Throttled because every call costs API usage.
+Route::post('/chatbot', ChatController::class)
+    ->middleware('throttle:20,1')
+    ->name('chatbot');
 
 
 // =========================

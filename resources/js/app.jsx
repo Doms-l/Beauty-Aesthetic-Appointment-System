@@ -211,6 +211,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         chatMessages.scrollTop =
             chatMessages.scrollHeight;
+
+        return messageWrapper;
     }
 
 
@@ -295,13 +297,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const PRICE_WORDS = [
         'price', 'prices', 'pricing', 'cost', 'costs',
         'how much', 'fee', 'fees', 'rate', 'rates',
-        'magkano', 'presyo', 'charge',
+        'magkano', 'presyo', 'charge', 'tagpila', 'precio', 'cuanto cuesta',
     ];
 
     // words that mean "I want to book"
     const BOOKING_WORDS = [
         'book', 'booking', 'appointment', 'schedule', 'reserve',
+        'magbook', 'mag book', 'magpabook', 'magpa book', 'pabook',
+        'iskedyul', 'reservar', 'cita',
     ];
+
+    // words that mean "where is the clinic?" (English, Tagalog,
+    // Cebuano/Waray, Spanish and a few others)
+    const LOCATION_WORDS = [
+        'where', 'location', 'located', 'address', 'directions', 'direction',
+        'saan', 'nasaan', 'lokasyon', 'asa', 'diin', 'hain',
+        'donde', 'ubicacion', 'direccion', 'adresse', 'standort',
+    ];
+
+    // same idea for languages that do not use a-z letters
+    const LOCATION_WORDS_OTHER = [
+        '哪里', '哪裡', '在哪', '地址', '位置',
+        'どこ', '場所', '住所',
+        '어디', '위치', '주소',
+        'أين', 'عنوان',
+        'где', 'адрес',
+    ];
+
+    const CLINIC_ADDRESS =
+        'Brgy Bito Abuyog Leyte, Front of BV Closa Central School Back Gate';
 
 
     // lowercase, remove symbols, pad with spaces so whole words match
@@ -310,6 +334,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return ' ' +
             text
                 .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
                 .replace(/[^a-z0-9]+/g, ' ')
                 .trim() +
             ' ';
@@ -585,15 +611,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // LOCATION
 
         if (
-            question.includes('where') ||
-            question.includes('location') ||
-            question.includes('address')
+            mentionsAny(question, LOCATION_WORDS) ||
+            LOCATION_WORDS_OTHER.some(function (word) {
+                return question.includes(word);
+            })
         ) {
 
             return (
-                'For the clinic location and contact information, ' +
-                'please check the information provided on the ' +
-                'M. Cares Beauty Services website.'
+                'You can find us at:\n' +
+                '📍 ' + CLINIC_ADDRESS + '\n\n' +
+                'For more contact details, please check the ' +
+                'information on our website.'
             );
         }
 
@@ -604,6 +632,12 @@ document.addEventListener('DOMContentLoaded', () => {
             question === 'hi' ||
             question === 'hello' ||
             question === 'hey' ||
+            question === 'hola' ||
+            question === 'kumusta' ||
+            question === 'kamusta' ||
+            question.includes('maayong buntag') ||
+            question.includes('maayong hapon') ||
+            question.includes('maayong gabii') ||
             question.includes('good morning') ||
             question.includes('good afternoon') ||
             question.includes('good evening')
@@ -620,7 +654,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (
             question.includes('thank') ||
-            question.includes('thanks')
+            question.includes('thanks') ||
+            question.includes('salamat') ||
+            question.includes('gracias')
         ) {
 
             return (
@@ -637,8 +673,63 @@ document.addEventListener('DOMContentLoaded', () => {
             'I’m sorry, I don’t have an answer for that yet. ' +
             'You can ask me about our services, prices, ' +
             'appointments, staff, amenities, clinic hours, ' +
-            'cancellations, or your profile.'
+            'our location, cancellations, or your profile.'
         );
+    }
+
+
+    // ---------------------------------------------------------
+    // ASK THE SERVER (ANSWERS IN ANY LANGUAGE)
+    //
+    // The server sends the question to the AI assistant, which
+    // answers in the client's language. If the server cannot
+    // answer (no API key, no internet, too many requests), the
+    // built-in answers above are used instead.
+    // ---------------------------------------------------------
+
+    const chatEndpoint =
+        chatForm.dataset.endpoint || '/chatbot';
+
+    const csrfToken =
+        document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content') || '';
+
+    // last messages, so the assistant understands follow-up questions
+    const chatHistory = [];
+
+    let isSending = false;
+
+
+    async function askServer(message) {
+
+        const response = await fetch(
+            chatEndpoint,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    message: message,
+                    history: chatHistory.slice(-10),
+                }),
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error('Chatbot server unavailable');
+        }
+
+        const data = await response.json();
+
+        if (!data.reply) {
+            throw new Error('Empty chatbot reply');
+        }
+
+        return data.reply;
     }
 
 
@@ -646,15 +737,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // SEND MESSAGE
     // ---------------------------------------------------------
 
-    function sendMessage(message) {
+    async function sendMessage(message) {
 
         const cleanMessage =
             message.trim();
 
 
-        if (!cleanMessage) {
+        if (!cleanMessage || isSending) {
             return;
         }
+
+        isSending = true;
 
 
         // User message
@@ -670,21 +763,34 @@ document.addEventListener('DOMContentLoaded', () => {
         chatInput.value = '';
 
 
-        // Small delay for natural chatbot response
+        // "typing" bubble while we wait
 
-        setTimeout(() => {
+        const typing = addMessage('…', 'bot');
 
-            const response =
-                getBotResponse(
-                    cleanMessage
-                );
+        let response;
 
-            addMessage(
-                response,
-                'bot'
-            );
+        try {
 
-        }, 400);
+            response = await askServer(cleanMessage);
+
+        } catch (error) {
+
+            response = getBotResponse(cleanMessage);
+        }
+
+        typing.remove();
+
+        addMessage(
+            response,
+            'bot'
+        );
+
+        chatHistory.push(
+            { role: 'user', content: cleanMessage },
+            { role: 'assistant', content: response }
+        );
+
+        isSending = false;
     }
 
 
