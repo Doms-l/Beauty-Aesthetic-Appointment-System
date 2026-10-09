@@ -22,10 +22,13 @@ class StaffController extends Controller
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'phone' => ['nullable', 'string', 'max:30'],
+            'phone' => ['required', 'digits:11'],
             'position' => ['required', 'string', 'max:100'],
             'specialization' => ['nullable', 'string', 'max:150'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'phone.required' => 'Phone number is required.',
+            'phone.digits' => 'Phone number must contain exactly 11 digits (numbers only).',
         ]);
 
         DB::transaction(function () use ($validated) {

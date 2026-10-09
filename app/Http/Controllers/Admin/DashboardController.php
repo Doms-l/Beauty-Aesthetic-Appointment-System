@@ -19,7 +19,7 @@ class DashboardController extends Controller
 
         $appointments = Appointment::with(['user', 'service'])
             ->whereDate('appointment_date', '>=', today())
-            ->whereNotIn('status', ['cancelled'])
+            ->counted()
             ->orderBy('appointment_date')
             ->orderBy('appointment_time')
             ->take(10)
@@ -34,7 +34,7 @@ class DashboardController extends Controller
         $popularServices = Appointment::with('service')
             ->select('service_id')
             ->selectRaw('COUNT(*) as total_bookings')
-            ->whereNotIn('status', ['cancelled'])
+            ->counted()
             ->groupBy('service_id')
             ->orderByDesc('total_bookings')
             ->limit(5)
@@ -67,7 +67,7 @@ class DashboardController extends Controller
      * INCOME ANALYTICS
      *
      * Income = the price of the service of every appointment that
-     * is NOT cancelled. A cancelled appointment is never counted
+     * is NOT cancelled and NOT archived. Those are never counted
      * anywhere (income, bookings, or service breakdown).
      *
      * "Earned"   = completed appointments
@@ -111,7 +111,7 @@ class DashboardController extends Controller
 
         // One query: every non-cancelled appointment with its service
         $rows = Appointment::with('service:id,name,price')
-            ->where('status', '!=', 'cancelled')
+            ->counted()
             ->get(['id', 'service_id', 'appointment_date', 'status']);
 
         $periods = [];
