@@ -466,9 +466,130 @@
         });
     });
 
-    document.getElementById('income-print').addEventListener('click', function () {
-        buildReport(current);
-        window.print();
+    // ---------- PDF download (saved to the laptop first, then printed from the file) ----------
+
+    const GENERATED_AT = @json($incomeAnalytics['generated_at']);
+
+    const PDF_LIBS = [
+        'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'
+    ];
+
+    function loadScript(src) {
+        return new Promise(function (resolve, reject) {
+            const s = document.createElement('script');
+            s.src = src;
+            s.onload = resolve;
+            s.onerror = function () { reject(new Error('Could not load ' + src)); };
+            document.head.appendChild(s);
+        });
+    }
+
+    // jsPDF's built-in fonts have no peso sign, so the PDF uses "PHP".
+    function php(n) {
+        return 'PHP ' + Number(n).toLocaleString('en-PH', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    async function ensurePdfLibs() {
+        if (window.jspdf && window.jspdf.jsPDF && typeof window.jspdf.jsPDF.API.autoTable === 'function') {
+            return;
+        }
+        await loadScript(PDF_LIBS[0]);
+        await loadScript(PDF_LIBS[1]);
+    }
+
+    function buildPdf(period) {
+
+        const data = DATA[period];
+        const doc  = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' });
+        const left = 40;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(20);
+        doc.setTextColor(98, 68, 77);
+        doc.text('M. Cares Beauty Services', left, 52);
+
+        doc.setFontSize(13);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Income Summary - ' + NAMES[period] + ' (' + data.title + ')', left, 74);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(90, 90, 90);
+        doc.text('Generated ' + GENERATED_AT + '  |  Cancelled appointments are excluded.', left, 90);
+
+        const headStyles = { fillColor: [243, 188, 210], textColor: [98, 68, 77], fontStyle: 'bold' };
+
+        doc.autoTable({
+            startY: 106,
+            head: [['Period', 'Bookings', 'Earned', 'Expected', 'Total income']],
+            body: data.buckets.map(function (b) {
+                return [b.label, String(b.bookings), php(b.earned), php(b.expected), php(b.income)];
+            }),
+            foot: [[
+                'Total',
+                String(data.bookings),
+                php(data.earned),
+                php(data.total - data.earned),
+                php(data.total)
+            ]],
+            theme: 'grid',
+            styles: { fontSize: 9, cellPadding: 5, textColor: [0, 0, 0] },
+            headStyles: headStyles,
+            footStyles: { fillColor: [253, 238, 187], textColor: [0, 0, 0], fontStyle: 'bold' },
+            columnStyles: {
+                1: { halign: 'right' }, 2: { halign: 'right' },
+                3: { halign: 'right' }, 4: { halign: 'right' }
+            }
+        });
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Income by service', left, doc.lastAutoTable.finalY + 30);
+
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 40,
+            head: [['Service', 'Bookings', 'Income']],
+            body: data.services.length
+                ? data.services.map(function (s) {
+                    return [s.name, String(s.bookings), php(s.income)];
+                })
+                : [['No income recorded.', '', '']],
+            theme: 'grid',
+            styles: { fontSize: 9, cellPadding: 5, textColor: [0, 0, 0] },
+            headStyles: headStyles,
+            columnStyles: { 1: { halign: 'right' }, 2: { halign: 'right' } }
+        });
+
+        return doc;
+    }
+
+    const printBtn = document.getElementById('income-print');
+
+    printBtn.addEventListener('click', async function () {
+
+        const label = printBtn.innerHTML;
+        printBtn.disabled = true;
+        printBtn.textContent = 'Preparing PDF…';
+
+        try {
+            await ensurePdfLibs();
+
+            const stamp = new Date().toISOString().slice(0, 10);
+            buildPdf(current).save('mcares-income-summary-' + current + '-' + stamp + '.pdf');
+
+        } catch (e) {
+            // PDF library could not load (e.g. offline): fall back to the browser's print dialog
+            buildReport(current);
+            window.print();
+        } finally {
+            printBtn.disabled = false;
+            printBtn.innerHTML = label;
+        }
     });
 
     render(current);

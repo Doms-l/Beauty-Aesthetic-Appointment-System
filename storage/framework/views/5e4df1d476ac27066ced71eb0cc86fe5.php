@@ -3,6 +3,8 @@
 <?php
     $admin = $admin ?? false;
 
+    $promo = \App\Models\Promo::current();
+
     $promoLink = auth()->check()
         ? (auth()->user()->isClient()
             ? route('client.appointments.create')
@@ -31,18 +33,20 @@
 
     
 
+    <?php if($promo->is_active): ?>
+
     <div class="dash-slide dash-slide-promo">
 
         <div
             class="dash-promo-bg"
-            style="background-image: url('<?php echo e(asset('images/promo.jpg')); ?>');"
+            style="background-image: url('<?php echo e($promo->image_url); ?>');"
         ></div>
 
         <a href="<?php echo e($admin ? route('home') : $promoLink); ?>" class="dash-promo-link">
 
             <img
-                src="<?php echo e(asset('images/promo.jpg')); ?>"
-                alt="Macayla Cares Retouch/Recolor Microbrows promo: P999 with free lashes"
+                src="<?php echo e($promo->image_url); ?>"
+                alt="<?php echo e($promo->title); ?>"
             >
 
         </a>
@@ -56,6 +60,8 @@
         <?php endif; ?>
 
     </div>
+
+    <?php endif; ?>
 
 </section>
 

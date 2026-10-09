@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentControll
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Http\Controllers\Admin\StaffController as AdminStaffController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Admin\PromoController as AdminPromoController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -153,6 +154,14 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::delete('/services/{service}', [AdminServiceController::class, 'destroy'])
             ->name('services.destroy');
+
+
+        // PROMO BANNER
+        Route::get('/promo', [AdminPromoController::class, 'edit'])
+            ->name('promo');
+
+        Route::put('/promo', [AdminPromoController::class, 'update'])
+            ->name('promo.update');
 
 
         // STAFF

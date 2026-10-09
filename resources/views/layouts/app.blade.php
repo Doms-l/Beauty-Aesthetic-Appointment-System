@@ -210,6 +210,8 @@
 ========================================================= --}}
 
 @php
+    $barPromo = \App\Models\Promo::current();
+
     $barLink = auth()->check()
         ? (auth()->user()->isClient()
             ? route('client.appointments.create')
@@ -217,12 +219,12 @@
         : route('register');
 @endphp
 
+@if($barPromo->is_active)
 <div class="promo-bar" id="promo-bar">
 
     <a href="{{ $barLink }}">
         &#127872; <strong>PROMO:</strong>
-        Retouch/Recolor Microbrows only <strong>&#8369;999</strong>
-        with FREE Lashes &mdash; Book now &rarr;
+        {{ $barPromo->bar_line }} &mdash; Book now &rarr;
     </a>
 
     <button
@@ -235,6 +237,7 @@
     </button>
 
 </div>
+@endif
 
 
 {{-- =========================================================
