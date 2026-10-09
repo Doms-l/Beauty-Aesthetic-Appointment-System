@@ -57,6 +57,10 @@
                 Staff →
             </a>
 
+            <a href="#" class="raffle-open-btn">
+                🎡 Raffle Wheel →
+            </a>
+
         </div>
 
 
@@ -151,6 +155,10 @@
             <?php endif; ?>
 
         </div>
+
+
+        
+        <?php echo $__env->make('partials.income-analytics', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 
         
@@ -252,6 +260,8 @@
     </div>
 
 </section> 
+
+<?php echo $__env->make('partials.raffle-wheel', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/admin/dashboard.blade.php ENDPATH**/ ?>
