@@ -182,6 +182,12 @@ document.addEventListener('DOMContentLoaded', () => {
             'mcares-chat-bubble';
 
 
+        // lets the bot show lists with line breaks
+        if (sender === 'bot') {
+            bubble.style.whiteSpace = 'pre-line';
+        }
+
+
         /*
          * We use textContent instead of innerHTML
          * for user messages to prevent HTML injection.
@@ -209,6 +215,208 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ---------------------------------------------------------
+    // PRICE LIST
+    //
+    // name  = what the bot says
+    // price = the price text shown to the client
+    // keys  = words a client might type (lowercase). The full
+    //         service name is always included automatically.
+    //
+    // To change a price, just edit the price text below.
+    // ---------------------------------------------------------
+
+    const PRICE_LIST = [
+
+        // ----- FACIAL SERVICES -----
+        { name: 'Basic Facial', price: '₱350', keys: ['facial', 'facials'] },
+        { name: 'Microdermabrasion / Diamond Peel', price: '₱499', keys: ['microdermabrasion', 'diamond peel', 'facial', 'facials'] },
+        { name: 'Acne Treatment', price: '₱799', keys: ['acne', 'facial', 'facials'] },
+        { name: 'Hydra Facial', price: '₱999', keys: ['hydra', 'hydrafacial', 'facial', 'facials'] },
+        { name: 'Anti-Aging Facial', price: '₱699', keys: ['anti aging', 'antiaging', 'anti ageing', 'facial', 'facials'] },
+        { name: 'Melasma Treatment', price: '₱599', keys: ['melasma', 'facial', 'facials'] },
+        { name: 'Pico Carbon Laser Treatment', price: '₱1,999', keys: ['pico', 'carbon', 'carbon laser', 'facial', 'facials'] },
+        { name: 'Oxygen Facial', price: '₱1,999', keys: ['oxygen', 'oxygeneo', 'facial', 'facials'] },
+        { name: 'Korean BB Glow + BB Blush', price: '₱1,499', keys: ['bb glow', 'bb blush', 'korean', 'facial', 'facials'] },
+        { name: 'Free Stemcell Facial', price: '₱3,999 / 4 sessions', keys: ['stemcell', 'stem cell', 'facial', 'facials'] },
+
+        // ----- LASH & BROWS SERVICES -----
+        { name: 'Lash Extension', price: '₱199–₱350', keys: ['lash extension', 'lash extensions', 'eyelash extension', 'eyelash extensions', 'lash', 'lashes', 'eyelash', 'eyelashes'] },
+        { name: 'Lashlift', price: '₱350', keys: ['lash lift', 'lashlift', 'lash', 'lashes', 'eyelash', 'eyelashes'] },
+        { name: 'Brow Tint', price: '₱150', keys: ['brow', 'brows', 'eyebrow', 'eyebrows'] },
+        { name: 'Brow Lamination w/ Tint', price: '₱350', keys: ['brow lamination', 'lamination', 'brow', 'brows', 'eyebrow', 'eyebrows'] },
+        { name: 'Microblading', price: '₱2,500', keys: ['microblading', 'brow', 'brows', 'eyebrow', 'eyebrows'] },
+        {
+            name: 'Micro Brows Retouch',
+            price: '₱1,500',
+            keys: ['micro brows', 'microbrows', 'retouch', 'recolor', 'brow', 'brows', 'eyebrow', 'eyebrows'],
+            // PROMO NOTE - delete this line when the promo ends
+            note: 'It is on promo right now: ₱999 with FREE lashes! 🎀',
+        },
+        { name: 'Lip Blush', price: '₱2,500', keys: ['lip blush', 'lip'] },
+        { name: 'Lip Tattoo', price: '₱3,500', keys: ['lip tattoo', 'lip', 'tattoo'] },
+        { name: 'Microshading', price: '₱3,000', keys: ['microshading', 'shading', 'brow', 'brows', 'eyebrow', 'eyebrows'] },
+        { name: 'Ombre Shading', price: '₱3,500', keys: ['ombre', 'shading', 'brow', 'brows', 'eyebrow', 'eyebrows'] },
+        { name: 'Eyeliner Tattoo', price: '₱1,999', keys: ['eyeliner', 'tattoo'] },
+
+        // ----- OTHER SERVICES -----
+        { name: 'UA Waxing', price: '₱250', keys: ['ua wax', 'ua waxing', 'underarm wax', 'underarm waxing', 'armpit wax', 'wax', 'waxing'] },
+        { name: 'Leg Waxing', price: '₱500', keys: ['leg wax', 'leg waxing', 'wax', 'waxing'] },
+        { name: 'Upper Lip Wax', price: '₱250', keys: ['upper lip', 'wax', 'waxing'] },
+        { name: 'UA IPL Laser Hair Removal', price: '₱500', keys: ['ua ipl', 'underarm ipl', 'ipl', 'laser hair removal', 'hair removal'] },
+        { name: 'Body IPL Laser Hair Removal', price: '₱999', keys: ['body ipl', 'ipl', 'laser hair removal', 'hair removal'] },
+        { name: 'UA Whitening', price: '₱350', keys: ['ua whitening', 'underarm whitening', 'whitening'] },
+        { name: 'RF Face', price: '₱350', keys: ['rf face', 'rf'] },
+        { name: 'RF Body', price: '₱550', keys: ['rf body', 'rf'] },
+        { name: 'HIFU Face', price: '₱999', keys: ['hifu'] },
+        { name: 'Gel Polish', price: '₱350', keys: ['gel polish', 'gel', 'polish', 'manicure', 'nail', 'nails'] },
+        { name: 'Nail Extension', price: '₱550', keys: ['nail extension', 'nail extensions', 'nail', 'nails'] },
+        { name: 'Toe Nail Extension', price: '₱650', keys: ['toe nail extension', 'toe nail', 'toe', 'nail', 'nails'] },
+        { name: 'Toe Gel Polish', price: '₱499', keys: ['toe gel polish', 'toe gel', 'toe', 'nail', 'nails'] },
+        { name: 'Barbie Arms', price: '₱2,499', keys: ['barbie arms', 'barbie arm', 'barbie'] },
+        { name: 'Face Botox', price: '₱7,999', keys: ['botox', 'face botox'] },
+        { name: 'Warts Removal', price: '₱599', keys: ['warts', 'wart', 'warts removal'] },
+        { name: 'Milia Removal', price: '₱799', keys: ['milia'] },
+        { name: 'Syringoma Removal', price: '₱899', keys: ['syringoma'] },
+        { name: 'Skin Tag Removal', price: '₱699', keys: ['skin tag', 'skin tags'] },
+        { name: 'Tattoo Removal', price: '₱500–₱2,000', keys: ['tattoo removal', 'tattoo'] },
+        { name: 'Scar Camouflage', price: '₱999', keys: ['scar', 'scars', 'camouflage'] },
+        { name: 'Glutadrip', price: '₱3,500', keys: ['glutadrip', 'gluta', 'glutathione', 'drip'] },
+        { name: 'Thermage', price: '₱1,999', keys: ['thermage'] },
+        { name: 'Melano Out Melasma Meso', price: '₱4,999', keys: ['melano out', 'melano', 'meso', 'melasma'] },
+        { name: 'Vitamin A (Acne Breakouts)', price: '₱4,999', keys: ['vitamin a', 'acne breakouts', 'breakouts', 'breakout', 'acne'] },
+        { name: 'Hair Treatments', price: '₱300–₱600', keys: ['hair treatment', 'hair treatments', 'hair'] },
+        { name: 'Rebond', price: '₱999', keys: ['rebond', 'rebonding'] },
+        { name: 'Footspa', price: '₱300', keys: ['footspa', 'foot spa', 'foot'] },
+
+    ];
+
+
+    // words that mean "how much?"
+    const PRICE_WORDS = [
+        'price', 'prices', 'pricing', 'cost', 'costs',
+        'how much', 'fee', 'fees', 'rate', 'rates',
+        'magkano', 'presyo', 'charge',
+    ];
+
+    // words that mean "I want to book"
+    const BOOKING_WORDS = [
+        'book', 'booking', 'appointment', 'schedule', 'reserve',
+    ];
+
+
+    // lowercase, remove symbols, pad with spaces so whole words match
+    function normalizeText(text) {
+
+        return ' ' +
+            text
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, ' ')
+                .trim() +
+            ' ';
+    }
+
+
+    function mentionsAny(question, words) {
+
+        const text = normalizeText(question);
+
+        return words.some(function (word) {
+
+            return text.includes(normalizeText(word));
+        });
+    }
+
+
+    // finds the service(s) the client is asking about
+    // (the longest / most specific match wins)
+    function findServices(question) {
+
+        const text = normalizeText(question);
+
+        let best = 0;
+
+        const scored = [];
+
+        PRICE_LIST.forEach(function (service) {
+
+            let longest = 0;
+
+            [service.name].concat(service.keys).forEach(function (key) {
+
+                const normalized = normalizeText(key);
+
+                if (text.includes(normalized)) {
+
+                    longest = Math.max(
+                        longest,
+                        normalized.trim().length
+                    );
+                }
+            });
+
+            if (longest > 0) {
+
+                scored.push({ service: service, length: longest });
+
+                best = Math.max(best, longest);
+            }
+        });
+
+        return scored
+            .filter(function (item) {
+                return item.length === best;
+            })
+            .map(function (item) {
+                return item.service;
+            });
+    }
+
+
+    function formatPrices(services) {
+
+        // ONE service
+        if (services.length === 1) {
+
+            const service = services[0];
+
+            let reply =
+                service.name + ' is ' + service.price + '.';
+
+            if (service.note) {
+                reply += ' ' + service.note;
+            }
+
+            reply +=
+                ' You can book it anytime through Book Now ' +
+                'on our website.';
+
+            return reply;
+        }
+
+        // SEVERAL services
+        return (
+            'Here are the prices I found:\n' +
+            services
+                .map(function (service) {
+                    return '• ' + service.name + ' – ' + service.price;
+                })
+                .join('\n') +
+            '\n\nAsk me about one service to get its exact price.'
+        );
+    }
+
+
+    const PRICE_SUMMARY =
+        'Our prices depend on the service:\n' +
+        '• Facial Services: from ₱350\n' +
+        '• Lash & Brows Services: from ₱150\n' +
+        '• Other Services: from ₱250\n\n' +
+        'Ask me about a specific service, for example ' +
+        '"How much is Gel Polish?", or open the Services page ' +
+        'to see the full list.';
+
+
+    // ---------------------------------------------------------
     // CHATBOT ANSWERS
     // ---------------------------------------------------------
 
@@ -218,6 +426,34 @@ document.addEventListener('DOMContentLoaded', () => {
             message
                 .toLowerCase()
                 .trim();
+
+
+        // PRICES (asking about a specific service, e.g. "gel polish")
+
+        const wantsPrice =
+            mentionsAny(question, PRICE_WORDS);
+
+        const wantsBooking =
+            mentionsAny(question, BOOKING_WORDS);
+
+        const wordCount =
+            question.split(/\s+/).length;
+
+        const matchedServices =
+            findServices(question);
+
+        if (
+            matchedServices.length > 0 &&
+            (wantsPrice || (wordCount <= 4 && !wantsBooking))
+        ) {
+
+            return formatPrices(matchedServices);
+        }
+
+        if (wantsPrice) {
+
+            return PRICE_SUMMARY;
+        }
 
 
         // SERVICES
@@ -231,12 +467,15 @@ document.addEventListener('DOMContentLoaded', () => {
         ) {
 
             return (
-                'M. Cares Beauty Services offers ' +
-                'beauty and aesthetic services including ' +
-                'facial treatments, aesthetic services, ' +
-                'lash services, and other beauty treatments. ' +
-                'Please visit our Services page to see the ' +
-                'available services and prices.'
+                'We offer facial treatments like Hydra Facial, ' +
+                'Korean BB Glow, Acne and Melasma Treatment; ' +
+                'lash and brow services like Lash Extension, ' +
+                'Lashlift, Microblading and Brow Lamination; ' +
+                'and other treatments like Face Botox, Glutadrip, ' +
+                'IPL Hair Removal, Gel Polish and Footspa. ' +
+                'Ask me about any service to get its price, ' +
+                'like "How much is Gel Polish?", or visit our ' +
+                'Services page to see the full list.'
             );
         }
 
@@ -251,10 +490,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ) {
 
             return (
-                'You can book an appointment through the ' +
-                'Book Now option on the website. ' +
-                'Choose your service, select the available ' +
-                'date and time, and complete the appointment form.'
+                'Log in or register, then click Book Now. ' +
+                'Choose your service, pick an available date and ' +
+                'time, and send your appointment request. ' +
+                'Our team will confirm it, and you can check its ' +
+                'status anytime under Appointments.'
             );
         }
 
@@ -270,11 +510,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ) {
 
             return (
-                'M. Cares Beauty Services provides ' +
-                'client-friendly amenities such as free Wi-Fi ' +
-                'and free drinking water. Other available ' +
-                'refreshments and amenities may be shown ' +
-                'during the appointment process.'
+                'We provide free Wi-Fi and free drinking water ' +
+                'for all our clients while you wait or enjoy ' +
+                'your treatment.'
             );
         }
 
@@ -284,31 +522,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (
             question.includes('hour') ||
             question.includes('open') ||
-            question.includes('close') ||
-            question.includes('schedule')
+            question.includes('close')
         ) {
 
             return (
-                'For the most accurate clinic hours, ' +
-                'please check the clinic information provided ' +
-                'on the website or contact M. Cares Beauty Services directly.'
-            );
-        }
-
-
-        // PRICE
-
-        if (
-            question.includes('price') ||
-            question.includes('cost') ||
-            question.includes('how much') ||
-            question.includes('fee')
-        ) {
-
-            return (
-                'Service prices are available on the ' +
-                'Services page. You can open the Services ' +
-                'section to view the available treatments and prices.'
+                'We are open every day, Monday to Sunday, ' +
+                'from 8:00 AM to 8:00 PM. ' +
+                'Booking online ahead is recommended.'
             );
         }
 
