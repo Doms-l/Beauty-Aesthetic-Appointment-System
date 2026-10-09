@@ -504,6 +504,14 @@
                 Clinic Hours
             </button>
 
+
+            <button
+                type="button"
+                data-question="Where is your clinic located?"
+            >
+                Location
+            </button>
+
         </div>
 
 
@@ -512,6 +520,7 @@
         <form
             id="mcares-chat-form"
             class="mcares-chat-form"
+            data-endpoint="{{ route('chatbot') }}"
         >
 
             <input
