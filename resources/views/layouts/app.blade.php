@@ -38,6 +38,13 @@
     <script>
         (function () {
 
+            // loading screen only on the first visit of this browser tab
+            try {
+                if (sessionStorage.getItem('mcares-loader-seen')) {
+                    document.documentElement.classList.add('mcares-seen');
+                }
+            } catch (e) {}
+
             const savedTheme =
                 localStorage.getItem('mcares-theme');
 
@@ -65,6 +72,138 @@
 
 
 <body>
+
+{{-- =========================================================
+    LOADING SCREEN (shows while the page loads, like Gmail)
+========================================================= --}}
+<style>
+    #mcares-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 22px;
+        background: #fffafc;
+        transition: opacity .5s ease, visibility .5s ease;
+    }
+    html.dark-mode #mcares-loader { background: #161316; }
+
+    html.mcares-seen #mcares-loader { display: none !important; }
+
+    #mcares-loader.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    #mcares-loader .loader-logo {
+        width: 120px;
+        height: 120px;
+        object-fit: contain;
+        border-radius: 50%;
+        animation: mcares-pulse 1.6s ease-in-out infinite;
+    }
+    #mcares-loader .loader-name {
+        margin: 0;
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.5rem;
+        letter-spacing: .02em;
+        color: #62444D;
+    }
+    html.dark-mode #mcares-loader .loader-name { color: #f3d9e4; }
+
+    #mcares-loader .loader-bar {
+        width: 220px;
+        height: 4px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(98, 68, 77, .15);
+    }
+    html.dark-mode #mcares-loader .loader-bar { background: rgba(255, 255, 255, .15); }
+
+    #mcares-loader .loader-bar span {
+        display: block;
+        width: 0;
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #F3BCD2, #FFAFF1, #D6B36A);
+        transition: width .35s ease;
+    }
+
+    @keyframes mcares-pulse {
+        0%, 100% { transform: scale(1);    opacity: .9; }
+        50%      { transform: scale(1.08); opacity: 1; }
+    }
+
+    body.mcares-loading { overflow: hidden; }
+</style>
+
+<noscript><style>#mcares-loader { display: none !important; }</style></noscript>
+
+<div id="mcares-loader" role="status" aria-label="Loading">
+    <img class="loader-logo" src="{{ asset('images/round.png') }}" alt="M. Cares Beauty Services">
+    <p class="loader-name">M. Cares Beauty Services</p>
+    <div class="loader-bar"><span id="mcares-loader-fill"></span></div>
+</div>
+
+<script>
+    (function () {
+
+        const loader = document.getElementById('mcares-loader');
+        const fill   = document.getElementById('mcares-loader-fill');
+
+        // already shown in this tab: do not show it again on other pages
+        if (document.documentElement.classList.contains('mcares-seen')) {
+            loader.remove();
+            return;
+        }
+
+        const started = Date.now();
+        const MIN_SHOW = 1100;      // always show at least ~1 second
+        let progress = 0;
+        let done = false;
+
+        document.body.classList.add('mcares-loading');
+
+        // the bar creeps forward while the page loads
+        const timer = setInterval(function () {
+            progress += (90 - progress) * 0.12;
+            fill.style.width = progress + '%';
+        }, 120);
+
+        function finish() {
+
+            if (done) { return; }
+            done = true;
+
+            const wait = Math.max(0, MIN_SHOW - (Date.now() - started));
+
+            setTimeout(function () {
+                clearInterval(timer);
+                fill.style.width = '100%';
+
+                setTimeout(function () {
+                    try { sessionStorage.setItem('mcares-loader-seen', '1'); } catch (e) {}
+                    loader.classList.add('is-hidden');
+                    document.body.classList.remove('mcares-loading');
+                    setTimeout(function () { loader.remove(); }, 700);
+                }, 250);
+            }, wait);
+        }
+
+        if (document.readyState === 'complete') {
+            finish();
+        } else {
+            window.addEventListener('load', finish);
+        }
+
+        // back/forward button (page restored from cache)
+        window.addEventListener('pageshow', function (e) { if (e.persisted) { finish(); } });
+
+        // safety: never get stuck
+        setTimeout(finish, 8000);
+
+    })();
+</script>
 
 {{-- =========================================================
     PROMO ANNOUNCEMENT BAR (shows on every page, admin and client)

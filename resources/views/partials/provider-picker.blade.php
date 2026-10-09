@@ -37,9 +37,15 @@
             <label class="provider-card">
                 <input type="radio" name="provider" value="{{ $member->id }}" @checked((string) $selectedProvider === (string) $member->id)>
                 <span class="provider-body">
-                    <span class="provider-avatar">
-                        {{ strtoupper(mb_substr($member->user->first_name ?? $member->user->full_name, 0, 1)) }}
-                    </span>
+                    @if($member->user->profile_picture)
+                        <img class="provider-avatar provider-photo"
+                             src="{{ Storage::disk('public')->url($member->user->profile_picture) }}"
+                             alt="{{ $member->user->full_name }}">
+                    @else
+                        <span class="provider-avatar">
+                            {{ strtoupper(mb_substr($member->user->first_name ?? $member->user->full_name, 0, 1)) }}
+                        </span>
+                    @endif
                     <strong>{{ $member->user->full_name }}</strong>
                     <small>{{ $member->position }}{{ $member->specialization ? ' · ' . $member->specialization : '' }}</small>
                 </span>
@@ -100,6 +106,7 @@
         border-radius: 50%;
         background: linear-gradient(135deg, #F3BCD2, #FFAFF1);
     }
+    .provider-photo { object-fit: cover; border: 2px solid #F3BCD2; }
     .provider-card:hover .provider-body { transform: translateY(-2px); }
     .provider-card input:checked + .provider-body {
         border-color: #E8AECF;
