@@ -2,8 +2,6 @@
 
 
 
-
-
 <?php $__env->startSection('title', 'M. Cares Beauty Services'); ?>
 
 
@@ -456,6 +454,88 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+
+<style>
+
+/*
+|--------------------------------------------------------------------------
+| Photos inside the service category cards
+| (change the file names in the HTML below the "OUR SERVICES" heading)
+|--------------------------------------------------------------------------
+*/
+
+.home-category-card .category-visual {
+
+    position: relative;
+
+    height: 130px;
+
+}
+
+.home-category-card .category-visual img {
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: transform .5s ease;
+
+}
+
+.home-category-card:hover .category-visual img {
+
+    transform: scale(1.08);
+
+}
+
+/* soft dark layer so the white label stays readable */
+
+.home-category-card .category-visual::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background: linear-gradient(180deg, rgba(98, 68, 77, .15), rgba(60, 35, 45, .55));
+
+}
+
+.home-category-card .category-visual span {
+
+    position: relative;
+
+    z-index: 1;
+
+    color: #ffffff;
+
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .45);
+
+}
+
+@media (max-width: 650px) {
+
+    .home-category-card .category-visual {
+
+        height: 105px;
+
+    }
+
+}
+
+</style>
+
+
+
 <?php echo $__env->make('partials.promo-banner', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 
@@ -808,6 +888,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 <div class="category-visual facial-visual">
 
+                    <img src="<?php echo e($heroSrc('Facial Services/Hydra Facial.jpg')); ?>" alt="Facial treatments" loading="lazy">
+
                     <span>FACIAL</span>
 
                 </div>
@@ -827,6 +909,8 @@ document.addEventListener('DOMContentLoaded', function () {
                class="home-category-card">
 
                 <div class="category-visual lashes-visual">
+
+                    <img src="<?php echo e($heroSrc('Lash and Brows Services/Lash Extension.jpg')); ?>" alt="Lash extensions" loading="lazy">
 
                     <span>LASHES</span>
 
@@ -848,6 +932,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 <div class="category-visual brows-visual">
 
+                    <img src="<?php echo e($heroSrc('Lash and Brows Services/Brow Lamination with Tint.jpg')); ?>" alt="Brow lamination with tint" loading="lazy">
+
                     <span>BROWS</span>
 
                 </div>
@@ -868,6 +954,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 <div class="category-visual body-visual">
 
+                    <img src="<?php echo e($heroSrc('Other Services/Barbie Arms.jpg')); ?>" alt="Body treatments" loading="lazy">
+
                     <span>BODY</span>
 
                 </div>
@@ -887,6 +975,8 @@ document.addEventListener('DOMContentLoaded', function () {
                class="home-category-card">
 
                 <div class="category-visual advanced-visual">
+
+                    <img src="<?php echo e($heroSrc('Other Services/Face Botox.jpg')); ?>" alt="Advanced aesthetic treatments" loading="lazy">
 
                     <span>AESTHETIC</span>
 
@@ -1071,5 +1161,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 <?php $__env->stopSection(); ?>
-
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/home.blade.php ENDPATH**/ ?>
