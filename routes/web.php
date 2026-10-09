@@ -161,4 +161,10 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::post('/staff', [AdminStaffController::class, 'store'])
             ->name('staff.store');
+
+        Route::put('/staff/{staff}', [AdminStaffController::class, 'update'])
+            ->name('staff.update');
+
+        Route::delete('/staff/{staff}', [AdminStaffController::class, 'destroy'])
+            ->name('staff.destroy');
     });
