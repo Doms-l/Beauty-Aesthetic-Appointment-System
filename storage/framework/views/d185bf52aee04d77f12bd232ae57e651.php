@@ -3,14 +3,14 @@
 <?php $__env->startSection('title', 'Client Dashboard | M. Cares'); ?>
 
 <?php $__env->startSection('content'); ?>
-<section class="dashboard-header">
-    <div class="container"><span class="eyebrow">CLIENT DASHBOARD</span><h1>Welcome, <?php echo e(auth()->user()->first_name); ?>.</h1><p>Manage your profile and beauty appointments here.</p></div>
-</section>
+<?php echo $__env->make('partials.dashboard-slider', [
+    'eyebrow' => 'CLIENT DASHBOARD',
+    'title'   => 'Welcome, ' . auth()->user()->first_name . '.',
+    'text'    => 'Manage your profile and beauty appointments here.',
+], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <section class="section compact">
     <div class="container">
         <div class="dashboard-actions"><a class="primary-button" href="<?php echo e(route('client.appointments.create')); ?>">+ Book appointment</a><a class="secondary-button" href="<?php echo e(route('client.profile')); ?>">Edit profile</a></div>
-        <?php echo $__env->make('partials.promo-banner', ['compact' => true], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-
         <div class="dashboard-grid">
             <div class="panel spotlight">
                 <span class="eyebrow">NEXT APPOINTMENT</span>

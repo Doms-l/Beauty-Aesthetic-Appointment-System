@@ -142,6 +142,11 @@
 
                 <?php if(auth()->user()->isClient()): ?>
 
+                    <a href="<?php echo e(route('client.dashboard')); ?>">
+                        Dashboard
+                    </a>
+
+
                     <a href="<?php echo e(route('client.appointments')); ?>">
                         Appointments
                     </a>
@@ -540,6 +545,11 @@
                 class="footer-logo"
             >
 
+            <span class="footer-brand-name">
+                M. CARES
+                <small>BEAUTY SERVICES</small>
+            </span>
+
         </div>
 
 
@@ -550,7 +560,7 @@
             
 
             <a
-                href="https://www.facebook.com/MacaylaCares"
+                href="https://www.facebook.com/macaylaanjeaneath.raejell"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="footer-contact-item"
@@ -640,6 +650,46 @@
     display: flex;
 
     align-items: center;
+
+    gap: 14px;
+
+}
+
+
+.footer-brand-name {
+
+    display: flex;
+
+    flex-direction: column;
+
+    color: #ffffff;
+
+    font-family: 'Playfair Display', Georgia, serif;
+
+    font-size: 20px;
+
+    font-weight: 600;
+
+    letter-spacing: 1px;
+
+    line-height: 1.2;
+
+}
+
+
+.footer-brand-name small {
+
+    margin-top: 4px;
+
+    color: #e8c9d9;
+
+    font-family: 'DM Sans', Arial, sans-serif;
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+    letter-spacing: 2.4px;
 
 }
 

@@ -4,17 +4,12 @@
  
 <?php $__env->startSection('content'); ?> 
 
-<section class="dashboard-header">
-    <div class="container">
-        <span class="eyebrow">ADMINISTRATION</span>
-
-        <h1>Clinic overview</h1>
-
-        <p>
-            Monitor appointments, clients, services, and daily clinic activity.
-        </p>
-    </div>
-</section>
+<?php echo $__env->make('partials.dashboard-slider', [
+    'eyebrow' => 'ADMINISTRATION',
+    'title'   => 'Clinic overview',
+    'text'    => 'Monitor appointments, clients, services, and daily clinic activity.',
+    'admin'   => true,
+], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 
 <section class="section compact">
@@ -46,9 +41,6 @@
 
         </div>
 
-
-        
-        <?php echo $__env->make('partials.promo-banner', ['compact' => true, 'admin' => true], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
         
         <div class="admin-links">

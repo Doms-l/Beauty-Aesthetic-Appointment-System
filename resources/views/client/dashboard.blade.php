@@ -3,14 +3,14 @@
 @section('title', 'Client Dashboard | M. Cares')
 
 @section('content')
-<section class="dashboard-header">
-    <div class="container"><span class="eyebrow">CLIENT DASHBOARD</span><h1>Welcome, {{ auth()->user()->first_name }}.</h1><p>Manage your profile and beauty appointments here.</p></div>
-</section>
+@include('partials.dashboard-slider', [
+    'eyebrow' => 'CLIENT DASHBOARD',
+    'title'   => 'Welcome, ' . auth()->user()->first_name . '.',
+    'text'    => 'Manage your profile and beauty appointments here.',
+])
 <section class="section compact">
     <div class="container">
         <div class="dashboard-actions"><a class="primary-button" href="{{ route('client.appointments.create') }}">+ Book appointment</a><a class="secondary-button" href="{{ route('client.profile') }}">Edit profile</a></div>
-        @include('partials.promo-banner', ['compact' => true])
-
         <div class="dashboard-grid">
             <div class="panel spotlight">
                 <span class="eyebrow">NEXT APPOINTMENT</span>

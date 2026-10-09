@@ -4,17 +4,12 @@
  
 @section('content') 
 
-<section class="dashboard-header">
-    <div class="container">
-        <span class="eyebrow">ADMINISTRATION</span>
-
-        <h1>Clinic overview</h1>
-
-        <p>
-            Monitor appointments, clients, services, and daily clinic activity.
-        </p>
-    </div>
-</section>
+@include('partials.dashboard-slider', [
+    'eyebrow' => 'ADMINISTRATION',
+    'title'   => 'Clinic overview',
+    'text'    => 'Monitor appointments, clients, services, and daily clinic activity.',
+    'admin'   => true,
+])
 
 
 <section class="section compact">
@@ -46,9 +41,6 @@
 
         </div>
 
-
-        {{-- Active promotion --}}
-        @include('partials.promo-banner', ['compact' => true, 'admin' => true])
 
         {{-- Admin Quick Links --}}
         <div class="admin-links">
