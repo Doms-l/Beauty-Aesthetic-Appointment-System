@@ -73,6 +73,10 @@
                     </label>
                 </div>
 
+                <label>Price label <small>(optional, shown to clients, e.g. ₱999 + FREE lashes)</small>
+                    <input name="price_display" value="<?php echo e(old('price_display')); ?>" maxlength="60" placeholder="Leave empty to show the price">
+                </label>
+
                 <button class="primary-button full">Add service</button>
 
             </form>
@@ -158,6 +162,8 @@
                                     <input type="number" step="0.01" min="0" name="price" value="<?php echo e($service->price); ?>" required>
                                     <input type="number" min="15" name="duration_minutes" value="<?php echo e($service->duration_minutes); ?>" required>
                                 </div>
+
+                                <input name="price_display" value="<?php echo e($service->price_display); ?>" maxlength="60" placeholder="Price label shown to clients (optional)">
 
                                 <label class="check-row">
                                     <input type="checkbox" name="is_available" value="1" <?php if($service->is_available): echo 'checked'; endif; ?>>

@@ -31,6 +31,7 @@ class ServiceController extends Controller
             'description' => ['nullable', 'string', 'max:2000'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'price' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
+            'price_display' => ['nullable', 'string', 'max:60'],
             'duration_minutes' => ['required', 'integer', 'min:15', 'max:600'],
         ]);
 
@@ -53,6 +54,7 @@ class ServiceController extends Controller
             'description' => ['nullable', 'string', 'max:2000'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'price' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
+            'price_display' => ['nullable', 'string', 'max:60'],
             'duration_minutes' => ['required', 'integer', 'min:15', 'max:600'],
             'is_available' => ['nullable', 'boolean'],
         ]);

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\File;
 class ServiceCatalog
 {
     public const CATEGORIES = [
+        'Promo',
         'Facial Services',
         'Lash and Brows Services',
         'Other Services',
