@@ -14,6 +14,8 @@
 @php
     $admin = $admin ?? false;
 
+    $promo = \App\Models\Promo::current();
+
     $promoLink = auth()->check()
         ? (auth()->user()->isClient()
             ? route('client.appointments.create')
@@ -40,20 +42,22 @@
     </div>
 
 
-    {{-- SLIDE 2: PROMO POSTER --}}
+    {{-- SLIDE 2: PROMO POSTER (hidden when the promo is switched off) --}}
+
+    @if($promo->is_active)
 
     <div class="dash-slide dash-slide-promo">
 
         <div
             class="dash-promo-bg"
-            style="background-image: url('{{ asset('images/promo.jpg') }}');"
+            style="background-image: url('{{ $promo->image_url }}');"
         ></div>
 
         <a href="{{ $admin ? route('home') : $promoLink }}" class="dash-promo-link">
 
             <img
-                src="{{ asset('images/promo.jpg') }}"
-                alt="Macayla Cares Retouch/Recolor Microbrows promo: P999 with free lashes"
+                src="{{ $promo->image_url }}"
+                alt="{{ $promo->title }}"
             >
 
         </a>
@@ -67,6 +71,8 @@
         @endunless
 
     </div>
+
+    @endif
 
 </section>
 

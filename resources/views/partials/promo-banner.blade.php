@@ -2,6 +2,8 @@
     $compact = $compact ?? false;
     $admin   = $admin   ?? false;
 
+    $promo = \App\Models\Promo::current();
+
     $promoLink = auth()->check()
         ? (auth()->user()->isClient()
             ? route('client.appointments.create')
@@ -9,6 +11,7 @@
         : route('register');
 @endphp
 
+@if($promo->is_active)
 <section class="promo-section {{ $compact ? 'is-compact' : '' }}">
 
     @unless($compact)<div class="container">@endunless
@@ -18,8 +21,8 @@
             <a class="promo-poster" href="{{ $admin ? route('home') : $promoLink }}">
 
                 <img
-                    src="{{ asset('images/promo.jpg') }}"
-                    alt="Macayla Cares Retouch/Recolor Microbrows promo: P999 with free lashes"
+                    src="{{ $promo->image_url }}"
+                    alt="{{ $promo->title }}"
                     loading="lazy"
                 >
 
@@ -33,10 +36,7 @@
                         {{ $admin ? 'ACTIVE PROMOTION' : 'LIMITED-TIME PROMO' }}
                     </span>
 
-                    <h3>
-                        Retouch/Recolor Microbrows
-                        &mdash; &#8369;999 with FREE Lashes
-                    </h3>
+                    <h3>{{ $promo->title }}</h3>
 
                 </div>
 
@@ -61,3 +61,4 @@
     @unless($compact)</div>@endunless
 
 </section>
+@endif

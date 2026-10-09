@@ -57,6 +57,10 @@
                 Staff →
             </a>
 
+            <a href="<?php echo e(route('admin.promo')); ?>">
+                📣 Promo →
+            </a>
+
             <a href="#" class="raffle-open-btn">
                 🎡 Raffle Wheel →
             </a>

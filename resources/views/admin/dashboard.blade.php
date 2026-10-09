@@ -57,6 +57,10 @@
                 Staff →
             </a>
 
+            <a href="{{ route('admin.promo') }}">
+                📣 Promo →
+            </a>
+
             <a href="#" class="raffle-open-btn">
                 🎡 Raffle Wheel →
             </a>

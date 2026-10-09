@@ -2,6 +2,8 @@
     $compact = $compact ?? false;
     $admin   = $admin   ?? false;
 
+    $promo = \App\Models\Promo::current();
+
     $promoLink = auth()->check()
         ? (auth()->user()->isClient()
             ? route('client.appointments.create')
@@ -9,6 +11,7 @@
         : route('register');
 ?>
 
+<?php if($promo->is_active): ?>
 <section class="promo-section <?php echo e($compact ? 'is-compact' : ''); ?>">
 
     <?php if (! ($compact)): ?><div class="container"><?php endif; ?>
@@ -18,8 +21,8 @@
             <a class="promo-poster" href="<?php echo e($admin ? route('home') : $promoLink); ?>">
 
                 <img
-                    src="<?php echo e(asset('images/promo.jpg')); ?>"
-                    alt="Macayla Cares Retouch/Recolor Microbrows promo: P999 with free lashes"
+                    src="<?php echo e($promo->image_url); ?>"
+                    alt="<?php echo e($promo->title); ?>"
                     loading="lazy"
                 >
 
@@ -34,10 +37,7 @@
 
                     </span>
 
-                    <h3>
-                        Retouch/Recolor Microbrows
-                        &mdash; &#8369;999 with FREE Lashes
-                    </h3>
+                    <h3><?php echo e($promo->title); ?></h3>
 
                 </div>
 
@@ -62,4 +62,5 @@
     <?php if (! ($compact)): ?></div><?php endif; ?>
 
 </section>
+<?php endif; ?>
 <?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/partials/promo-banner.blade.php ENDPATH**/ ?>
