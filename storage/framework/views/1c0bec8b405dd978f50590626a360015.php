@@ -1,20 +1,20 @@
-@extends('layouts.app')
 
-@section('title', 'Services | M. Cares Beauty Services')
 
-@section('content')
+<?php $__env->startSection('title', 'Services | M. Cares Beauty Services'); ?>
 
-@php
+<?php $__env->startSection('content'); ?>
+
+<?php
     $norm = fn ($s) => preg_replace('/[^a-z0-9]/', '', strtolower($s));
 
     // Descriptions and photos now come from App\Support\ServiceCatalog
     // and the Service model (so the admin page shows the same ones).
     $encodePath = fn ($path) =>
         implode('/', array_map('rawurlencode', explode('/', $path)));
-@endphp
+?>
 
 
-{{-- PAGE HERO --}}
+
 <section class="page-hero">
     <div class="container">
         <span class="eyebrow">M. CARES BEAUTY SERVICES</span>
@@ -27,24 +27,24 @@
 </section>
 
 
-{{-- SERVICES GRID --}}
+
 <section class="section">
     <div class="container">
 
-        @forelse($groupedServices as $category => $categoryServices)
+        <?php $__empty_1 = true; $__currentLoopData = $groupedServices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category => $categoryServices): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
 
             <div class="services-category">
 
                 <div class="section-heading">
                     <span class="eyebrow">M. CARES</span>
-                    <h2>{{ $category }}</h2>
+                    <h2><?php echo e($category); ?></h2>
                 </div>
 
                 <div class="card-grid service-list-grid">
 
-                    @foreach($categoryServices as $service)
+                    <?php $__currentLoopData = $categoryServices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $service): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
-                        @php
+                        <?php
                             $serviceImage = $service->image_path;
 
                             $bookingUrl = route(
@@ -54,75 +54,75 @@
 
                             $serviceDescription = $service->effective_description
                                 ?: 'Description is not available yet.';
-                        @endphp
+                        ?>
 
                         <article class="service-card service-page-card">
 
-                            {{-- CLICKABLE SERVICE IMAGE --}}
-                            @if($serviceImage)
+                            
+                            <?php if($serviceImage): ?>
                                 <button
                                     type="button"
                                     class="service-image-trigger"
-                                    aria-label="View details for {{ $service->name }}"
-                                    data-service-name="{{ $service->name }}"
-                                    data-service-category="{{ $category }}"
-                                    data-service-description="{{ $serviceDescription }}"
-                                    data-service-price="{{ $service->display_price }}"
-                                    data-service-image="{{ asset($encodePath($serviceImage)) }}"
-                                    data-service-book="{{ $bookingUrl }}"
+                                    aria-label="View details for <?php echo e($service->name); ?>"
+                                    data-service-name="<?php echo e($service->name); ?>"
+                                    data-service-category="<?php echo e($category); ?>"
+                                    data-service-description="<?php echo e($serviceDescription); ?>"
+                                    data-service-price="<?php echo e($service->display_price); ?>"
+                                    data-service-image="<?php echo e(asset($encodePath($serviceImage))); ?>"
+                                    data-service-book="<?php echo e($bookingUrl); ?>"
                                 >
                                     <img
-                                        src="{{ asset($encodePath($serviceImage)) }}"
-                                        alt="{{ $service->name }}"
+                                        src="<?php echo e(asset($encodePath($serviceImage))); ?>"
+                                        alt="<?php echo e($service->name); ?>"
                                         loading="lazy"
                                     >
                                     <span class="image-view-hint">View Details</span>
                                 </button>
-                            @endif
+                            <?php endif; ?>
 
-                            <h3>{{ $service->name }}</h3>
+                            <h3><?php echo e($service->name); ?></h3>
 
-                            @if($service->description)
-                                <p>{{ $service->description }}</p>
-                            @else
+                            <?php if($service->description): ?>
+                                <p><?php echo e($service->description); ?></p>
+                            <?php else: ?>
                                 <p>Available at M. Cares Beauty Services.</p>
-                            @endif
+                            <?php endif; ?>
 
                             <div class="service-meta">
                                 <span>Price</span>
-                                <strong>{{ $service->display_price }}</strong>
+                                <strong><?php echo e($service->display_price); ?></strong>
                             </div>
 
-                            @auth
-                                @if(auth()->user()->isClient())
+                            <?php if(auth()->guard()->check()): ?>
+                                <?php if(auth()->user()->isClient()): ?>
                                     <div class="service-card-action">
                                         <a
-                                            href="{{ $bookingUrl }}"
+                                            href="<?php echo e($bookingUrl); ?>"
                                             class="primary-button"
                                         >
                                             Book Now
                                         </a>
                                     </div>
-                                @endif
-                            @else
+                                <?php endif; ?>
+                            <?php else: ?>
                                 <div class="service-card-action">
                                     <a
-                                        href="{{ route('login') }}"
+                                        href="<?php echo e(route('login')); ?>"
                                         class="primary-button"
                                     >
                                         Login to Book
                                     </a>
                                 </div>
-                            @endauth
+                            <?php endif; ?>
 
                         </article>
 
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                 </div>
             </div>
 
-        @empty
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
 
             <div class="empty-state">
                 <h3>No services available</h3>
@@ -132,13 +132,13 @@
                 </p>
             </div>
 
-        @endforelse
+        <?php endif; ?>
 
     </div>
 </section>
 
 
-{{-- BOOKING CTA --}}
+
 <section class="section compact soft-section">
     <div class="container">
         <div class="panel spotlight">
@@ -149,26 +149,26 @@
                 that fits your beauty and care needs.
             </p>
 
-            @auth
-                @if(auth()->user()->isClient())
+            <?php if(auth()->guard()->check()): ?>
+                <?php if(auth()->user()->isClient()): ?>
                     <a
-                        href="{{ route('client.appointments.create') }}"
+                        href="<?php echo e(route('client.appointments.create')); ?>"
                         class="primary-button"
                     >
                         Book an Appointment
                     </a>
-                @endif
-            @else
-                <a href="{{ route('register') }}" class="primary-button">
+                <?php endif; ?>
+            <?php else: ?>
+                <a href="<?php echo e(route('register')); ?>" class="primary-button">
                     Create an Account
                 </a>
-            @endauth
+            <?php endif; ?>
         </div>
     </div>
 </section>
 
 
-{{-- FLOATING SERVICE DETAIL POPUP --}}
+
 <div
     class="service-modal"
     id="serviceModal"
@@ -197,7 +197,7 @@
 
         <div class="service-modal-content">
 
-            {{-- LEFT SIDE --}}
+            
             <div class="service-modal-info">
 
                 <span
@@ -225,31 +225,31 @@
 
                 <div class="service-modal-actions">
 
-                    @auth
-                        @if(auth()->user()->isClient())
+                    <?php if(auth()->guard()->check()): ?>
+                        <?php if(auth()->user()->isClient()): ?>
                             <a
-                                href="{{ route('client.appointments.create') }}"
+                                href="<?php echo e(route('client.appointments.create')); ?>"
                                 class="primary-button service-modal-book"
                                 id="modalBookButton"
                             >
                                 Book Now
                             </a>
-                        @endif
-                    @else
+                        <?php endif; ?>
+                    <?php else: ?>
                         <a
-                            href="{{ route('login') }}"
+                            href="<?php echo e(route('login')); ?>"
                             class="primary-button service-modal-book"
                             id="modalBookButton"
                         >
                             Login to Book
                         </a>
-                    @endauth
+                    <?php endif; ?>
 
                 </div>
 
             </div>
 
-            {{-- RIGHT SIDE: ENLARGED IMAGE --}}
+            
             <div class="service-modal-image-area">
                 <img
                     src=""
@@ -263,7 +263,7 @@
 </div>
 
 
-{{-- POPUP STYLES --}}
+
 <style>
     .service-image-trigger {
         position: relative;
@@ -578,7 +578,7 @@
 </style>
 
 
-{{-- POPUP JAVASCRIPT --}}
+
 <script>
 (function () {
     function initializeServiceModal() {
@@ -659,4 +659,6 @@
 })();
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/services/index.blade.php ENDPATH**/ ?>
