@@ -327,6 +327,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const CLINIC_ADDRESS =
         'Brgy Bito Abuyog Leyte, Front of BV Closa Central School Back Gate';
 
+    // contact details (keep in sync with config/chatbot.php)
+    const CLINIC_PHONE = '09155168312';
+    const CLINIC_FACEBOOK = 'https://www.facebook.com/macaylaanjeaneath.raejell';
+
+    // words that mean "phone number / contact us"
+    const CONTACT_WORDS = [
+        'phone', 'number', 'contact', 'call', 'cellphone', 'mobile',
+        'telephone', 'hotline', 'facebook', 'messenger', 'fb',
+        'telepono', 'numero', 'tawag', 'tumawag', 'kontak', 'contacto',
+        'telefono', 'llamar', 'telefon', 'telephone',
+    ];
+
+    const CONTACT_WORDS_OTHER = [
+        '电话', '電話', '联系', '聯絡', '聯繫', '手机', '手機',
+        '電話番号', 'でんわ', '連絡',
+        '전화', '연락', '번호',
+        'هاتف', 'رقم', 'اتصال',
+        'телефон', 'номер', 'связь',
+    ];
+
 
     // lowercase, remove symbols, pad with spaces so whole words match
     function normalizeText(text) {
@@ -482,6 +502,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
 
+        // PHONE / CONTACT
+
+        if (
+            mentionsAny(question, CONTACT_WORDS) ||
+            CONTACT_WORDS_OTHER.some(function (word) {
+                return question.includes(word);
+            })
+        ) {
+
+            return (
+                'You can reach M. Cares Beauty Services here:\n' +
+                '📞 ' + CLINIC_PHONE + '\n' +
+                '💬 Facebook: ' + CLINIC_FACEBOOK
+            );
+        }
+
+
         // SERVICES
 
         if (
@@ -620,8 +657,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return (
                 'You can find us at:\n' +
                 '📍 ' + CLINIC_ADDRESS + '\n\n' +
-                'For more contact details, please check the ' +
-                'information on our website.'
+                'Call or message us:\n' +
+                '📞 ' + CLINIC_PHONE
             );
         }
 
