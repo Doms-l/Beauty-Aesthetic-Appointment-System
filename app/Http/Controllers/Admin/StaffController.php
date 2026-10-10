@@ -135,7 +135,8 @@ class StaffController extends Controller
             // deleting the user also deletes the staff row (cascade);
             // appointments.staff_id is set to NULL automatically
             if ($user) {
-                $user->delete();
+                // permanently remove the staff login (the staff row goes with it)
+                $user->forceDelete();
             } else {
                 $staff->delete();
             }

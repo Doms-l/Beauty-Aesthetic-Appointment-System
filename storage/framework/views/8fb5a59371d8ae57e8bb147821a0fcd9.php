@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'My Profile | M. Cares')
 
-@section('content')
+<?php $__env->startSection('title', 'My Profile | M. Cares'); ?>
+
+<?php $__env->startSection('content'); ?>
 
 <section class="page-hero">
 
@@ -31,40 +31,41 @@
 
         <form
             method="POST"
-            action="{{ route('client.profile.update') }}"
+            action="<?php echo e(route('client.profile.update')); ?>"
             class="form-stack profile-form"
             enctype="multipart/form-data"
         >
 
-            @csrf
+            <?php echo csrf_field(); ?>
 
-            @method('PUT')
+            <?php echo method_field('PUT'); ?>
 
 
-            {{-- PROFILE PICTURE --}}
+            
 
             <div class="profile-picture-section">
 
                 <div class="profile-picture-preview">
 
-                    @if($user->profile_picture)
+                    <?php if($user->profile_picture): ?>
 
                         <img
-                            src="{{ asset('storage/' . $user->profile_picture) }}"
+                            src="<?php echo e(asset('storage/' . $user->profile_picture)); ?>"
                             alt="Profile Picture"
                             id="profile-preview"
                         >
 
-                    @else
+                    <?php else: ?>
 
                         <div
                             class="profile-picture-placeholder"
                             id="profile-placeholder"
                         >
-                            {{ strtoupper(substr($user->first_name, 0, 1)) }}
+                            <?php echo e(strtoupper(substr($user->first_name, 0, 1))); ?>
+
                         </div>
 
-                    @endif
+                    <?php endif; ?>
 
                 </div>
 
@@ -103,7 +104,7 @@
             </div>
 
 
-            {{-- PERSONAL INFORMATION --}}
+            
 
             <div class="form-grid two">
 
@@ -113,7 +114,7 @@
 
                     <input
                         name="first_name"
-                        value="{{ old('first_name', $user->first_name) }}"
+                        value="<?php echo e(old('first_name', $user->first_name)); ?>"
                         required
                     >
 
@@ -126,7 +127,7 @@
 
                     <input
                         name="last_name"
-                        value="{{ old('last_name', $user->last_name) }}"
+                        value="<?php echo e(old('last_name', $user->last_name)); ?>"
                         required
                     >
 
@@ -144,7 +145,7 @@
                     <input
                         type="email"
                         name="email"
-                        value="{{ old('email', $user->email) }}"
+                        value="<?php echo e(old('email', $user->email)); ?>"
                         required
                     >
 
@@ -158,7 +159,7 @@
                     <input
     type="tel"
     name="phone"
-    value="{{ old('phone', $user->phone) }}"
+    value="<?php echo e(old('phone', $user->phone)); ?>"
     required
     maxlength="11"
     minlength="11"
@@ -182,10 +183,10 @@
                     <input
                         type="date"
                         name="date_of_birth"
-                        value="{{ old(
+                        value="<?php echo e(old(
                             'date_of_birth',
                             optional($user->date_of_birth)->format('Y-m-d')
-                        ) }}"
+                        )); ?>"
                     >
 
                 </label>
@@ -197,7 +198,7 @@
 
                     <input
                         name="address"
-                        value="{{ old('address', $user->address) }}"
+                        value="<?php echo e(old('address', $user->address)); ?>"
                     >
 
                 </label>
@@ -219,9 +220,7 @@
 </section>
 
 
-{{-- =====================================================
-     DANGER ZONE: DELETE ACCOUNT
-     ===================================================== --}}
+
 <section class="section compact">
 
     <div class="container narrow-panel">
@@ -237,17 +236,17 @@
                 This cannot be undone.
             </p>
 
-            <details class="danger-details" @if($errors->has('password') || $errors->has('confirmation')) open @endif>
+            <details class="danger-details" <?php if($errors->has('password') || $errors->has('confirmation')): ?> open <?php endif; ?>>
 
                 <summary>I want to delete my account</summary>
 
                 <form method="POST"
-                      action="{{ route('client.profile.destroy') }}"
+                      action="<?php echo e(route('client.profile.destroy')); ?>"
                       class="form-stack"
                       onsubmit="return confirm('Delete your account for good? This cannot be undone.')">
 
-                    @csrf
-                    @method('DELETE')
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('DELETE'); ?>
 
                     <label>
                         Your password
@@ -259,13 +258,27 @@
                         <input name="confirmation" required autocomplete="off" placeholder="DELETE">
                     </label>
 
-                    @error('password')
-                        <p class="danger-error">{{ $message }}</p>
-                    @enderror
+                    <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="danger-error"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
 
-                    @error('confirmation')
-                        <p class="danger-error">{{ $message }}</p>
-                    @enderror
+                    <?php $__errorArgs = ['confirmation'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="danger-error"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
 
                     <button type="submit" class="danger-button">Delete my account</button>
 
@@ -373,4 +386,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/client/profile.blade.php ENDPATH**/ ?>
