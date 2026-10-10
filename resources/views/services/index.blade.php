@@ -234,14 +234,6 @@
                             >
                                 Book Now
                             </a>
-                        @else
-                            <a
-                                href="{{ route('login') }}"
-                                class="primary-button service-modal-book"
-                                id="modalBookButton"
-                            >
-                                Login to Book
-                            </a>
                         @endif
                     @else
                         <a

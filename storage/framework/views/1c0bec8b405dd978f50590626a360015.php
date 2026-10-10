@@ -234,14 +234,6 @@
                             >
                                 Book Now
                             </a>
-                        <?php else: ?>
-                            <a
-                                href="<?php echo e(route('login')); ?>"
-                                class="primary-button service-modal-book"
-                                id="modalBookButton"
-                            >
-                                Login to Book
-                            </a>
                         <?php endif; ?>
                     <?php else: ?>
                         <a
