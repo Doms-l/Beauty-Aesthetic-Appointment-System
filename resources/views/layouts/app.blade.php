@@ -525,7 +525,7 @@
     >
 
         <img
-            src="{{ asset('images/chatbot.png') }}"
+            src="{{ asset('images/CHATBOTV2.gif') }}"
             alt="M. Cares Chatbot"
             class="mcares-chat-toggle-img"
         >
@@ -548,7 +548,7 @@
                 <div class="mcares-chat-avatar">
 
                     <img
-                        src="{{ asset('images/chatbot.png') }}"
+                        src="{{ asset('images/CHATBOTV2.gif') }}"
                         alt="M. Cares Assistant"
                     >
 
@@ -694,6 +694,75 @@
     </div>
 
 </div>
+
+
+{{-- =========================================================
+    CHATBOT V2 (ANIMATED GIF) ICON STYLES
+    Loaded after the main CSS so it overrides the old icon rules.
+========================================================= --}}
+
+<style>
+
+/* Floating button: bigger so the "Hi!" bubble is readable */
+.mcares-chatbot .mcares-chat-toggle {
+    width: 84px !important;
+    height: 84px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 50% !important;
+    background: #fbe7e7 !important;
+    border: 3px solid #ffffff !important;
+    box-shadow: 0 8px 25px rgba(98, 68, 77, 0.30) !important;
+}
+
+/* 90% size keeps the whole "Hi!" bubble inside the circle */
+.mcares-chatbot .mcares-chat-toggle .mcares-chat-toggle-img {
+    width: 90% !important;
+    height: 90% !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    border-radius: 0 !important;
+    display: block !important;
+}
+
+/* Keep the chat window above the bigger button */
+.mcares-chatbot .mcares-chat-window {
+    bottom: 96px !important;
+}
+
+/* Header avatar: zoom the GIF onto her face */
+.mcares-chatbot .mcares-chat-header .mcares-chat-avatar {
+    position: relative !important;
+    background: #fbe7e7 !important;
+}
+
+.mcares-chatbot .mcares-chat-header .mcares-chat-avatar img {
+    position: absolute !important;
+    width: 200% !important;
+    height: 200% !important;
+    left: -44% !important;
+    top: -14% !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    border-radius: 0 !important;
+}
+
+@media (max-width: 600px) {
+
+    .mcares-chatbot .mcares-chat-toggle {
+        width: 72px !important;
+        height: 72px !important;
+    }
+
+    .mcares-chatbot .mcares-chat-window {
+        bottom: 84px !important;
+    }
+
+}
+
+</style>
 
 
 {{-- =========================================================
