@@ -219,6 +219,99 @@
 </section>
 
 
+{{-- =====================================================
+     DANGER ZONE: DELETE ACCOUNT
+     ===================================================== --}}
+<section class="section compact">
+
+    <div class="container narrow-panel">
+
+        <div class="danger-zone">
+
+            <h3>Delete account</h3>
+
+            <p>
+                This permanently removes your account and personal information,
+                and you will no longer be able to log in.
+                Your upcoming appointments will be cancelled.
+                This cannot be undone.
+            </p>
+
+            <details class="danger-details" @if($errors->has('password') || $errors->has('confirmation')) open @endif>
+
+                <summary>I want to delete my account</summary>
+
+                <form method="POST"
+                      action="{{ route('client.profile.destroy') }}"
+                      class="form-stack"
+                      onsubmit="return confirm('Delete your account for good? This cannot be undone.')">
+
+                    @csrf
+                    @method('DELETE')
+
+                    <label>
+                        Your password
+                        <input type="password" name="password" required autocomplete="current-password">
+                    </label>
+
+                    <label>
+                        Type <strong>DELETE</strong> to confirm
+                        <input name="confirmation" required autocomplete="off" placeholder="DELETE">
+                    </label>
+
+                    @error('password')
+                        <p class="danger-error">{{ $message }}</p>
+                    @enderror
+
+                    @error('confirmation')
+                        <p class="danger-error">{{ $message }}</p>
+                    @enderror
+
+                    <button type="submit" class="danger-button">Delete my account</button>
+
+                </form>
+
+            </details>
+
+        </div>
+
+    </div>
+
+</section>
+
+<style>
+    .danger-zone {
+        padding: 24px 26px;
+        border-radius: 22px;
+        border: 1px solid rgba(214, 75, 107, .45);
+        background: rgba(214, 75, 107, .07);
+    }
+    .danger-zone h3 { margin: 0 0 8px; color: #d64b6b; }
+    .danger-zone p { margin: 0 0 14px; color: var(--text, #222); }
+
+    .danger-details summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: #d64b6b;
+    }
+    .danger-details form { margin-top: 16px; }
+
+    .danger-error { margin: 0; color: #d64b6b; font-weight: 600; }
+
+    .danger-button {
+        border: 0;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 700;
+        padding: 14px 24px;
+        border-radius: 999px;
+        color: #fff;
+        background: #d64b6b;
+    }
+    .danger-button:hover { background: #bf3a59; }
+</style>
+
+
 <script>
 
 document.addEventListener('DOMContentLoaded', function () {
