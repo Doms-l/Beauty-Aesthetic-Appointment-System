@@ -6,7 +6,6 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -62,9 +61,6 @@ Route::middleware(['auth', 'role:client'])
     ->prefix('client')
     ->name('client.')
     ->group(function () {
-
-        Route::get('/dashboard', [ClientDashboardController::class, 'index'])
-            ->name('dashboard');
 
         Route::get('/profile', [ProfileController::class, 'edit'])
             ->name('profile');
@@ -159,12 +155,18 @@ Route::middleware(['auth', 'role:admin'])
             ->name('services.destroy');
 
 
-        // PROMO BANNER
-        Route::get('/promo', [AdminPromoController::class, 'edit'])
+        // PROMOS (any number of them)
+        Route::get('/promo', [AdminPromoController::class, 'index'])
             ->name('promo');
 
-        Route::put('/promo', [AdminPromoController::class, 'update'])
+        Route::post('/promo', [AdminPromoController::class, 'store'])
+            ->name('promo.store');
+
+        Route::put('/promo/{promo}', [AdminPromoController::class, 'update'])
             ->name('promo.update');
+
+        Route::delete('/promo/{promo}', [AdminPromoController::class, 'destroy'])
+            ->name('promo.destroy');
 
 
         // STAFF

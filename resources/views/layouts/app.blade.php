@@ -210,7 +210,7 @@
 ========================================================= --}}
 
 @php
-    $barPromo = \App\Models\Promo::current();
+    $barPromos = \App\Models\Promo::active();
 
     $barLink = auth()->check()
         ? (auth()->user()->isClient()
@@ -219,12 +219,17 @@
         : route('register');
 @endphp
 
-@if($barPromo->is_active)
+@if($barPromos->isNotEmpty())
 <div class="promo-bar" id="promo-bar">
 
-    <a href="{{ $barLink }}">
-        &#127872; <strong>PROMO:</strong>
-        {{ $barPromo->bar_line }} &mdash; Book now &rarr;
+    {{-- one line per live promo; they take turns every 5 seconds --}}
+    <a href="{{ $barLink }}" class="promo-bar-link">
+        @foreach($barPromos as $i => $barPromo)
+            <span class="promo-bar-item {{ $i === 0 ? 'is-active' : '' }}">
+                &#127872; <strong>PROMO:</strong>
+                {{ $barPromo->bar_line }} &mdash; Book now &rarr;
+            </span>
+        @endforeach
     </a>
 
     <button
@@ -287,11 +292,6 @@
                 {{-- CLIENT --}}
 
                 @if(auth()->user()->isClient())
-
-                    <a href="{{ route('client.dashboard') }}">
-                        Dashboard
-                    </a>
-
 
                     <a href="{{ route('client.appointments') }}">
                         Appointments
@@ -376,6 +376,23 @@
                 @endif
 
 
+                {{-- THEME TOGGLE (comes first, before Logout) --}}
+
+                <button
+                    type="button"
+                    id="theme-toggle"
+                    class="theme-toggle"
+                    aria-label="Switch to dark mode"
+                    title="Switch to dark mode"
+                >
+
+                    <span id="theme-icon">
+                        🌙
+                    </span>
+
+                </button>
+
+
                 {{-- LOGOUT --}}
 
                 <form
@@ -394,23 +411,6 @@
                     </button>
 
                 </form>
-
-
-                {{-- THEME TOGGLE --}}
-
-                <button
-                    type="button"
-                    id="theme-toggle"
-                    class="theme-toggle"
-                    aria-label="Switch to dark mode"
-                    title="Switch to dark mode"
-                >
-
-                    <span id="theme-icon">
-                        🌙
-                    </span>
-
-                </button>
 
 
             @else
@@ -2064,6 +2064,44 @@ html.dark-mode .hero-text-slide h1 em {
 
 }
 
+/* several promos: the lines sit on top of each other and fade in turn */
+
+.promo-bar-link {
+
+    display: grid;
+
+}
+
+.promo-bar-item {
+
+    grid-area: 1 / 1;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition: opacity .6s ease, visibility .6s;
+
+}
+
+.promo-bar-item.is-active {
+
+    opacity: 1;
+
+    visibility: visible;
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .promo-bar-item {
+
+        transition: none;
+
+    }
+
+}
+
 .promo-bar-close {
 
     position: absolute;
@@ -2312,6 +2350,30 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (e) {}
 
     });
+
+    // more than one live promo: show them one after the other
+    const items = bar.querySelectorAll('.promo-bar-item');
+
+    if (items.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+
+        let current = 0;
+        let timer   = null;
+
+        function next() {
+            items[current].classList.remove('is-active');
+            current = (current + 1) % items.length;
+            items[current].classList.add('is-active');
+        }
+
+        function start() { clearInterval(timer); timer = setInterval(next, 5000); }
+        function stop()  { clearInterval(timer); }
+
+        // stay put while the mouse is over the bar so it can be read and clicked
+        bar.addEventListener('mouseenter', stop);
+        bar.addEventListener('mouseleave', start);
+
+        start();
+    }
 
 });
 

@@ -45,7 +45,7 @@ class LoginController extends Controller
             return redirect()->intended(route('staff.dashboard'));
         }
 
-        return redirect()->intended(route('client.dashboard'));
+        return redirect()->intended(route('home'));
     }
 
     public function destroy(Request $request)

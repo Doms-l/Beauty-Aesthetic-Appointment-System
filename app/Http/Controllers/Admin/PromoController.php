@@ -6,15 +6,40 @@ use App\Http\Controllers\Controller;
 use App\Models\Promo;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 
 class PromoController extends Controller
 {
-    public function edit()
+    /** All promos (live and hidden) plus the live preview. */
+    public function index()
     {
-        return view('admin.promo', ['promo' => Promo::current()]);
+        return view('admin.promo', [
+            'promos' => Promo::query()->orderBy('id')->get(),
+        ]);
     }
 
-    public function update(Request $request)
+    /** Add a new promo. */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title'     => ['required', 'string', 'max:150'],
+            'bar_text'  => ['nullable', 'string', 'max:150'],
+            'image'     => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        Promo::create([
+            'title'     => $validated['title'],
+            'bar_text'  => $validated['bar_text'] ?? null,
+            'image'     => $this->saveImage($request->file('image')),
+            'is_active' => $request->boolean('is_active'),
+        ]);
+
+        return back()->with('success', 'Promo added.');
+    }
+
+    /** Edit one promo. */
+    public function update(Request $request, Promo $promo)
     {
         $validated = $request->validate([
             'title'        => ['required', 'string', 'max:150'],
@@ -23,8 +48,6 @@ class PromoController extends Controller
             'remove_image' => ['nullable', 'boolean'],
             'is_active'    => ['nullable', 'boolean'],
         ]);
-
-        $promo = Promo::query()->first() ?? new Promo();
 
         $data = [
             'title'     => $validated['title'],
@@ -43,7 +66,17 @@ class PromoController extends Controller
 
         $promo->fill($data)->save();
 
-        return back()->with('success', 'Promo updated. It is now live on the website and dashboards.');
+        return back()->with('success', 'Promo updated.');
+    }
+
+    /** Delete one promo and its uploaded poster. */
+    public function destroy(Promo $promo)
+    {
+        $this->deleteImage($promo->image);
+
+        $promo->delete();
+
+        return back()->with('success', 'Promo deleted.');
     }
 
     private function saveImage(UploadedFile $file): string
@@ -54,7 +87,7 @@ class PromoController extends Controller
             mkdir($directory, 0755, true);
         }
 
-        $filename = 'promo-' . time() . '.' . $file->extension();
+        $filename = 'promo-' . time() . '-' . Str::lower(Str::random(6)) . '.' . $file->extension();
 
         $file->move($directory, $filename);
 

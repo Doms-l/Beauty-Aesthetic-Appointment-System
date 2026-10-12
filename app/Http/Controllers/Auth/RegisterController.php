@@ -65,7 +65,7 @@ class RegisterController extends Controller
         Auth::login($user); 
         $request->session()->regenerate(); 
  
-        return redirect()->route('client.dashboard') 
+        return redirect()->route('home')
             ->with('success', 'Welcome to M. Cares! Your account has been created.'); 
     } 
 }
