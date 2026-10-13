@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class Promo extends Model
@@ -12,18 +13,28 @@ class Promo extends Model
 
     protected $casts = ['is_active' => 'boolean'];
 
-    private static ?self $current = null;
+    private static ?Collection $active = null;
+
+    protected static function booted(): void
+    {
+        // any change must show up straight away
+        static::saved(fn () => self::$active = null);
+        static::deleted(fn () => self::$active = null);
+    }
 
     /**
-     * The one promo row (a default one if the table is still empty).
+     * Every promo that is switched on, oldest first.
+     *
+     * The home slideshow, the top announcement bar and the admin
+     * dashboard slider all show these, one after the other.
+     * An empty collection means nothing is shown.
      */
-    public static function current(): self
+    public static function active(): Collection
     {
-        return self::$current ??= static::query()->first() ?? new static([
-            'title'     => 'Retouch/Recolor Microbrows — ₱999 with FREE Lashes',
-            'bar_text'  => 'Retouch/Recolor Microbrows only ₱999 with FREE Lashes',
-            'is_active' => true,
-        ]);
+        return self::$active ??= static::query()
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->get();
     }
 
     public function getImageUrlAttribute(): string

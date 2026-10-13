@@ -1,14 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Manage Promo | M. Cares')
+@section('title', 'Manage Promos | M. Cares')
 
 @section('content')
 
+@php
+    $liveCount = $promos->where('is_active', true)->count();
+@endphp
+
 <section class="page-hero">
     <div class="container">
-        <span class="eyebrow">ADMIN · PROMO</span>
-        <h1>Manage promo banner</h1>
-        <p>Change the poster and text shown on the home page, the dashboard slideshow, and the top announcement bar.</p>
+        <span class="eyebrow">ADMIN · PROMOS</span>
+        <h1>Manage promos</h1>
+        <p>Add as many promos as you like. Every live promo slides automatically on the home page and in the top announcement bar.</p>
     </div>
 </section>
 
@@ -16,80 +20,191 @@
 
     <div class="container admin-two-col">
 
-        {{-- EDIT FORM --}}
+        {{-- =====================================================
+             ADD A NEW PROMO
+             ===================================================== --}}
         <div class="panel">
 
-            <span class="eyebrow">EDIT PROMO</span>
-            <h2>Current promo</h2>
+            <span class="eyebrow">ADD PROMO</span>
+            <h2>New promo</h2>
 
             <form method="POST"
-                  action="{{ route('admin.promo.update') }}"
+                  action="{{ route('admin.promo.store') }}"
                   class="form-stack"
                   enctype="multipart/form-data">
 
                 @csrf
-                @method('PUT')
 
                 <label>Promo title <small>(shown under the poster)</small>
-                    <input name="title" value="{{ old('title', $promo->title) }}" maxlength="150" required>
+                    <input name="title" value="{{ old('title') }}" maxlength="150" required>
                 </label>
 
                 <label>Announcement bar text <small>(short line at the very top of every page; leave empty to reuse the title)</small>
-                    <input name="bar_text" value="{{ old('bar_text', $promo->bar_text) }}" maxlength="150">
+                    <input name="bar_text" value="{{ old('bar_text') }}" maxlength="150">
                 </label>
 
                 <div class="svc-photo-field">
 
                     <span class="svc-photo-label">Promo poster</span>
 
-                    <div class="svc-photo-preview" id="promo-preview">
-                        <img src="{{ $promo->image_url }}" alt="Current promo poster">
+                    <div class="svc-photo-preview">
+                        <span>No poster selected</span>
                     </div>
 
                     <input type="file"
                            name="image"
-                           id="promo-image"
                            accept="image/jpeg,image/png,image/webp"
-                           class="svc-file-input">
+                           class="svc-file-input promo-image-input"
+                           required>
 
-                    <small>JPG, PNG or WEBP · up to 5 MB · a wide poster (about 3:1) fits the slideshow best</small>
-
-                    @if($promo->image)
-                        <label class="promo-check">
-                            <input type="checkbox" name="remove_image" value="1">
-                            Go back to the original poster
-                        </label>
-                    @endif
+                    <small>JPG, PNG or WEBP · up to 5 MB · a wide poster (16:9 or similar) fits the slideshow best</small>
 
                 </div>
 
                 <label class="promo-check">
-                    <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $promo->is_active))>
-                    Show this promo on the website (untick to hide it everywhere)
+                    <input type="checkbox" name="is_active" value="1" @checked(old('title') === null || old('is_active'))>
+                    Show this promo on the website
                 </label>
 
-                <button class="primary-button full">Save promo</button>
+                <button class="primary-button full">Add promo</button>
 
             </form>
 
         </div>
 
 
-        {{-- LIVE PREVIEW --}}
+        {{-- =====================================================
+             CURRENT PROMOS
+             ===================================================== --}}
+        <div class="panel">
+
+            <span class="eyebrow">PROMO LIST</span>
+            <h2>Current promos</h2>
+
+            @if($liveCount > 0)
+                <p class="promo-status on">&#9679; {{ $liveCount }} {{ $liveCount === 1 ? 'promo is' : 'promos are' }} live on the website</p>
+            @else
+                <p class="promo-status off">&#9679; Nothing is live. Clients do not see a promo right now</p>
+            @endif
+
+            <div class="admin-list">
+
+                @forelse($promos as $promo)
+
+                    <div class="admin-item svc-item">
+
+                        <div class="svc-summary">
+
+                            <img class="svc-thumb promo-thumb" src="{{ $promo->image_url }}" alt="{{ $promo->title }}" loading="lazy">
+
+                            <div>
+                                <strong>{{ $promo->title }}</strong>
+                                <p>{{ $promo->is_active ? 'Live on the website' : 'Hidden' }}</p>
+                                <small>Bar: {{ $promo->bar_line }}</small>
+                            </div>
+
+                        </div>
+
+                        <details class="svc-details">
+
+                            <summary>Edit</summary>
+
+                            <form method="POST"
+                                  action="{{ route('admin.promo.update', $promo) }}"
+                                  class="form-stack mini"
+                                  enctype="multipart/form-data">
+
+                                @csrf
+                                @method('PUT')
+
+                                <label>Promo title
+                                    <input name="title" value="{{ $promo->title }}" maxlength="150" required>
+                                </label>
+
+                                <label>Announcement bar text <small>(empty = use the title)</small>
+                                    <input name="bar_text" value="{{ $promo->bar_text }}" maxlength="150">
+                                </label>
+
+                                <div class="svc-photo-field">
+
+                                    <span class="svc-photo-label">Poster</span>
+
+                                    <div class="svc-photo-preview">
+                                        <img src="{{ $promo->image_url }}" alt="Current poster">
+                                    </div>
+
+                                    <input type="file"
+                                           name="image"
+                                           accept="image/jpeg,image/png,image/webp"
+                                           class="svc-file-input promo-image-input">
+
+                                    <small>Choose a new file only if you want to replace the poster.</small>
+
+                                    @if($promo->image)
+                                        <label class="promo-check">
+                                            <input type="checkbox" name="remove_image" value="1">
+                                            Go back to the original poster
+                                        </label>
+                                    @endif
+
+                                </div>
+
+                                <label class="promo-check">
+                                    <input type="checkbox" name="is_active" value="1" @checked($promo->is_active)>
+                                    Show on the website (untick to hide it)
+                                </label>
+
+                                <button class="small-button">Save</button>
+
+                            </form>
+
+                            <form method="POST" action="{{ route('admin.promo.destroy', $promo) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button class="danger-link"
+                                        onclick="return confirm('Delete this promo? This cannot be undone.')">
+                                    Delete
+                                </button>
+                            </form>
+
+                        </details>
+
+                    </div>
+
+                @empty
+
+                    <p>No promos yet. Add your first one on the left.</p>
+
+                @endforelse
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+{{-- =========================================================
+     PREVIEW: exactly what clients see
+========================================================= --}}
+<section class="section compact">
+
+    <div class="container">
+
         <div class="panel">
 
             <span class="eyebrow">PREVIEW</span>
             <h2>What clients see</h2>
 
-            @if($promo->is_active)
-                <p class="promo-status on">&#9679; Live on the website and client pages</p>
-            @else
-                <p class="promo-status off">&#9679; Hidden. Clients do not see a promo right now</p>
-            @endif
-
-            <div class="promo-bar-preview">
-                &#127872; <strong>PROMO:</strong> {{ $promo->bar_line }} &mdash; Book now &rarr;
-            </div>
+            @forelse($promos->where('is_active', true) as $livePromo)
+                <div class="promo-bar-preview">
+                    &#127872; <strong>PROMO:</strong> {{ $livePromo->bar_line }} &mdash; Book now &rarr;
+                </div>
+            @empty
+                <p class="promo-status off">No live promos, so no announcement bar and no slideshow.</p>
+            @endforelse
 
             @include('partials.promo-banner', ['compact' => true, 'admin' => true])
 
@@ -99,6 +214,7 @@
 
 </section>
 
+
 <style>
     .promo-check { display: flex; align-items: center; gap: 10px; font-weight: 600; }
     .promo-check input { width: auto; }
@@ -106,7 +222,7 @@
     .promo-status.on { color: #2e8b57; }
     .promo-status.off { color: #b4534f; }
     .promo-bar-preview {
-        margin-bottom: 14px;
+        margin-bottom: 10px;
         padding: 10px 16px;
         border-radius: 12px;
         background: linear-gradient(110deg, #70475e, #b46e91, #70475e);
@@ -116,13 +232,29 @@
         font-weight: 600;
     }
     .promo-bar-preview strong { color: #ffe9a8; }
+    .promo-bar-preview + .promo-section { margin-top: 18px; }
+
+    .svc-item { align-items: flex-start; }
+    .svc-summary { display: flex; gap: 14px; align-items: center; }
+    .svc-thumb {
+        flex: none;
+        width: 64px;
+        height: 64px;
+        object-fit: cover;
+        border-radius: 14px;
+        border: 1px solid var(--line, #ddd);
+    }
+    .promo-thumb { width: 96px; height: 54px; object-fit: contain; background: var(--surface-soft, #fff1f7); }
+    .svc-details { flex: 1 1 340px; }
+
     .svc-photo-field { display: grid; gap: 8px; }
     .svc-photo-label { font-weight: 700; color: var(--heading, #62444D); }
     .svc-photo-field small { color: var(--text-muted, #7d7074); }
     .svc-photo-preview {
-        display: grid; place-items: center; overflow: hidden;
+        display: grid; place-items: center; min-height: 120px; overflow: hidden;
         border-radius: 18px; border: 2px dashed var(--line, #ccc);
         background: var(--surface-soft, #fff1f7);
+        color: var(--text-muted, #7d7074);
     }
     .svc-photo-preview img { width: 100%; max-height: 240px; object-fit: contain; display: block; }
     .svc-file-input {
@@ -133,22 +265,24 @@
 </style>
 
 <script>
-    // shows the chosen poster before saving
-    (function () {
-        const input = document.getElementById('promo-image');
-        const box = document.getElementById('promo-preview');
-        if (!input || !box) { return; }
+    // shows the chosen poster before saving (works for every promo form)
+    document.querySelectorAll('.promo-image-input').forEach(function (input) {
 
         input.addEventListener('change', function () {
+
+            const box = input.closest('.svc-photo-field').querySelector('.svc-photo-preview');
             const file = input.files && input.files[0];
-            if (!file) { return; }
+
+            if (!box || !file) { return; }
+
             const img = document.createElement('img');
             img.src = URL.createObjectURL(file);
             img.alt = 'Selected poster';
             box.innerHTML = '';
             box.appendChild(img);
         });
-    })();
+
+    });
 </script>
 
 @endsection

@@ -61,6 +61,10 @@
                 📣 Promo →
             </a>
 
+            <a href="{{ route('admin.socials') }}">
+                🔗 Social Accounts →
+            </a>
+
             <a href="#" class="raffle-open-btn">
                 🎡 Raffle Wheel →
             </a>

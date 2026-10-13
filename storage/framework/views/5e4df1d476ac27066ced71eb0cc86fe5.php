@@ -3,7 +3,7 @@
 <?php
     $admin = $admin ?? false;
 
-    $promo = \App\Models\Promo::current();
+    $dashPromos = \App\Models\Promo::active();
 
     $promoLink = auth()->check()
         ? (auth()->user()->isClient()
@@ -33,7 +33,7 @@
 
     
 
-    <?php if($promo->is_active): ?>
+    <?php $__currentLoopData = $dashPromos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $promo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
     <div class="dash-slide dash-slide-promo">
 
@@ -61,7 +61,7 @@
 
     </div>
 
-    <?php endif; ?>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
 </section>
 

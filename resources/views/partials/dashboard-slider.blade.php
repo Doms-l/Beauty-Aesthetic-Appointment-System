@@ -1,20 +1,21 @@
 {{-- =========================================================
     DASHBOARD HEADER SLIDESHOW
-    Slide 1: the page title   ->   Slide 2: the promo poster
+    Slide 1: the page title   ->   then one slide for every live promo
     Slides to the left every 5 seconds and loops forever.
 
     Used like:
     @include('partials.dashboard-slider', [
-        'eyebrow' => 'CLIENT DASHBOARD',
-        'title'   => 'Welcome, Dominic.',
-        'text'    => 'Manage your profile ...',
+        'eyebrow' => 'ADMINISTRATION',
+        'title'   => 'Clinic overview',
+        'text'    => 'Monitor appointments ...',
+        'admin'   => true,
     ])
 ========================================================= --}}
 
 @php
     $admin = $admin ?? false;
 
-    $promo = \App\Models\Promo::current();
+    $dashPromos = \App\Models\Promo::active();
 
     $promoLink = auth()->check()
         ? (auth()->user()->isClient()
@@ -42,9 +43,9 @@
     </div>
 
 
-    {{-- SLIDE 2: PROMO POSTER (hidden when the promo is switched off) --}}
+    {{-- NEXT SLIDES: one per live promo (none when every promo is switched off) --}}
 
-    @if($promo->is_active)
+    @foreach($dashPromos as $promo)
 
     <div class="dash-slide dash-slide-promo">
 
@@ -72,7 +73,7 @@
 
     </div>
 
-    @endif
+    @endforeach
 
 </section>
 
