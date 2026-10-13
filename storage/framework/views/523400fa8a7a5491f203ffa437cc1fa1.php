@@ -206,7 +206,7 @@
 
 
 <?php
-    $barPromo = \App\Models\Promo::current();
+    $barPromos = \App\Models\Promo::active();
 
     $barLink = auth()->check()
         ? (auth()->user()->isClient()
@@ -215,12 +215,17 @@
         : route('register');
 ?>
 
-<?php if($barPromo->is_active): ?>
+<?php if($barPromos->isNotEmpty()): ?>
 <div class="promo-bar" id="promo-bar">
 
-    <a href="<?php echo e($barLink); ?>">
-        &#127872; <strong>PROMO:</strong>
-        <?php echo e($barPromo->bar_line); ?> &mdash; Book now &rarr;
+    
+    <a href="<?php echo e($barLink); ?>" class="promo-bar-link">
+        <?php $__currentLoopData = $barPromos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $barPromo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <span class="promo-bar-item <?php echo e($i === 0 ? 'is-active' : ''); ?>">
+                &#127872; <strong>PROMO:</strong>
+                <?php echo e($barPromo->bar_line); ?> &mdash; Book now &rarr;
+            </span>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </a>
 
     <button
@@ -281,11 +286,6 @@
                 
 
                 <?php if(auth()->user()->isClient()): ?>
-
-                    <a href="<?php echo e(route('client.dashboard')); ?>">
-                        Dashboard
-                    </a>
-
 
                     <a href="<?php echo e(route('client.appointments')); ?>">
                         Appointments
@@ -374,6 +374,23 @@
 
                 
 
+                <button
+                    type="button"
+                    id="theme-toggle"
+                    class="theme-toggle"
+                    aria-label="Switch to dark mode"
+                    title="Switch to dark mode"
+                >
+
+                    <span id="theme-icon">
+                        🌙
+                    </span>
+
+                </button>
+
+
+                
+
                 <form
                     method="POST"
                     action="<?php echo e(route('logout')); ?>"
@@ -390,23 +407,6 @@
                     </button>
 
                 </form>
-
-
-                
-
-                <button
-                    type="button"
-                    id="theme-toggle"
-                    class="theme-toggle"
-                    aria-label="Switch to dark mode"
-                    title="Switch to dark mode"
-                >
-
-                    <span id="theme-icon">
-                        🌙
-                    </span>
-
-                </button>
 
 
             <?php else: ?>
@@ -780,42 +780,27 @@
 
         <div class="footer-contact">
 
-            
+            <?php $__currentLoopData = \App\Models\SocialLink::active(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $footerLink): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
-            <a
-                href="https://www.facebook.com/macaylaanjeaneath.raejell"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="footer-contact-item"
-            >
+                <a
+                    href="<?php echo e($footerLink->href); ?>"
+                    <?php if($footerLink->opens_new_tab): ?> target="_blank" rel="noopener noreferrer" <?php endif; ?>
+                    class="footer-contact-item"
+                    title="<?php echo e($footerLink->platform_name); ?>"
+                >
 
-                <span class="footer-icon">
-                    f
-                </span>
+                    <span class="footer-icon">
+                        <?php echo $__env->make('partials.social-icon', ['link' => $footerLink], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+                    </span>
 
-                <span>
-                    Macayla Cares
-                </span>
+                    <span>
+                        <?php echo e($footerLink->label); ?>
 
-            </a>
+                    </span>
 
+                </a>
 
-            
-
-            <a
-                href="tel:09155168312"
-                class="footer-contact-item"
-            >
-
-                <span class="footer-icon">
-                    ☎
-                </span>
-
-                <span>
-                    09155168312
-                </span>
-
-            </a>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
         </div>
 
@@ -936,7 +921,9 @@
 
     align-items: center;
 
-    gap: 25px;
+    flex-wrap: wrap;
+
+    gap: 16px 25px;
 
 }
 
@@ -988,6 +975,15 @@
     font-weight: bold;
 
     font-size: 18px;
+
+}
+
+
+.footer-icon svg {
+
+    width: 17px;
+
+    height: 17px;
 
 }
 
@@ -2028,6 +2024,44 @@ html.dark-mode .hero-text-slide h1 em {
 
 }
 
+/* several promos: the lines sit on top of each other and fade in turn */
+
+.promo-bar-link {
+
+    display: grid;
+
+}
+
+.promo-bar-item {
+
+    grid-area: 1 / 1;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition: opacity .6s ease, visibility .6s;
+
+}
+
+.promo-bar-item.is-active {
+
+    opacity: 1;
+
+    visibility: visible;
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .promo-bar-item {
+
+        transition: none;
+
+    }
+
+}
+
 .promo-bar-close {
 
     position: absolute;
@@ -2276,6 +2310,30 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (e) {}
 
     });
+
+    // more than one live promo: show them one after the other
+    const items = bar.querySelectorAll('.promo-bar-item');
+
+    if (items.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+
+        let current = 0;
+        let timer   = null;
+
+        function next() {
+            items[current].classList.remove('is-active');
+            current = (current + 1) % items.length;
+            items[current].classList.add('is-active');
+        }
+
+        function start() { clearInterval(timer); timer = setInterval(next, 5000); }
+        function stop()  { clearInterval(timer); }
+
+        // stay put while the mouse is over the bar so it can be read and clicked
+        bar.addEventListener('mouseenter', stop);
+        bar.addEventListener('mouseleave', start);
+
+        start();
+    }
 
 });
 
