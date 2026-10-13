@@ -780,42 +780,27 @@
 
         <div class="footer-contact">
 
-            
+            <?php $__currentLoopData = \App\Models\SocialLink::active(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $footerLink): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
-            <a
-                href="https://www.facebook.com/macaylaanjeaneath.raejell"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="footer-contact-item"
-            >
+                <a
+                    href="<?php echo e($footerLink->href); ?>"
+                    <?php if($footerLink->opens_new_tab): ?> target="_blank" rel="noopener noreferrer" <?php endif; ?>
+                    class="footer-contact-item"
+                    title="<?php echo e($footerLink->platform_name); ?>"
+                >
 
-                <span class="footer-icon">
-                    f
-                </span>
+                    <span class="footer-icon">
+                        <?php echo $__env->make('partials.social-icon', ['link' => $footerLink], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+                    </span>
 
-                <span>
-                    Macayla Cares
-                </span>
+                    <span>
+                        <?php echo e($footerLink->label); ?>
 
-            </a>
+                    </span>
 
+                </a>
 
-            
-
-            <a
-                href="tel:09155168312"
-                class="footer-contact-item"
-            >
-
-                <span class="footer-icon">
-                    ☎
-                </span>
-
-                <span>
-                    09155168312
-                </span>
-
-            </a>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
         </div>
 
@@ -936,7 +921,9 @@
 
     align-items: center;
 
-    gap: 25px;
+    flex-wrap: wrap;
+
+    gap: 16px 25px;
 
 }
 
@@ -988,6 +975,15 @@
     font-weight: bold;
 
     font-size: 18px;
+
+}
+
+
+.footer-icon svg {
+
+    width: 17px;
+
+    height: 17px;
 
 }
 

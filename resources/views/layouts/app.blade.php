@@ -791,46 +791,30 @@
         </div>
 
 
-        {{-- CONTACT --}}
+        {{-- SOCIAL ACCOUNTS (managed by the admin under "Social accounts") --}}
 
         <div class="footer-contact">
 
-            {{-- FACEBOOK --}}
+            @foreach(\App\Models\SocialLink::active() as $footerLink)
 
-            <a
-                href="https://www.facebook.com/macaylaanjeaneath.raejell"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="footer-contact-item"
-            >
+                <a
+                    href="{{ $footerLink->href }}"
+                    @if($footerLink->opens_new_tab) target="_blank" rel="noopener noreferrer" @endif
+                    class="footer-contact-item"
+                    title="{{ $footerLink->platform_name }}"
+                >
 
-                <span class="footer-icon">
-                    f
-                </span>
+                    <span class="footer-icon">
+                        @include('partials.social-icon', ['link' => $footerLink])
+                    </span>
 
-                <span>
-                    Macayla Cares
-                </span>
+                    <span>
+                        {{ $footerLink->label }}
+                    </span>
 
-            </a>
+                </a>
 
-
-            {{-- PHONE --}}
-
-            <a
-                href="tel:09155168312"
-                class="footer-contact-item"
-            >
-
-                <span class="footer-icon">
-                    ☎
-                </span>
-
-                <span>
-                    09155168312
-                </span>
-
-            </a>
+            @endforeach
 
         </div>
 
@@ -953,7 +937,9 @@
 
     align-items: center;
 
-    gap: 25px;
+    flex-wrap: wrap;
+
+    gap: 16px 25px;
 
 }
 
@@ -1005,6 +991,15 @@
     font-weight: bold;
 
     font-size: 18px;
+
+}
+
+
+.footer-icon svg {
+
+    width: 17px;
+
+    height: 17px;
 
 }
 

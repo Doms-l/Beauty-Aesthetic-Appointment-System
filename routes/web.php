@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Http\Controllers\Admin\StaffController as AdminStaffController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\PromoController as AdminPromoController;
+use App\Http\Controllers\Admin\SocialLinkController as AdminSocialLinkController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -167,6 +168,20 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::delete('/promo/{promo}', [AdminPromoController::class, 'destroy'])
             ->name('promo.destroy');
+
+
+        // SOCIAL ACCOUNTS (shown in the footer)
+        Route::get('/socials', [AdminSocialLinkController::class, 'index'])
+            ->name('socials');
+
+        Route::post('/socials', [AdminSocialLinkController::class, 'store'])
+            ->name('socials.store');
+
+        Route::put('/socials/{social}', [AdminSocialLinkController::class, 'update'])
+            ->name('socials.update');
+
+        Route::delete('/socials/{social}', [AdminSocialLinkController::class, 'destroy'])
+            ->name('socials.destroy');
 
 
         // STAFF
