@@ -6,6 +6,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\Client\AppointmentController as ClientAppointmentController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -46,6 +47,37 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('register.store');
+
+    // Email verification code (registration)
+    Route::get('/register/verify', [RegisterController::class, 'showVerify'])
+        ->name('register.verify');
+
+    Route::post('/register/verify', [RegisterController::class, 'verify'])
+        ->middleware('throttle:10,1')
+        ->name('register.verify.store');
+
+    Route::post('/register/resend', [RegisterController::class, 'resend'])
+        ->middleware('throttle:3,1')
+        ->name('register.resend');
+
+    // Forgot password (emailed code)
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])
+        ->name('password.request');
+
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'send'])
+        ->middleware('throttle:5,1')
+        ->name('password.email');
+
+    Route::get('/reset-password', [ForgotPasswordController::class, 'edit'])
+        ->name('password.reset');
+
+    Route::post('/reset-password', [ForgotPasswordController::class, 'update'])
+        ->middleware('throttle:10,1')
+        ->name('password.update');
+
+    Route::post('/reset-password/resend', [ForgotPasswordController::class, 'resend'])
+        ->middleware('throttle:3,1')
+        ->name('password.resend');
 });
 
 

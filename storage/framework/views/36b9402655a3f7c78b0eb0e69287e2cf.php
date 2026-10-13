@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Login | M. Cares'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -80,15 +78,23 @@
             </label>
 
             
-            <label class="check-row">
-                <input
-                    type="checkbox"
-                    name="remember"
-                    value="1"
-                    id="rememberMe"
-                >
-                Remember me
-            </label>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+
+                <label class="check-row">
+                    <input
+                        type="checkbox"
+                        name="remember"
+                        value="1"
+                        id="rememberMe"
+                    >
+                    Remember me
+                </label>
+
+                <a href="<?php echo e(route('password.request')); ?>" style="font-size:0.9rem;font-weight:600;">
+                    Forgot password?
+                </a>
+
+            </div>
 
             <button
                 class="primary-button full"
