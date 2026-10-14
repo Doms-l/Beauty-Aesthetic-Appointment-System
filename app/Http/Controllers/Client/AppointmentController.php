@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Service;
 use App\Models\Staff;
+use App\Models\User;
 use App\Support\ClientTier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
@@ -126,6 +128,36 @@ class AppointmentController extends Controller
 
         $appointment->update(['status' => 'cancelled']);
 
-        return back()->with('success', 'Appointment cancelled successfully.');
+        // Every cancellation by the client counts. At the limit the account
+        // is banned and only an admin can unban it.
+        $user = $request->user();
+        $limit = (int) config('loyalty.cancel_ban_limit', 3);
+        $strikes = $user->cancel_strikes + 1;
+
+        if ($strikes >= $limit) {
+            $user->forceFill([
+                'cancel_strikes' => $strikes,
+                'banned_at' => now(),
+                'ban_reason' => "Cancelled {$limit} appointments",
+            ])->save();
+
+            Auth::logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')
+                ->withErrors(['email' => User::BAN_MESSAGE]);
+        }
+
+        $user->forceFill(['cancel_strikes' => $strikes])->save();
+
+        $left = $limit - $strikes;
+
+        return back()->with(
+            'success',
+            "Appointment cancelled. Warning: you have cancelled {$strikes} of {$limit} appointments. "
+            . "{$left} more and your account will be banned."
+        );
     }
 }

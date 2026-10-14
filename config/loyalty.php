@@ -13,11 +13,13 @@
 |                   (pending / confirmed / rescheduled, from today on)
 |  max_per_day      booking requests that can be sent in one day
 |  advance_days     how far ahead a booking date can be
-|  max_cancels_30d  cancellations allowed in the last 30 days before the
-|                   client is paused from booking
 */
 
 return [
+
+    // A client who cancels this many appointments is banned automatically.
+    // Only an admin can unban the account (Admin > Clients / Bans).
+    'cancel_ban_limit' => 3,
 
     // Lowest level first. The last one is the VIP level.
     'levels' => [
@@ -28,7 +30,6 @@ return [
             'max_active' => 1,
             'max_per_day' => 2,
             'advance_days' => 14,
-            'max_cancels_30d' => 2,
             'perks' => 'Online booking and appointment history.',
         ],
 
@@ -38,7 +39,6 @@ return [
             'max_active' => 3,
             'max_per_day' => 3,
             'advance_days' => 30,
-            'max_cancels_30d' => 3,
             'perks' => 'More bookings at once and priority booking.',
         ],
 
@@ -48,7 +48,6 @@ return [
             'max_active' => 5,
             'max_per_day' => 5,
             'advance_days' => 60,
-            'max_cancels_30d' => 4,
             'perks' => 'The highest booking limits and first access to promos.',
         ],
 

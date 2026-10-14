@@ -15,6 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => App\Http\Middleware\RoleMiddleware::class,
         ]);
+
+        // Signs out any banned account on its next request.
+        $middleware->web(append: [
+            App\Http\Middleware\CheckBanned::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Keep default Laravel exception handling.

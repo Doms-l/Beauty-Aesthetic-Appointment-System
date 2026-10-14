@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Book Appointment | M. Cares'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -20,6 +18,8 @@
 <section class="section compact">
 
     <div class="container narrow-panel">
+
+        <?php echo $__env->make('partials.client-tier', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
         <?php echo $__env->make('partials.perks-banner', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
@@ -43,12 +43,22 @@
         Additional notes
 
         <textarea
+            id="booking-notes"
             name="notes"
             rows="4"
             maxlength="1000"
             placeholder="Optional: tell the clinic anything important about your request."
         ><?php echo e(old('notes')); ?></textarea>
     </label>
+
+    <p class="form-help" style="margin-top:-8px;">
+        Reminder: you can type up to <strong>1000 characters</strong>
+        (letters, numbers, spaces and symbols). Keep it short, for example
+        allergies, skin concerns or special requests. Do not write passwords
+        or payment details here.
+        <br>
+        <span id="booking-notes-count" style="font-weight:700;">0 / 1000</span> characters used
+    </p>
 
     <button
         class="primary-button full"
@@ -63,5 +73,26 @@
 
 </section>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var box = document.getElementById('booking-notes');
+    var count = document.getElementById('booking-notes-count');
+
+    if (!box || !count) return;
+
+    function update() {
+        var used = box.value.length;
+        var max = box.maxLength > 0 ? box.maxLength : 1000;
+
+        count.textContent = used + ' / ' + max;
+        count.style.color = used >= max ? '#e5484d' : (used >= max * 0.9 ? '#e9a23b' : '');
+    }
+
+    box.addEventListener('input', update);
+    update();
+});
+</script>
+
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/appointments/create.blade.php ENDPATH**/ ?>
