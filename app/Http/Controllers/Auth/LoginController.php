@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,6 +32,18 @@ class LoginController extends Controller
                     'email' => 'The email or password is incorrect.'
                 ])
                 ->onlyInput('email');
+        }
+
+        // A banned client cannot log in. Only an admin can unban the account.
+        if ($request->user()->isBanned()) {
+            Auth::logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')
+                ->withErrors(['email' => User::BAN_MESSAGE])
+                ->withInput($request->only('email'));
         }
 
         $request->session()->regenerate();

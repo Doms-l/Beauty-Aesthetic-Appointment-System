@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\StaffController as AdminStaffController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\PromoController as AdminPromoController;
 use App\Http\Controllers\Admin\SocialLinkController as AdminSocialLinkController;
+use App\Http\Controllers\Admin\ClientController as AdminClientController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -200,6 +201,17 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::delete('/promo/{promo}', [AdminPromoController::class, 'destroy'])
             ->name('promo.destroy');
+
+
+        // CLIENTS (ban / unban)
+        Route::get('/clients', [AdminClientController::class, 'index'])
+            ->name('clients');
+
+        Route::patch('/clients/{user}/unban', [AdminClientController::class, 'unban'])
+            ->name('clients.unban');
+
+        Route::patch('/clients/{user}/ban', [AdminClientController::class, 'ban'])
+            ->name('clients.ban');
 
 
         // SOCIAL ACCOUNTS (shown in the footer)

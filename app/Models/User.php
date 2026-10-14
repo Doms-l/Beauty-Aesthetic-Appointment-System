@@ -11,6 +11,9 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, SoftDeletes;
 
+    /** Shown to a banned client. */
+    public const BAN_MESSAGE = 'Your account is banned. Please visit the M. Cares clinic office for further instructions.';
+
     protected $fillable = [
         'first_name',
         'last_name',
@@ -32,6 +35,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'banned_at' => 'datetime',
             'date_of_birth' => 'date',
             'password' => 'hashed',
         ];
@@ -60,6 +64,11 @@ class User extends Authenticatable
     public function isStaff(): bool
     {
         return $this->role === 'staff';
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->banned_at !== null;
     }
 
     public function isClient(): bool

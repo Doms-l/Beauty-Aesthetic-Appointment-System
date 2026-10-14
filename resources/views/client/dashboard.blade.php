@@ -11,6 +11,7 @@
 <section class="section compact">
     <div class="container">
         <div class="dashboard-actions"><a class="primary-button" href="{{ route('client.appointments.create') }}">+ Book appointment</a><a class="secondary-button" href="{{ route('client.profile') }}">Edit profile</a></div>
+        @include('partials.client-tier')
         <div class="dashboard-grid">
             <div class="panel spotlight">
                 <span class="eyebrow">NEXT APPOINTMENT</span>

@@ -57,6 +57,10 @@
                 Staff →
             </a>
 
+            <a href="{{ route('admin.clients') }}">
+                🚫 Clients / Bans →
+            </a>
+
             <a href="{{ route('admin.promo') }}">
                 📣 Promo →
             </a>
