@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Service;
 use App\Models\Staff;
+use App\Support\ClientTier;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
@@ -50,6 +51,17 @@ class AppointmentController extends Controller
         $service = Service::whereKey($validated['service_id'])
             ->where('is_available', true)
             ->firstOrFail();
+
+        // Booking limits depend on the client's level (Member / Glow / VIP).
+        // This protects the clinic from fake or spam bookings.
+        $limitError = ClientTier::for($request->user())
+            ->bookingError($request->user(), $validated['appointment_date']);
+
+        if ($limitError) {
+            return back()
+                ->withErrors(['appointment_date' => $limitError])
+                ->withInput();
+        }
 
         // Who will do the service?
         //   "any"    = no preference

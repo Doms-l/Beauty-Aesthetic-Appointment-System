@@ -21,6 +21,8 @@
 
     <div class="container narrow-panel">
 
+        @include('partials.client-tier')
+
         @include('partials.perks-banner')
 
         <form
