@@ -42,40 +42,6 @@
         </div>
 
 
-        {{-- Admin Quick Links --}}
-        <div class="admin-links">
-
-            <a href="{{ route('admin.appointments') }}">
-                Appointments →
-            </a>
-
-            <a href="{{ route('admin.services') }}">
-                Services →
-            </a>
-
-            <a href="{{ route('admin.staff') }}">
-                Staff →
-            </a>
-
-            <a href="{{ route('admin.clients') }}">
-                🚫 Clients / Bans →
-            </a>
-
-            <a href="{{ route('admin.promo') }}">
-                📣 Promo →
-            </a>
-
-            <a href="{{ route('admin.socials') }}">
-                🔗 Social Accounts →
-            </a>
-
-            <a href="#" class="raffle-open-btn">
-                🎡 Raffle Wheel →
-            </a>
-
-        </div>
-
-
         {{-- =====================================================
              MOST BOOKED SERVICES
              ===================================================== --}}

@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Manage Promos | M. Cares'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -59,6 +57,18 @@
 
                 </div>
 
+                <label>Linked service <small>(a service in the "Promo" category; clients who click this promo go to booking with it selected)</small>
+                    <select name="service_id">
+                        <option value="">No linked service</option>
+                        <?php $__currentLoopData = $promoServices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $svc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($svc->id); ?>" <?php if(old('service_id') == $svc->id): echo 'selected'; endif; ?>><?php echo e($svc->name); ?><?php echo e($svc->is_available ? '' : ' (unavailable)'); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </select>
+                    <?php if($promoServices->isEmpty()): ?>
+                        <small>No Promo services yet. Add one under Services with the category "Promo", then come back.</small>
+                    <?php endif; ?>
+                </label>
+
                 <label class="promo-check">
                     <input type="checkbox" name="is_active" value="1" <?php if(old('title') === null || old('is_active')): echo 'checked'; endif; ?>>
                     Show this promo on the website
@@ -97,6 +107,7 @@
                                 <strong><?php echo e($promo->title); ?></strong>
                                 <p><?php echo e($promo->is_active ? 'Live on the website' : 'Hidden'); ?></p>
                                 <small>Bar: <?php echo e($promo->bar_line); ?></small>
+                                <br><small>Books: <?php echo e($promo->service?->name ?? 'no linked service'); ?></small>
                             </div>
 
                         </div>
@@ -144,6 +155,15 @@
                                     <?php endif; ?>
 
                                 </div>
+
+                                <label>Linked service <small>(Promo category)</small>
+                                    <select name="service_id">
+                                        <option value="">No linked service</option>
+                                        <?php $__currentLoopData = $promoServices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $svc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($svc->id); ?>" <?php if($promo->service_id == $svc->id): echo 'selected'; endif; ?>><?php echo e($svc->name); ?><?php echo e($svc->is_available ? '' : ' (unavailable)'); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                </label>
 
                                 <label class="promo-check">
                                     <input type="checkbox" name="is_active" value="1" <?php if($promo->is_active): echo 'checked'; endif; ?>>

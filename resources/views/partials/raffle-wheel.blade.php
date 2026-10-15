@@ -555,6 +555,9 @@
         b.addEventListener('click', function (e) { e.preventDefault(); open(); });
     });
 
+    // opened from the Admin Dashboard menu on another page
+    if (/[?&]raffle=1/.test(window.location.search)) { open(); }
+
     document.getElementById('raffle-close').addEventListener('click', close);
     modal.addEventListener('mousedown', function (e) { if (e.target === modal) { close(); } });
     document.addEventListener('keydown', function (e) {

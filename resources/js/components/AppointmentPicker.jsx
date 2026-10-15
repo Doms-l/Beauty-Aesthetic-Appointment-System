@@ -30,6 +30,11 @@ export default function AppointmentPicker({
         }
     });
 
+    // "Promo" is always offered, even when no promo service exists yet
+    if (!categories.includes('Promo')) {
+        categories.push('Promo');
+    }
+
     categories.sort((a, b) => rank(a) - rank(b));
 
     const [serviceId, setServiceId] = useState(
@@ -137,7 +142,9 @@ export default function AppointmentPicker({
 
                     <option value="">
                         {category
-                            ? '-- Select a service --'
+                            ? (services.some((service) => categoryOf(service) === category)
+                                ? '-- Select a service --'
+                                : '-- No services available right now --')
                             : '-- Choose a type of service first --'}
                     </option>
 

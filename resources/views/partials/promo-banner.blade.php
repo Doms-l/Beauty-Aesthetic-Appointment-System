@@ -15,11 +15,6 @@
     $promos = \App\Models\Promo::active();
     $total  = $promos->count();
 
-    $promoLink = auth()->check()
-        ? (auth()->user()->isClient()
-            ? route('client.appointments.create')
-            : route('home'))
-        : route('register');
 @endphp
 
 @if($total > 0)
@@ -38,7 +33,7 @@
                 @foreach($promos as $i => $promo)
 
                     <a class="promo-poster promo-slide {{ $i === 0 ? 'is-active' : '' }}"
-                       href="{{ $admin ? route('home') : $promoLink }}"
+                       href="{{ $admin ? route('home') : $promo->bookingUrl() }}"
                        role="group"
                        aria-roledescription="slide"
                        aria-label="{{ $i + 1 }} of {{ $total }}">
@@ -96,7 +91,7 @@
 
                         @else
 
-                            <a class="promo-cta" href="{{ $promoLink }}">
+                            <a class="promo-cta" href="{{ $promo->bookingUrl() }}">
                                 Book this promo
                             </a>
 

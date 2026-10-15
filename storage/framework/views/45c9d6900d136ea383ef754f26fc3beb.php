@@ -7,11 +7,6 @@
     $promos = \App\Models\Promo::active();
     $total  = $promos->count();
 
-    $promoLink = auth()->check()
-        ? (auth()->user()->isClient()
-            ? route('client.appointments.create')
-            : route('home'))
-        : route('register');
 ?>
 
 <?php if($total > 0): ?>
@@ -30,7 +25,7 @@
                 <?php $__currentLoopData = $promos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $promo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
                     <a class="promo-poster promo-slide <?php echo e($i === 0 ? 'is-active' : ''); ?>"
-                       href="<?php echo e($admin ? route('home') : $promoLink); ?>"
+                       href="<?php echo e($admin ? route('home') : $promo->bookingUrl()); ?>"
                        role="group"
                        aria-roledescription="slide"
                        aria-label="<?php echo e($i + 1); ?> of <?php echo e($total); ?>">
@@ -89,7 +84,7 @@
 
                         <?php else: ?>
 
-                            <a class="promo-cta" href="<?php echo e($promoLink); ?>">
+                            <a class="promo-cta" href="<?php echo e($promo->bookingUrl()); ?>">
                                 Book this promo
                             </a>
 

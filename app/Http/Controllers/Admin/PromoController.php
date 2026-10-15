@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Promo;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class PromoController extends Controller
 {
@@ -14,7 +16,8 @@ class PromoController extends Controller
     public function index()
     {
         return view('admin.promo', [
-            'promos' => Promo::query()->orderBy('id')->get(),
+            'promos' => Promo::query()->with('service')->orderBy('id')->get(),
+            'promoServices' => Service::where('category', 'Promo')->orderBy('name')->get(),
         ]);
     }
 
@@ -26,9 +29,11 @@ class PromoController extends Controller
             'bar_text'  => ['nullable', 'string', 'max:150'],
             'image'     => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'is_active' => ['nullable', 'boolean'],
+            'service_id' => ['nullable', 'integer', Rule::exists('services', 'id')->where('category', 'Promo')],
         ]);
 
         Promo::create([
+            'service_id' => $validated['service_id'] ?? null,
             'title'     => $validated['title'],
             'bar_text'  => $validated['bar_text'] ?? null,
             'image'     => $this->saveImage($request->file('image')),
@@ -47,9 +52,11 @@ class PromoController extends Controller
             'image'        => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'remove_image' => ['nullable', 'boolean'],
             'is_active'    => ['nullable', 'boolean'],
+            'service_id'   => ['nullable', 'integer', Rule::exists('services', 'id')->where('category', 'Promo')],
         ]);
 
         $data = [
+            'service_id' => $validated['service_id'] ?? null,
             'title'     => $validated['title'],
             'bar_text'  => $validated['bar_text'] ?? null,
             'is_active' => $request->boolean('is_active'),
