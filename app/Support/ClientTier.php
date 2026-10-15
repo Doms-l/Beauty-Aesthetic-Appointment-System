@@ -75,18 +75,7 @@ class ClientTier
      */
     public function bookingError(User $user, string $appointmentDate): ?string
     {
-        // 1. Too many cancellations lately (fake or abandoned bookings).
-        $cancelled = Appointment::where('user_id', $user->id)
-            ->where('status', 'cancelled')
-            ->where('updated_at', '>=', now()->subDays(30))
-            ->count();
-
-        if ($cancelled >= $this->limit('max_cancels_30d')) {
-            return 'Your account is paused from booking because of too many cancelled appointments '
-                . 'in the last 30 days. Please contact the clinic to continue.';
-        }
-
-        // 2. Too many bookings waiting at the same time.
+        // 1. Too many bookings waiting at the same time.
         $active = Appointment::where('user_id', $user->id)
             ->whereNull('archived_at')
             ->whereIn('status', ['pending', 'confirmed', 'rescheduled'])
@@ -100,7 +89,7 @@ class ClientTier
                 . $this->upgradeHint();
         }
 
-        // 3. Too many requests in a single day (spam protection).
+        // 2. Too many requests in a single day (spam protection).
         $today = Appointment::where('user_id', $user->id)
             ->whereDate('created_at', now()->toDateString())
             ->count();
@@ -110,7 +99,7 @@ class ClientTier
                 . 'booking requests per day. Please try again tomorrow.';
         }
 
-        // 4. Booking too far ahead.
+        // 3. Booking too far ahead.
         $latest = now()->addDays($this->limit('advance_days'))->toDateString();
 
         if ($appointmentDate > $latest) {

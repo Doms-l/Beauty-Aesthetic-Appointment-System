@@ -2252,6 +2252,8 @@ details summary {
 .booking-summary {
     display: flex;
 
+    flex-wrap: wrap;
+
     justify-content: space-between;
 
     gap: 15px;
@@ -2262,7 +2264,14 @@ details summary {
 
     background: var(--cream);
 
-    color: var(--heading);
+    /* fixed dark text so it stays readable in light AND dark mode
+       (the box is always cream) */
+    color: #3b2a31;
+}
+
+.booking-summary strong,
+.booking-summary span {
+    color: #3b2a31;
 }
 
 
@@ -4094,4 +4103,6 @@ details summary {
 }
 
 
-}
+
+
+
