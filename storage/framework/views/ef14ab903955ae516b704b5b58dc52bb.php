@@ -57,6 +57,10 @@
                 Staff →
             </a>
 
+            <a href="<?php echo e(route('admin.clients')); ?>">
+                🚫 Clients / Bans →
+            </a>
+
             <a href="<?php echo e(route('admin.promo')); ?>">
                 📣 Promo →
             </a>
