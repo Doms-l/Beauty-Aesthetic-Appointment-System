@@ -5,9 +5,46 @@ export default function AppointmentPicker({
     selectedService = ''
 }) {
 
+    // Order the "types of service" are listed in
+    const CATEGORY_ORDER = [
+        'Promo',
+        'Facial Services',
+        'Lash and Brows Services',
+        'Other Services',
+    ];
+
+    const categoryOf = (service) => service?.category || 'Other Services';
+
+    const rank = (name) => {
+        const index = CATEGORY_ORDER.indexOf(name);
+        return index === -1 ? CATEGORY_ORDER.length : index;
+    };
+
+    const categories = [];
+
+    services.forEach((service) => {
+        const name = categoryOf(service);
+
+        if (!categories.includes(name)) {
+            categories.push(name);
+        }
+    });
+
+    categories.sort((a, b) => rank(a) - rank(b));
+
     const [serviceId, setServiceId] = useState(
         selectedService ? String(selectedService) : ''
     );
+
+    // When a service is pre-selected (from the Services page),
+    // open its type automatically.
+    const [category, setCategory] = useState(() => {
+        const preselected = services.find(
+            (service) => String(service.id) === String(selectedService)
+        );
+
+        return preselected ? categoryOf(preselected) : '';
+    });
 
     const [date, setDate] = useState('');
 
@@ -45,6 +82,42 @@ export default function AppointmentPicker({
 
             {/* SERVICE DROPDOWN */}
 
+            <div
+                className="service-dropdown-wrapper"
+                style={{ marginBottom: '14px' }}
+            >
+
+                <label htmlFor="service_category">
+                    Type of service
+                </label>
+
+                <select
+                    id="service_category"
+                    value={category}
+                    onChange={(event) => {
+                        setCategory(event.target.value);
+                        setServiceId('');
+                    }}
+                    required
+                >
+
+                    <option value="">
+                        -- Select a type of service --
+                    </option>
+
+                    {categories.map((name) => (
+
+                        <option key={name} value={name}>
+                            {name}
+                        </option>
+
+                    ))}
+
+                </select>
+
+            </div>
+
+
             <div className="service-dropdown-wrapper">
 
                 <label htmlFor="service_id">
@@ -58,14 +131,19 @@ export default function AppointmentPicker({
                     onChange={(event) => {
                         setServiceId(event.target.value);
                     }}
+                    disabled={!category}
                     required
                 >
 
                     <option value="">
-                        -- Select a service --
+                        {category
+                            ? '-- Select a service --'
+                            : '-- Choose a type of service first --'}
                     </option>
 
-                    {services.map((service) => (
+                    {services
+                        .filter((service) => categoryOf(service) === category)
+                        .map((service) => (
 
                         <option
                             key={service.id}

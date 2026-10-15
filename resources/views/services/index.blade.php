@@ -33,7 +33,7 @@
 
         @forelse($groupedServices as $category => $categoryServices)
 
-            <div class="services-category">
+            <div class="services-category" id="{{ \Illuminate\Support\Str::slug($category) }}">
 
                 <div class="section-heading">
                     <span class="eyebrow">M. CARES</span>

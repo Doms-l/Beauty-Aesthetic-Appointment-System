@@ -273,18 +273,144 @@
         </a>
 
 
-        {{-- NAVIGATION --}}
+                {{-- NAVIGATION --}}
+
+        <style>
+            /* Page links get the same pill shape as Register / Book Now.
+               The link of the page you are on is filled in. */
+            .main-nav { gap: 6px; }
+
+            .main-nav > a:not(.nav-cta):not(.nav-profile):not(.brand),
+            .main-nav .nav-dropdown > a {
+                padding: 10px 14px;
+                border-radius: 999px;
+                transition: background .2s ease, color .2s ease;
+            }
+
+            .main-nav > a.nav-active:not(.nav-profile),
+            .main-nav .nav-dropdown > a.nav-active {
+                background: var(--mauve);
+                color: #fff !important;
+            }
+
+            .main-nav > a.nav-active:not(.nav-profile):hover,
+            .main-nav .nav-dropdown > a.nav-active:hover {
+                background: #8b5e6e;
+                color: #fff !important;
+            }
+
+            /* Services hover menu */
+            .nav-dropdown {
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+
+            .nav-dropdown-menu {
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                z-index: 60;
+
+                min-width: 230px;
+                padding: 8px;
+
+                background: var(--surface);
+                border: 1px solid var(--line);
+                border-radius: 16px;
+                box-shadow: var(--shadow);
+
+                opacity: 0;
+                visibility: hidden;
+                transform: translate(-50%, 6px);
+                transition: opacity .18s ease, transform .18s ease, visibility .18s;
+            }
+
+            /* invisible bridge so the menu does not close while moving the mouse down */
+            .nav-dropdown-menu::before {
+                content: '';
+                position: absolute;
+                top: -12px;
+                left: 0;
+                right: 0;
+                height: 12px;
+            }
+
+            .nav-dropdown:hover .nav-dropdown-menu,
+            .nav-dropdown:focus-within .nav-dropdown-menu {
+                opacity: 1;
+                visibility: visible;
+                transform: translate(-50%, 0);
+            }
+
+            .main-nav .nav-dropdown-menu a {
+                display: block;
+                padding: 10px 14px;
+                border-radius: 10px;
+
+                color: var(--heading);
+                font-size: 14px;
+                font-weight: 600;
+                white-space: nowrap;
+            }
+
+            .main-nav .nav-dropdown-menu a:hover {
+                background: var(--surface-soft);
+                color: var(--heading);
+            }
+
+            /* phones and tablets: no hover, so Services just opens the page
+               (every type is listed there) */
+            @media (max-width: 900px) {
+                .nav-dropdown-menu { display: none; }
+            }
+
+            /* when jumping to a type on the Services page, keep it below the sticky header */
+            .services-category { scroll-margin-top: 100px; }
+
+            .nav-profile.nav-active {
+                box-shadow: 0 0 0 3px var(--mauve);
+            }
+        </style>
 
         <nav class="main-nav">
 
-            <a href="{{ route('home') }}">
+            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">
                 Home
             </a>
 
 
-            <a href="{{ route('services.index') }}">
-                Services
-            </a>
+            @php
+                // Service types shown in the Services hover menu
+                $navCategories = rescue(function () {
+                    $order = array_flip(\App\Support\ServiceCatalog::CATEGORIES);
+
+                    return \App\Models\Service::where('is_available', true)
+                        ->whereNotNull('category')
+                        ->distinct()
+                        ->pluck('category')
+                        ->sortBy(fn ($name) => $order[$name] ?? 99)
+                        ->values();
+                }, collect(), false);
+            @endphp
+
+            <div class="nav-dropdown">
+
+                <a href="{{ route('services.index') }}" class="{{ request()->routeIs('services.*') ? 'nav-active' : '' }}">
+                    Services
+                </a>
+
+                @if ($navCategories->count())
+                    <div class="nav-dropdown-menu">
+                        @foreach ($navCategories as $navCategory)
+                            <a href="{{ route('services.index') }}#{{ \Illuminate\Support\Str::slug($navCategory) }}">
+                                {{ $navCategory }}
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
+
+            </div>
 
 
             @auth
@@ -293,14 +419,14 @@
 
                 @if(auth()->user()->isClient())
 
-                    <a href="{{ route('client.appointments') }}">
+                    <a href="{{ route('client.appointments') }}" class="{{ request()->routeIs('client.appointments') ? 'nav-active' : '' }}">
                         Appointments
                     </a>
 
 
                     <a
-                        class="nav-cta"
                         href="{{ route('client.appointments.create') }}"
+                        class="{{ request()->routeIs('client.appointments.create') ? 'nav-active' : '' }}"
                     >
                         Book Now
                     </a>
@@ -308,7 +434,7 @@
 
                     <a
                         href="{{ route('client.profile') }}"
-                        class="nav-profile"
+                        class="nav-profile {{ request()->routeIs('client.profile') ? 'nav-active' : '' }}"
                         title="Edit Profile"
                         aria-label="Edit Profile"
                     >
@@ -335,14 +461,14 @@
 
                 @elseif(auth()->user()->isAdmin())
 
-                    <a href="{{ route('admin.dashboard') }}">
+                    <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.*') && ! request()->routeIs('admin.profile') ? 'nav-active' : '' }}">
                         Admin Dashboard
                     </a>
 
 
                     <a
                         href="{{ route('admin.profile') }}"
-                        class="nav-profile"
+                        class="nav-profile {{ request()->routeIs('admin.profile') ? 'nav-active' : '' }}"
                         title="Admin Profile"
                         aria-label="Admin Profile"
                     >
@@ -369,7 +495,7 @@
 
                 @elseif(auth()->user()->isStaff())
 
-                    <a href="{{ route('staff.dashboard') }}">
+                    <a href="{{ route('staff.dashboard') }}" class="{{ request()->routeIs('staff.*') ? 'nav-active' : '' }}">
                         Staff Dashboard
                     </a>
 
@@ -417,14 +543,14 @@
 
                 {{-- GUEST --}}
 
-                <a href="{{ route('login') }}">
+                <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'nav-active' : '' }}">
                     Login
                 </a>
 
 
                 <a
-                    class="nav-cta"
                     href="{{ route('register') }}"
+                    class="{{ request()->routeIs('register', 'register.*') ? 'nav-active' : '' }}"
                 >
                     Register
                 </a>
