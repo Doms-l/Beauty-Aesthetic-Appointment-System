@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('title', 'My Appointments | M. Cares'); ?>
 
 <?php $__env->startSection('content'); ?>

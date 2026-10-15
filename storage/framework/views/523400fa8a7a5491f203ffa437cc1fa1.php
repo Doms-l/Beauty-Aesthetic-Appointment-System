@@ -267,18 +267,145 @@
         </a>
 
 
-        
+                
+
+        <style>
+            /* Page links get the same pill shape as Register / Book Now.
+               The link of the page you are on is filled in. */
+            .main-nav { gap: 6px; }
+
+            .main-nav > a:not(.nav-cta):not(.nav-profile):not(.brand),
+            .main-nav .nav-dropdown > a {
+                padding: 10px 14px;
+                border-radius: 999px;
+                transition: background .2s ease, color .2s ease;
+            }
+
+            .main-nav > a.nav-active:not(.nav-profile),
+            .main-nav .nav-dropdown > a.nav-active {
+                background: var(--mauve);
+                color: #fff !important;
+            }
+
+            .main-nav > a.nav-active:not(.nav-profile):hover,
+            .main-nav .nav-dropdown > a.nav-active:hover {
+                background: #8b5e6e;
+                color: #fff !important;
+            }
+
+            /* Services hover menu */
+            .nav-dropdown {
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+
+            .nav-dropdown-menu {
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                z-index: 60;
+
+                min-width: 230px;
+                padding: 8px;
+
+                background: var(--surface);
+                border: 1px solid var(--line);
+                border-radius: 16px;
+                box-shadow: var(--shadow);
+
+                opacity: 0;
+                visibility: hidden;
+                transform: translate(-50%, 6px);
+                transition: opacity .18s ease, transform .18s ease, visibility .18s;
+            }
+
+            /* invisible bridge so the menu does not close while moving the mouse down */
+            .nav-dropdown-menu::before {
+                content: '';
+                position: absolute;
+                top: -12px;
+                left: 0;
+                right: 0;
+                height: 12px;
+            }
+
+            .nav-dropdown:hover .nav-dropdown-menu,
+            .nav-dropdown:focus-within .nav-dropdown-menu {
+                opacity: 1;
+                visibility: visible;
+                transform: translate(-50%, 0);
+            }
+
+            .main-nav .nav-dropdown-menu a {
+                display: block;
+                padding: 10px 14px;
+                border-radius: 10px;
+
+                color: var(--heading);
+                font-size: 14px;
+                font-weight: 600;
+                white-space: nowrap;
+            }
+
+            .main-nav .nav-dropdown-menu a:hover {
+                background: var(--surface-soft);
+                color: var(--heading);
+            }
+
+            /* phones and tablets: no hover, so Services just opens the page
+               (every type is listed there) */
+            @media (max-width: 900px) {
+                .nav-dropdown-menu { display: none; }
+            }
+
+            /* when jumping to a type on the Services page, keep it below the sticky header */
+            .services-category { scroll-margin-top: 100px; }
+
+            .nav-profile.nav-active {
+                box-shadow: 0 0 0 3px var(--mauve);
+            }
+        </style>
 
         <nav class="main-nav">
 
-            <a href="<?php echo e(route('home')); ?>">
+            <a href="<?php echo e(route('home')); ?>" class="<?php echo e(request()->routeIs('home') ? 'nav-active' : ''); ?>">
                 Home
             </a>
 
 
-            <a href="<?php echo e(route('services.index')); ?>">
-                Services
-            </a>
+            <?php
+                // Service types shown in the Services hover menu
+                $navCategories = rescue(function () {
+                    $order = array_flip(\App\Support\ServiceCatalog::CATEGORIES);
+
+                    return \App\Models\Service::where('is_available', true)
+                        ->whereNotNull('category')
+                        ->distinct()
+                        ->pluck('category')
+                        ->sortBy(fn ($name) => $order[$name] ?? 99)
+                        ->values();
+                }, collect(), false);
+            ?>
+
+            <div class="nav-dropdown">
+
+                <a href="<?php echo e(route('services.index')); ?>" class="<?php echo e(request()->routeIs('services.*') ? 'nav-active' : ''); ?>">
+                    Services
+                </a>
+
+                <?php if($navCategories->count()): ?>
+                    <div class="nav-dropdown-menu">
+                        <?php $__currentLoopData = $navCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $navCategory): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <a href="<?php echo e(route('services.index')); ?>#<?php echo e(\Illuminate\Support\Str::slug($navCategory)); ?>">
+                                <?php echo e($navCategory); ?>
+
+                            </a>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                <?php endif; ?>
+
+            </div>
 
 
             <?php if(auth()->guard()->check()): ?>
@@ -287,14 +414,14 @@
 
                 <?php if(auth()->user()->isClient()): ?>
 
-                    <a href="<?php echo e(route('client.appointments')); ?>">
+                    <a href="<?php echo e(route('client.appointments')); ?>" class="<?php echo e(request()->routeIs('client.appointments') ? 'nav-active' : ''); ?>">
                         Appointments
                     </a>
 
 
                     <a
-                        class="nav-cta"
                         href="<?php echo e(route('client.appointments.create')); ?>"
+                        class="<?php echo e(request()->routeIs('client.appointments.create') ? 'nav-active' : ''); ?>"
                     >
                         Book Now
                     </a>
@@ -302,7 +429,7 @@
 
                     <a
                         href="<?php echo e(route('client.profile')); ?>"
-                        class="nav-profile"
+                        class="nav-profile <?php echo e(request()->routeIs('client.profile') ? 'nav-active' : ''); ?>"
                         title="Edit Profile"
                         aria-label="Edit Profile"
                     >
@@ -330,14 +457,14 @@
 
                 <?php elseif(auth()->user()->isAdmin()): ?>
 
-                    <a href="<?php echo e(route('admin.dashboard')); ?>">
+                    <a href="<?php echo e(route('admin.dashboard')); ?>" class="<?php echo e(request()->routeIs('admin.*') && ! request()->routeIs('admin.profile') ? 'nav-active' : ''); ?>">
                         Admin Dashboard
                     </a>
 
 
                     <a
                         href="<?php echo e(route('admin.profile')); ?>"
-                        class="nav-profile"
+                        class="nav-profile <?php echo e(request()->routeIs('admin.profile') ? 'nav-active' : ''); ?>"
                         title="Admin Profile"
                         aria-label="Admin Profile"
                     >
@@ -365,7 +492,7 @@
 
                 <?php elseif(auth()->user()->isStaff()): ?>
 
-                    <a href="<?php echo e(route('staff.dashboard')); ?>">
+                    <a href="<?php echo e(route('staff.dashboard')); ?>" class="<?php echo e(request()->routeIs('staff.*') ? 'nav-active' : ''); ?>">
                         Staff Dashboard
                     </a>
 
@@ -413,14 +540,14 @@
 
                 
 
-                <a href="<?php echo e(route('login')); ?>">
+                <a href="<?php echo e(route('login')); ?>" class="<?php echo e(request()->routeIs('login') ? 'nav-active' : ''); ?>">
                     Login
                 </a>
 
 
                 <a
-                    class="nav-cta"
                     href="<?php echo e(route('register')); ?>"
+                    class="<?php echo e(request()->routeIs('register', 'register.*') ? 'nav-active' : ''); ?>"
                 >
                     Register
                 </a>

@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Services | M. Cares Beauty Services'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -33,7 +31,7 @@
 
         <?php $__empty_1 = true; $__currentLoopData = $groupedServices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category => $categoryServices): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
 
-            <div class="services-category">
+            <div class="services-category" id="<?php echo e(\Illuminate\Support\Str::slug($category)); ?>">
 
                 <div class="section-heading">
                     <span class="eyebrow">M. CARES</span>
