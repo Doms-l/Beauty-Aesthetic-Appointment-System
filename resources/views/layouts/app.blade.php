@@ -267,6 +267,22 @@
         </a>
 
 
+        {{-- MENU BUTTON (phones and tablets) --}}
+
+        <button
+            type="button"
+            id="nav-toggle"
+            class="nav-toggle"
+            aria-label="Open menu"
+            aria-expanded="false"
+            aria-controls="main-nav"
+        >
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+
                 {{-- NAVIGATION --}}
 
         <style>
@@ -367,7 +383,7 @@
             }
         </style>
 
-        <nav class="main-nav">
+        <nav class="main-nav" id="main-nav">
 
             <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">
                 Home
@@ -2644,6 +2660,8 @@ document.addEventListener(
 
 </script>
 
+
+@include('partials.mobile-responsive')
 
 </body>
 

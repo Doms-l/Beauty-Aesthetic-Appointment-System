@@ -261,6 +261,22 @@
         </a>
 
 
+        
+
+        <button
+            type="button"
+            id="nav-toggle"
+            class="nav-toggle"
+            aria-label="Open menu"
+            aria-expanded="false"
+            aria-controls="main-nav"
+        >
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+
                 
 
         <style>
@@ -361,7 +377,7 @@
             }
         </style>
 
-        <nav class="main-nav">
+        <nav class="main-nav" id="main-nav">
 
             <a href="<?php echo e(route('home')); ?>" class="<?php echo e(request()->routeIs('home') ? 'nav-active' : ''); ?>">
                 Home
@@ -2608,6 +2624,8 @@ document.addEventListener(
 
 </script>
 
+
+<?php echo $__env->make('partials.mobile-responsive', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 </body>
 
