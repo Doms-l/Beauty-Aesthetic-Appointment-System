@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\PromoController as AdminPromoController;
 use App\Http\Controllers\Admin\SocialLinkController as AdminSocialLinkController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
+use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
+use App\Http\Controllers\Staff\AppointmentController as StaffAppointmentController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -138,17 +140,17 @@ Route::middleware(['auth', 'role:staff'])
     ->name('staff.')
     ->group(function () {
 
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+        Route::get('/dashboard', [StaffDashboardController::class, 'index'])
             ->name('dashboard');
 
-        Route::get('/appointments', [AdminAppointmentController::class, 'index'])
+        Route::get('/appointments', [StaffAppointmentController::class, 'index'])
             ->name('appointments');
 
-        Route::patch('/appointments/{appointment}', [AdminAppointmentController::class, 'update'])
+        Route::patch('/appointments/{appointment}', [StaffAppointmentController::class, 'update'])
             ->name('appointments.update');
 
-        Route::patch('/appointments/{appointment}/unsave', [AdminAppointmentController::class, 'unsave'])
-            ->name('appointments.unsave');
+        Route::patch('/appointments/{appointment}/claim', [StaffAppointmentController::class, 'claim'])
+            ->name('appointments.claim');
     });
 
 
