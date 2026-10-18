@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 552cf076470698b8cd93be437339dadfac4f4270
 <?php $__env->startSection('title', 'Clients | M. Cares'); ?>
 
 <?php $__env->startSection('content'); ?>
