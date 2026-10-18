@@ -126,7 +126,7 @@ class AppointmentController extends Controller
             return back()->withErrors(['appointment' => 'This appointment can no longer be cancelled.']);
         }
 
-        $appointment->update(['status' => 'cancelled']);
+        $appointment->update(['status' => 'cancelled', 'admin_saved_at' => null]);
 
         // Every cancellation by the client counts. At the limit the account
         // is banned and only an admin can unban it.

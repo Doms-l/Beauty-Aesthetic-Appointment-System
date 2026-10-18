@@ -211,26 +211,20 @@
 
 @php
     $barPromos = \App\Models\Promo::active();
-
-    $barLink = auth()->check()
-        ? (auth()->user()->isClient()
-            ? route('client.appointments.create')
-            : route('home'))
-        : route('register');
 @endphp
 
 @if($barPromos->isNotEmpty())
 <div class="promo-bar" id="promo-bar">
 
     {{-- one line per live promo; they take turns every 5 seconds --}}
-    <a href="{{ $barLink }}" class="promo-bar-link">
+    <div class="promo-bar-link">
         @foreach($barPromos as $i => $barPromo)
-            <span class="promo-bar-item {{ $i === 0 ? 'is-active' : '' }}">
+            <a href="{{ $barPromo->bookingUrl() }}" class="promo-bar-item {{ $i === 0 ? 'is-active' : '' }}">
                 &#127872; <strong>PROMO:</strong>
                 {{ $barPromo->bar_line }} &mdash; Book now &rarr;
-            </span>
+            </a>
         @endforeach
-    </a>
+    </div>
 
     <button
         type="button"
@@ -385,10 +379,13 @@
                 $navCategories = rescue(function () {
                     $order = array_flip(\App\Support\ServiceCatalog::CATEGORIES);
 
+                    // "Promo" is always listed, even before a promo service exists
                     return \App\Models\Service::where('is_available', true)
                         ->whereNotNull('category')
                         ->distinct()
                         ->pluck('category')
+                        ->push('Promo')
+                        ->unique()
                         ->sortBy(fn ($name) => $order[$name] ?? 99)
                         ->values();
                 }, collect(), false);
@@ -461,9 +458,23 @@
 
                 @elseif(auth()->user()->isAdmin())
 
-                    <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.*') && ! request()->routeIs('admin.profile') ? 'nav-active' : '' }}">
-                        Admin Dashboard
-                    </a>
+                    <div class="nav-dropdown">
+
+                        <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.*') && ! request()->routeIs('admin.profile') ? 'nav-active' : '' }}">
+                            Admin Dashboard
+                        </a>
+
+                        <div class="nav-dropdown-menu">
+                            <a href="{{ route('admin.appointments') }}">🗓️ Appointments</a>
+                            <a href="{{ route('admin.services') }}">💆 Services</a>
+                            <a href="{{ route('admin.staff') }}">👥 Staff</a>
+                            <a href="{{ route('admin.clients') }}">🚫 Clients / Bans</a>
+                            <a href="{{ route('admin.promo') }}">📣 Promo</a>
+                            <a href="{{ route('admin.socials') }}">🔗 Social Accounts</a>
+                            <a href="{{ route('admin.dashboard', ['raffle' => 1]) }}" class="raffle-open-btn">🎡 Raffle Wheel</a>
+                        </div>
+
+                    </div>
 
 
                     <a

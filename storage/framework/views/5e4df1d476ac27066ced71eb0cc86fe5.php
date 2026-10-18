@@ -4,12 +4,6 @@
     $admin = $admin ?? false;
 
     $dashPromos = \App\Models\Promo::active();
-
-    $promoLink = auth()->check()
-        ? (auth()->user()->isClient()
-            ? route('client.appointments.create')
-            : route('home'))
-        : route('register');
 ?>
 
 <section class="dashboard-header dash-slider" id="dash-slider">
@@ -42,7 +36,7 @@
             style="background-image: url('<?php echo e($promo->image_url); ?>');"
         ></div>
 
-        <a href="<?php echo e($admin ? route('home') : $promoLink); ?>" class="dash-promo-link">
+        <a href="<?php echo e($admin ? route('home') : $promo->bookingUrl()); ?>" class="dash-promo-link">
 
             <img
                 src="<?php echo e($promo->image_url); ?>"
@@ -53,7 +47,7 @@
 
         <?php if (! ($admin)): ?>
 
-            <a class="promo-cta dash-promo-cta" href="<?php echo e($promoLink); ?>">
+            <a class="promo-cta dash-promo-cta" href="<?php echo e($promo->bookingUrl()); ?>">
                 Book this promo
             </a>
 

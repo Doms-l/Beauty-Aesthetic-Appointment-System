@@ -1,6 +1,12 @@
 {{-- "Who do you want to serve you?" — owner, any, or a registered staff member --}}
 @php
     $selectedProvider = old('provider', 'any');
+
+    // The Owner card is editable by the admin (Admin > Staff)
+    $ownerCard = rescue(fn () => \App\Models\OwnerProfile::current(), null, false);
+    $ownerName = $ownerCard?->name ?: 'The Owner';
+    $ownerText = $ownerCard ? $ownerCard->description : 'Served personally by the owner';
+    $ownerPhoto = $ownerCard?->photo_url;
 @endphp
 
 <div class="provider-picker">
@@ -27,9 +33,15 @@
         <label class="provider-card">
             <input type="radio" name="provider" value="owner" @checked($selectedProvider === 'owner')>
             <span class="provider-body">
-                <span class="provider-avatar">👑</span>
-                <strong>The Owner</strong>
-                <small>Served personally by the owner</small>
+                @if($ownerPhoto)
+                    <img class="provider-avatar provider-photo" src="{{ $ownerPhoto }}" alt="{{ $ownerName }}">
+                @else
+                    <span class="provider-avatar">👑</span>
+                @endif
+                <strong>{{ $ownerName }}</strong>
+                @if($ownerText)
+                    <small>{{ $ownerText }}</small>
+                @endif
             </span>
         </label>
 

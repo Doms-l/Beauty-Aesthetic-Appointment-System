@@ -19,12 +19,14 @@ class Appointment extends Model
         'notes',
         'status',
         'archived_at',
+        'admin_saved_at',
     ];
 
     protected $casts = [
         'appointment_date' => 'date',
         'with_owner' => 'boolean',
         'archived_at' => 'datetime',
+        'admin_saved_at' => 'datetime',
     ];
 
     public function user()

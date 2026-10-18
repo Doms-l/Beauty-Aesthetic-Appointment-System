@@ -43,40 +43,6 @@
 
 
         
-        <div class="admin-links">
-
-            <a href="<?php echo e(route('admin.appointments')); ?>">
-                Appointments →
-            </a>
-
-            <a href="<?php echo e(route('admin.services')); ?>">
-                Services →
-            </a>
-
-            <a href="<?php echo e(route('admin.staff')); ?>">
-                Staff →
-            </a>
-
-            <a href="<?php echo e(route('admin.clients')); ?>">
-                🚫 Clients / Bans →
-            </a>
-
-            <a href="<?php echo e(route('admin.promo')); ?>">
-                📣 Promo →
-            </a>
-
-            <a href="<?php echo e(route('admin.socials')); ?>">
-                🔗 Social Accounts →
-            </a>
-
-            <a href="#" class="raffle-open-btn">
-                🎡 Raffle Wheel →
-            </a>
-
-        </div>
-
-
-        
 
         <div class="panel popular-services-panel">
 

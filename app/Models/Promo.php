@@ -9,7 +9,7 @@ class Promo extends Model
 {
     public const DEFAULT_IMAGE = 'images/promo.jpg';
 
-    protected $fillable = ['title', 'bar_text', 'image', 'is_active'];
+    protected $fillable = ['title', 'bar_text', 'image', 'service_id', 'is_active'];
 
     protected $casts = ['is_active' => 'boolean'];
 
@@ -35,6 +35,31 @@ class Promo extends Model
             ->where('is_active', true)
             ->orderBy('id')
             ->get();
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
+    }
+
+    /**
+     * Where "Book this promo" goes.
+     * Clients land on the booking page with the linked Promo service
+     * already selected; guests go to register; staff/admin stay on home.
+     */
+    public function bookingUrl(): string
+    {
+        if (! auth()->check()) {
+            return route('register');
+        }
+
+        if (! auth()->user()->isClient()) {
+            return route('home');
+        }
+
+        return $this->service_id
+            ? route('client.appointments.create', ['service' => $this->service_id])
+            : route('client.appointments.create');
     }
 
     public function getImageUrlAttribute(): string

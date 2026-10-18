@@ -207,26 +207,20 @@
 
 <?php
     $barPromos = \App\Models\Promo::active();
-
-    $barLink = auth()->check()
-        ? (auth()->user()->isClient()
-            ? route('client.appointments.create')
-            : route('home'))
-        : route('register');
 ?>
 
 <?php if($barPromos->isNotEmpty()): ?>
 <div class="promo-bar" id="promo-bar">
 
     
-    <a href="<?php echo e($barLink); ?>" class="promo-bar-link">
+    <div class="promo-bar-link">
         <?php $__currentLoopData = $barPromos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $barPromo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <span class="promo-bar-item <?php echo e($i === 0 ? 'is-active' : ''); ?>">
+            <a href="<?php echo e($barPromo->bookingUrl()); ?>" class="promo-bar-item <?php echo e($i === 0 ? 'is-active' : ''); ?>">
                 &#127872; <strong>PROMO:</strong>
                 <?php echo e($barPromo->bar_line); ?> &mdash; Book now &rarr;
-            </span>
+            </a>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-    </a>
+    </div>
 
     <button
         type="button"
@@ -379,10 +373,13 @@
                 $navCategories = rescue(function () {
                     $order = array_flip(\App\Support\ServiceCatalog::CATEGORIES);
 
+                    // "Promo" is always listed, even before a promo service exists
                     return \App\Models\Service::where('is_available', true)
                         ->whereNotNull('category')
                         ->distinct()
                         ->pluck('category')
+                        ->push('Promo')
+                        ->unique()
                         ->sortBy(fn ($name) => $order[$name] ?? 99)
                         ->values();
                 }, collect(), false);
@@ -457,9 +454,23 @@
 
                 <?php elseif(auth()->user()->isAdmin()): ?>
 
-                    <a href="<?php echo e(route('admin.dashboard')); ?>" class="<?php echo e(request()->routeIs('admin.*') && ! request()->routeIs('admin.profile') ? 'nav-active' : ''); ?>">
-                        Admin Dashboard
-                    </a>
+                    <div class="nav-dropdown">
+
+                        <a href="<?php echo e(route('admin.dashboard')); ?>" class="<?php echo e(request()->routeIs('admin.*') && ! request()->routeIs('admin.profile') ? 'nav-active' : ''); ?>">
+                            Admin Dashboard
+                        </a>
+
+                        <div class="nav-dropdown-menu">
+                            <a href="<?php echo e(route('admin.appointments')); ?>">🗓️ Appointments</a>
+                            <a href="<?php echo e(route('admin.services')); ?>">💆 Services</a>
+                            <a href="<?php echo e(route('admin.staff')); ?>">👥 Staff</a>
+                            <a href="<?php echo e(route('admin.clients')); ?>">🚫 Clients / Bans</a>
+                            <a href="<?php echo e(route('admin.promo')); ?>">📣 Promo</a>
+                            <a href="<?php echo e(route('admin.socials')); ?>">🔗 Social Accounts</a>
+                            <a href="<?php echo e(route('admin.dashboard', ['raffle' => 1])); ?>" class="raffle-open-btn">🎡 Raffle Wheel</a>
+                        </div>
+
+                    </div>
 
 
                     <a

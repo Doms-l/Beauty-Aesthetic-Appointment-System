@@ -61,6 +61,18 @@
 
                 </div>
 
+                <label>Linked service <small>(a service in the "Promo" category; clients who click this promo go to booking with it selected)</small>
+                    <select name="service_id">
+                        <option value="">No linked service</option>
+                        @foreach($promoServices as $svc)
+                            <option value="{{ $svc->id }}" @selected(old('service_id') == $svc->id)>{{ $svc->name }}{{ $svc->is_available ? '' : ' (unavailable)' }}</option>
+                        @endforeach
+                    </select>
+                    @if($promoServices->isEmpty())
+                        <small>No Promo services yet. Add one under Services with the category "Promo", then come back.</small>
+                    @endif
+                </label>
+
                 <label class="promo-check">
                     <input type="checkbox" name="is_active" value="1" @checked(old('title') === null || old('is_active'))>
                     Show this promo on the website
@@ -101,6 +113,7 @@
                                 <strong>{{ $promo->title }}</strong>
                                 <p>{{ $promo->is_active ? 'Live on the website' : 'Hidden' }}</p>
                                 <small>Bar: {{ $promo->bar_line }}</small>
+                                <br><small>Books: {{ $promo->service?->name ?? 'no linked service' }}</small>
                             </div>
 
                         </div>
@@ -148,6 +161,15 @@
                                     @endif
 
                                 </div>
+
+                                <label>Linked service <small>(Promo category)</small>
+                                    <select name="service_id">
+                                        <option value="">No linked service</option>
+                                        @foreach($promoServices as $svc)
+                                            <option value="{{ $svc->id }}" @selected($promo->service_id == $svc->id)>{{ $svc->name }}{{ $svc->is_available ? '' : ' (unavailable)' }}</option>
+                                        @endforeach
+                                    </select>
+                                </label>
 
                                 <label class="promo-check">
                                     <input type="checkbox" name="is_active" value="1" @checked($promo->is_active)>

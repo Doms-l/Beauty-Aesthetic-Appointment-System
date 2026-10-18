@@ -19,6 +19,65 @@
 
 <section class="section compact">
 
+    <div class="container">
+
+        <div class="panel">
+
+            <span class="eyebrow">OWNER CARD</span>
+            <h2>The Owner</h2>
+            <p class="muted">This is the "Owner" choice clients see under "Choose who serves you". Change the name, description and photo here.</p>
+
+            <form method="POST"
+                  action="{{ route('admin.owner.update') }}"
+                  class="form-stack"
+                  enctype="multipart/form-data">
+
+                @csrf
+                @method('PUT')
+
+                <div class="staff-photo-field">
+                    <div class="staff-photo-preview" id="owner-photo-preview">
+                        @if($owner->photo_url)
+                            <img src="{{ $owner->photo_url }}" alt="Owner photo">
+                        @else
+                            <span>👑</span>
+                        @endif
+                    </div>
+                    <div>
+                        <span class="staff-photo-label">Owner photo</span>
+                        <input type="file" name="photo" id="owner-photo"
+                               accept="image/jpeg,image/png,image/webp" class="staff-file-input">
+                        <small>JPG, PNG or WEBP · up to 5 MB</small>
+                        @if($owner->photo)
+                            <label class="check-row">
+                                <input type="checkbox" name="remove_photo" value="1">
+                                Remove the photo (go back to the crown icon)
+                            </label>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="form-grid two">
+                    <label>Name <small>(shown on the card)</small>
+                        <input name="name" value="{{ old('name', $owner->name) }}" maxlength="100" required>
+                    </label>
+                    <label>Description <small>(short line under the name)</small>
+                        <input name="description" value="{{ old('description', $owner->description) }}" maxlength="200">
+                    </label>
+                </div>
+
+                <button class="primary-button">Save owner card</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="section compact">
+
     <div class="container admin-two-col">
 
         {{-- =====================================================
@@ -300,6 +359,25 @@
             button.setAttribute('aria-label', 'Show password');
         }
     }
+
+    // owner photo preview
+    (function () {
+        const input = document.getElementById('owner-photo');
+        const box = document.getElementById('owner-photo-preview');
+
+        if (!input || !box) { return; }
+
+        input.addEventListener('change', function () {
+            const file = input.files && input.files[0];
+            if (!file) { return; }
+
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.alt = 'Selected photo';
+            box.innerHTML = '';
+            box.appendChild(img);
+        });
+    })();
 
     // shows the chosen photo before saving
     (function () {
