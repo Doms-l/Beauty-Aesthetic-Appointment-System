@@ -184,10 +184,48 @@ class DashboardController extends Controller
                 ->values()
                 ->all();
 
+            // The current week / month / quarter / year only (used by the print option)
+            $currentStart = $def['start'](0)->startOfDay();
+            $currentEnd   = $def['end']($currentStart);
+
+            $currentServices = [];
+            $currentTotal    = 0.0;
+            $currentCount    = 0;
+
+            foreach ($rows as $row) {
+
+                $date = $row->appointment_date;
+
+                if ($date->lt($currentStart) || $date->gt($currentEnd)) {
+                    continue;
+                }
+
+                $name  = $row->service->name ?? 'Unknown service';
+                $price = (float) ($row->service->price ?? 0);
+
+                $currentServices[$name] ??= ['name' => $name, 'bookings' => 0, 'income' => 0.0];
+                $currentServices[$name]['bookings']++;
+                $currentServices[$name]['income'] += $price;
+
+                $currentTotal += $price;
+                $currentCount++;
+            }
+
+            $currentServices = collect($currentServices)
+                ->sortByDesc('income')
+                ->values()
+                ->all();
+
             $periods[$key] = [
                 'title'    => $def['title'],
                 'buckets'  => $buckets,
                 'services' => $byService,
+                'current'  => [
+                    'range'    => $currentStart->format('M d, Y') . ' - ' . $currentEnd->format('M d, Y'),
+                    'services' => $currentServices,
+                    'total'    => round($currentTotal, 2),
+                    'bookings' => $currentCount,
+                ],
                 'total'    => round(array_sum(array_column($buckets, 'income')), 2),
                 'earned'   => round(array_sum(array_column($buckets, 'earned')), 2),
                 'bookings' => array_sum(array_column($buckets, 'bookings')),

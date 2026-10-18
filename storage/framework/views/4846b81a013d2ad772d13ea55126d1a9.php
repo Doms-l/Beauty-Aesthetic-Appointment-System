@@ -94,6 +94,14 @@
             </div>
         </div>
 
+        <div class="pdf-pick" id="pdf-pick" role="group" aria-label="Choose what to print">
+            <span>Print:</span>
+            <button type="button" data-period="weekly">This week</button>
+            <button type="button" data-period="monthly">This month</button>
+            <button type="button" data-period="quarterly">This quarter</button>
+            <button type="button" data-period="annual">This year</button>
+        </div>
+
         <p class="pdf-note" id="pdf-note">Check the sheet below, then choose Download PDF or Print.</p>
 
         <div class="pdf-scroll">
@@ -328,6 +336,23 @@
         border: 1px solid var(--line, #ccc);
     }
     .pdf-actions button:disabled { opacity: .45; cursor: not-allowed; }
+    .pdf-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .pdf-pick span { font-weight: 700; color: var(--heading, #62444D); margin-right: 2px; }
+    .pdf-pick button {
+        cursor: pointer;
+        font: inherit;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 999px;
+        color: var(--heading, #62444D);
+        background: transparent;
+        border: 1px solid var(--line, #ccc);
+    }
+    .pdf-pick button.active {
+        color: #62444D;
+        border-color: transparent;
+        background: linear-gradient(135deg, #F3BCD2, #FFAFF1);
+    }
     .pdf-note { margin: 0; font-size: .9rem; color: var(--text-muted, #7d7074); }
     .pdf-note.ok { color: #2f8a57; font-weight: 600; }
     .pdf-scroll {
@@ -355,7 +380,7 @@
     .pdf-paper .sheet-head h1 { margin: 0; font-size: 20px; color: #62444D; }
     .pdf-paper .sheet-head p { margin: 3px 0 0; font-size: 12px; color: #62444D; }
     .pdf-paper .sheet-meta { margin-left: auto; text-align: right; font-size: 10px; color: #786e72; line-height: 1.6; }
-    .pdf-paper .sheet-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 18px 0 12px; }
+    .pdf-paper .sheet-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 18px 0 12px; }
     .pdf-paper .sheet-card { padding: 10px 12px; border: 1px solid #F3BCD2; border-radius: 8px; background: #fff1f7; }
     .pdf-paper .sheet-card span { display: block; font-size: 10px; color: #786e72; }
     .pdf-paper .sheet-card b { display: block; margin-top: 4px; font-size: 12.5px; color: #62444D; }
@@ -424,6 +449,7 @@
         }
 
         #pdf-modal .pdf-bar,
+        #pdf-modal .pdf-pick,
         #pdf-modal .pdf-note { display: none !important; }
 
         .pdf-paper {
@@ -452,6 +478,13 @@
         monthly: 'Monthly',
         quarterly: 'Quarterly',
         annual: 'Annual'
+    };
+
+    const PICK = {
+        weekly: 'This week',
+        monthly: 'This month',
+        quarterly: 'This quarter',
+        annual: 'This year'
     };
 
     const TITLES = {
@@ -582,56 +615,36 @@
     // ---------- the on-screen print sheet (same content as the PDF) ----------
     function buildPaper(period) {
 
-        const data = DATA[period];
+        const cur = DATA[period].current;
 
-        const periodRows = data.buckets.map(function (b) {
-            return '<tr><td>' + esc(b.label) + '</td>' +
-                '<td class="num">' + b.bookings + '</td>' +
-                '<td class="num">' + php(b.earned) + '</td>' +
-                '<td class="num">' + php(b.expected) + '</td>' +
-                '<td class="num">' + php(b.income) + '</td></tr>';
-        }).join('');
-
-        const serviceRows = data.services.length
-            ? data.services.map(function (s) {
+        const serviceRows = cur.services.length
+            ? cur.services.map(function (s) {
                 return '<tr><td>' + esc(s.name) + '</td>' +
                     '<td class="num">' + s.bookings + '</td>' +
                     '<td class="num">' + php(s.income) + '</td></tr>';
             }).join('')
-            : '<tr><td colspan="3">No income recorded.</td></tr>';
+            : '<tr><td colspan="3">No income recorded for this period.</td></tr>';
 
         paper.innerHTML =
             '<div class="sheet-head">' +
                 '<img src="' + esc(LOGO) + '" alt="">' +
                 '<div><h1>M. Cares Beauty Services</h1><p>Income Summary Report</p></div>' +
                 '<div class="sheet-meta">Generated: ' + esc(GENERATED) + '<br>Report: ' +
-                    NAMES[period] + ' (' + esc(data.title) + ')</div>' +
+                    PICK[period] + '<br>' + esc(cur.range) + '</div>' +
             '</div>' +
 
             '<div class="sheet-cards">' +
-                '<div class="sheet-card"><span>This week</span><b>' + php(SUMMARY.week) + '</b></div>' +
-                '<div class="sheet-card"><span>This month</span><b>' + php(SUMMARY.month) + '</b></div>' +
-                '<div class="sheet-card"><span>This quarter</span><b>' + php(SUMMARY.quarter) + '</b></div>' +
-                '<div class="sheet-card"><span>This year</span><b>' + php(SUMMARY.year) + '</b></div>' +
+                '<div class="sheet-card"><span>Bookings (' + PICK[period].toLowerCase() + ')</span><b>' + cur.bookings + '</b></div>' +
+                '<div class="sheet-card"><span>Total income (' + PICK[period].toLowerCase() + ')</span><b>' + php(cur.total) + '</b></div>' +
             '</div>' +
 
-            '<p class="sheet-line">Earned (completed): <b>' + php(SUMMARY.earned) + '</b> &nbsp;·&nbsp; ' +
-                'Expected (pending/confirmed): <b>' + php(SUMMARY.expected) + '</b> &nbsp;·&nbsp; ' +
-                'All time: <b>' + php(SUMMARY.all) + '</b></p>' +
             '<p class="sheet-small">Cancelled and archived appointments are not counted.</p>' +
 
-            '<h2>' + TITLES[period] + '</h2>' +
-            '<table><thead><tr><th>Period</th><th class="num">Bookings</th><th class="num">Earned</th>' +
-                '<th class="num">Expected</th><th class="num">Total income</th></tr></thead>' +
-                '<tbody>' + periodRows + '</tbody>' +
-                '<tfoot><tr><td>Total</td><td class="num">' + data.bookings + '</td>' +
-                    '<td class="num">' + php(data.earned) + '</td>' +
-                    '<td class="num">' + php(data.total - data.earned) + '</td>' +
-                    '<td class="num">' + php(data.total) + '</td></tr></tfoot></table>' +
-
             '<h2>Income by service</h2>' +
-            '<table><thead><tr><th>Service</th><th class="num">Bookings</th><th class="num">Income</th></tr></thead>' +
-                '<tbody>' + serviceRows + '</tbody></table>' +
+            '<table><thead><tr><th>Service</th><th class="num">Bookings</th><th class="num">Subtotal</th></tr></thead>' +
+                '<tbody>' + serviceRows + '</tbody>' +
+                '<tfoot><tr><td>Total</td><td class="num">' + cur.bookings + '</td>' +
+                    '<td class="num">' + php(cur.total) + '</td></tr></tfoot></table>' +
 
             '<div class="sheet-foot">M. Cares Beauty Services</div>';
     }
@@ -694,7 +707,7 @@
 
     function buildPdf(period, logo) {
 
-        const data = DATA[period];
+        const cur = DATA[period].current;
         const doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' });
         const W = doc.internal.pageSize.getWidth();
         const M = 40;
@@ -722,7 +735,8 @@
         doc.setFontSize(9);
         doc.setTextColor(120, 110, 114);
         doc.text('Generated: ' + GENERATED, W - M, 52, { align: 'right' });
-        doc.text('Report: ' + NAMES[period] + ' (' + data.title + ')', W - M, 66, { align: 'right' });
+        doc.text('Report: ' + PICK[period], W - M, 66, { align: 'right' });
+        doc.text(cur.range, W - M, 80, { align: 'right' });
 
         doc.setDrawColor.apply(doc, PINK);
         doc.setLineWidth(1.5);
@@ -730,14 +744,12 @@
 
         // summary boxes
         const boxes = [
-            ['This week', SUMMARY.week],
-            ['This month', SUMMARY.month],
-            ['This quarter', SUMMARY.quarter],
-            ['This year', SUMMARY.year]
+            ['Bookings (' + PICK[period].toLowerCase() + ')', String(cur.bookings)],
+            ['Total income (' + PICK[period].toLowerCase() + ')', php(cur.total)]
         ];
 
         const gap = 10;
-        const bw = (W - M * 2 - gap * 3) / 4;
+        const bw = (W - M * 2 - gap) / 2;
 
         boxes.forEach(function (b, i) {
             const x = M + i * (bw + gap);
@@ -750,80 +762,33 @@
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(11);
             doc.setTextColor.apply(doc, ROSE);
-            doc.text(php(b[1]), x + 10, 153);
+            doc.text(b[1], x + 10, 153);
             doc.setFont('helvetica', 'normal');
         });
 
-        doc.setFontSize(9.5);
-        doc.setTextColor(60, 50, 54);
-        doc.text(
-            'Earned (completed): ' + php(SUMMARY.earned) +
-            '    Expected (pending/confirmed): ' + php(SUMMARY.expected) +
-            '    All time: ' + php(SUMMARY.all),
-            M, 188
-        );
-
         doc.setFontSize(8.5);
         doc.setTextColor(120, 110, 114);
-        doc.text('Cancelled and archived appointments are not counted.', M, 202);
+        doc.text('Cancelled and archived appointments are not counted.', M, 188);
 
-        // income per period
+        // income by service
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(12);
         doc.setTextColor.apply(doc, ROSE);
-        doc.text(TITLES[period], M, 228);
+        doc.text('Income by service', M, 214);
         doc.setFont('helvetica', 'normal');
 
         doc.autoTable({
-            startY: 238,
+            startY: 224,
             margin: { left: M, right: M },
-            head: [['Period', 'Bookings', 'Earned', 'Expected', 'Total income']],
-            body: data.buckets.map(function (b) {
-                return [b.label, String(b.bookings), php(b.earned), php(b.expected), php(b.income)];
-            }),
-            foot: [[
-                'Total',
-                String(data.bookings),
-                php(data.earned),
-                php(data.total - data.earned),
-                php(data.total)
-            ]],
+            head: [['Service', 'Bookings', 'Subtotal']],
+            body: cur.services.length
+                ? cur.services.map(function (s) { return [s.name, String(s.bookings), php(s.income)]; })
+                : [['No income recorded for this period.', '', '']],
+            foot: [['Total', String(cur.bookings), php(cur.total)]],
             theme: 'grid',
             styles: { fontSize: 9, cellPadding: 5, textColor: [40, 30, 34], lineColor: [225, 210, 218] },
             headStyles: { fillColor: PINK, textColor: ROSE, fontStyle: 'bold' },
             footStyles: { fillColor: [255, 241, 247], textColor: ROSE, fontStyle: 'bold' },
-            columnStyles: {
-                1: { halign: 'right' },
-                2: { halign: 'right' },
-                3: { halign: 'right' },
-                4: { halign: 'right' }
-            }
-        });
-
-        // income by service
-        let y = doc.lastAutoTable.finalY + 28;
-
-        if (y > doc.internal.pageSize.getHeight() - 140) {
-            doc.addPage();
-            y = 50;
-        }
-
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(12);
-        doc.setTextColor.apply(doc, ROSE);
-        doc.text('Income by service', M, y);
-        doc.setFont('helvetica', 'normal');
-
-        doc.autoTable({
-            startY: y + 10,
-            margin: { left: M, right: M },
-            head: [['Service', 'Bookings', 'Income']],
-            body: data.services.length
-                ? data.services.map(function (s) { return [s.name, String(s.bookings), php(s.income)]; })
-                : [['No income recorded.', '', '']],
-            theme: 'grid',
-            styles: { fontSize: 9, cellPadding: 5, textColor: [40, 30, 34], lineColor: [225, 210, 218] },
-            headStyles: { fillColor: PINK, textColor: ROSE, fontStyle: 'bold' },
             columnStyles: { 1: { halign: 'right' }, 2: { halign: 'right' } }
         });
 
@@ -857,14 +822,34 @@
         document.body.style.overflow = '';
     }
 
+    // which range is being printed: this week / month / quarter / year
+    const pickButtons = document.querySelectorAll('#pdf-pick button');
+    let reportPeriod = 'monthly';
+
+    function choose(period) {
+        reportPeriod = period;
+
+        pickButtons.forEach(function (b) {
+            b.classList.toggle('active', b.dataset.period === period);
+        });
+
+        buildPaper(period);
+        setSaved(false);
+        modal.querySelector('.pdf-scroll').scrollTop = 0;
+    }
+
+    pickButtons.forEach(function (b) {
+        b.addEventListener('click', function () { choose(b.dataset.period); });
+    });
+
     // CLICK "Print summary" → the preview pops up straight away
     openBtn.addEventListener('click', function () {
 
         // the pop-up must be a direct child of <body> so printing can ignore the rest of the page
         if (modal.parentNode !== document.body) { document.body.appendChild(modal); }
 
-        buildPaper(current);
-        setSaved(false);
+        // start on the range the chart is showing (week / month / quarter / year)
+        choose(current);
 
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
@@ -884,10 +869,10 @@
             await ensureLibs();
 
             const logo = await loadLogo();
-            const doc = buildPdf(current, logo);
+            const doc = buildPdf(reportPeriod, logo);
 
             const stamp = new Date().toISOString().slice(0, 10);
-            doc.save('MCares-Income-Summary-' + NAMES[current] + '-' + stamp + '.pdf');
+            doc.save('MCares-Income-Summary-' + PICK[reportPeriod].replace(' ', '-') + '-' + stamp + '.pdf');
 
             setSaved(true);
 
@@ -919,5 +904,4 @@
     });
 
 })();
-</script>
-<?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/partials/income-analytics.blade.php ENDPATH**/ ?>
+</script><?php /**PATH C:\Users\Regis D\Desktop\Beauty-Aesthetic-Appointment-System\resources\views/partials/income-analytics.blade.php ENDPATH**/ ?>
