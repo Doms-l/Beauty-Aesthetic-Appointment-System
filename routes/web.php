@@ -20,6 +20,16 @@ use App\Http\Controllers\Admin\ClientController as AdminClientController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// Uploaded photos (profile-pictures/...). Normally the "public/storage" link serves
+// them; if that link is missing or broken (common on Windows) this route does it.
+Route::get('/storage/profile-pictures/{file}', function (string $file) {
+    $path = 'profile-pictures/' . basename($file);
+
+    abort_unless(\Illuminate\Support\Facades\Storage::disk('public')->exists($path), 404);
+
+    return \Illuminate\Support\Facades\Storage::disk('public')->response($path);
+})->where('file', '[A-Za-z0-9._-]+')->name('storage.profile-picture');
+
 Route::get('/services', [ServiceController::class, 'index'])
     ->name('services.index');
 
@@ -136,6 +146,9 @@ Route::middleware(['auth', 'role:staff'])
 
         Route::patch('/appointments/{appointment}', [AdminAppointmentController::class, 'update'])
             ->name('appointments.update');
+
+        Route::patch('/appointments/{appointment}/unsave', [AdminAppointmentController::class, 'unsave'])
+            ->name('appointments.unsave');
     });
 
 
@@ -167,6 +180,9 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::patch('/appointments/{appointment}', [AdminAppointmentController::class, 'update'])
             ->name('appointments.update');
+
+        Route::patch('/appointments/{appointment}/unsave', [AdminAppointmentController::class, 'unsave'])
+            ->name('appointments.unsave');
 
         Route::patch('/appointments/{appointment}/archive', [AdminAppointmentController::class, 'archive'])
             ->name('appointments.archive');
@@ -234,6 +250,9 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::post('/staff', [AdminStaffController::class, 'store'])
             ->name('staff.store');
+
+        Route::put('/staff/owner', [AdminStaffController::class, 'updateOwner'])
+            ->name('owner.update');
 
         Route::put('/staff/{staff}', [AdminStaffController::class, 'update'])
             ->name('staff.update');

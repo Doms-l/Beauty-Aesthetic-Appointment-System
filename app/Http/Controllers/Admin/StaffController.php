@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\OwnerProfile;
 use App\Models\Staff;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -16,7 +17,58 @@ class StaffController extends Controller
     {
         $staff = Staff::with('user')->latest()->paginate(12);
 
-        return view('admin.staff', compact('staff'));
+        $owner = OwnerProfile::current();
+
+        return view('admin.staff', compact('staff', 'owner'));
+    }
+
+    /** Edit the "The Owner" card shown on the booking page. */
+    public function updateOwner(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'description' => ['nullable', 'string', 'max:200'],
+            'photo' => ['nullable', 'file', 'mimetypes:image/jpeg,image/png,image/webp', 'max:5120'],
+            'remove_photo' => ['nullable', 'boolean'],
+        ]);
+
+        $owner = OwnerProfile::current();
+
+        $data = [
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+        ];
+
+        // The owner photo is saved straight into public/images/owner
+        // (like the promo posters), so it works without "storage:link".
+        if ($request->hasFile('photo')) {
+            $this->deleteOwnerPhoto($owner->photo);
+
+            $directory = public_path('images/owner');
+            if (! is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            $file = $request->file('photo');
+            $filename = 'owner-' . time() . '.' . $file->extension();
+            $file->move($directory, $filename);
+
+            $data['photo'] = 'images/owner/' . $filename;
+        } elseif ($request->boolean('remove_photo')) {
+            $this->deleteOwnerPhoto($owner->photo);
+            $data['photo'] = null;
+        }
+
+        $owner->update($data);
+
+        return back()->with('success', 'Owner card updated.');
+    }
+
+    private function deleteOwnerPhoto(?string $path): void
+    {
+        if ($path && str_starts_with($path, 'images/owner/')) {
+            @unlink(public_path($path));
+        }
     }
 
     public function store(Request $request)

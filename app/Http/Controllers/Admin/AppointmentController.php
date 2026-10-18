@@ -49,9 +49,20 @@ class AppointmentController extends Controller
             $validated['with_owner'] = false;
         }
 
+        // clicking Save marks this row (and only this row) as saved
+        $validated['admin_saved_at'] = now();
+
         $appointment->update($validated);
 
         return back()->with('success', 'Appointment updated successfully.');
+    }
+
+    /** Take the "Saved" mark off a row (it goes back to red "Unsaved"). */
+    public function unsave(Appointment $appointment)
+    {
+        $appointment->update(['admin_saved_at' => null]);
+
+        return back()->with('success', 'Appointment marked as unsaved.');
     }
 
     /**
