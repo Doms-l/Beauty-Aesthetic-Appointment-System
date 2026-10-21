@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Staff;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
@@ -14,12 +15,23 @@ class AppointmentController extends Controller
         // ?archived=1 shows the archive instead of the active list
         $showArchived = $request->boolean('archived');
 
+        // ?date=YYYY-MM-DD shows only the bookings on that day
+        $selectedDate = null;
+        if ($request->filled('date')) {
+            try {
+                $selectedDate = Carbon::createFromFormat('Y-m-d', $request->input('date'))->toDateString();
+            } catch (\Throwable $e) {
+                $selectedDate = null; // ignore a bad date instead of crashing
+            }
+        }
+
         $appointments = Appointment::with(['user', 'service', 'staff.user'])
             ->when(
                 $showArchived,
                 fn ($q) => $q->whereNotNull('archived_at'),
                 fn ($q) => $q->whereNull('archived_at')
             )
+            ->when($selectedDate, fn ($q) => $q->whereDate('appointment_date', $selectedDate))
             ->latest('appointment_date')
             ->latest('appointment_time')
             ->paginate(15)
@@ -33,7 +45,8 @@ class AppointmentController extends Controller
             'appointments',
             'staff',
             'showArchived',
-            'archivedCount'
+            'archivedCount',
+            'selectedDate'
         ));
     }
 

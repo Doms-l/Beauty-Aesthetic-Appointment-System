@@ -39,6 +39,30 @@
             <p style="color:#d64b6b;">{{ $errors->first() }}</p>
         @endif
 
+        {{-- Pick a day to see only the bookings on it --}}
+        <form method="GET" action="{{ route('admin.appointments') }}" class="date-filter">
+            @if($showArchived)
+                <input type="hidden" name="archived" value="1">
+            @endif
+            <label for="filter-date">📅 Show bookings on</label>
+            <input type="date" id="filter-date" name="date" value="{{ $selectedDate }}"
+                   onchange="this.form.submit()">
+            <a class="date-filter-btn"
+               href="{{ route('admin.appointments', array_filter(['archived' => $showArchived ? 1 : null, 'date' => now()->toDateString()])) }}">Today</a>
+            @if($selectedDate)
+                <a class="date-filter-btn clear"
+                   href="{{ route('admin.appointments', array_filter(['archived' => $showArchived ? 1 : null])) }}">✕ Show all dates</a>
+            @endif
+        </form>
+
+        @if($selectedDate)
+            <p class="date-filter-note">
+                Showing <strong>{{ $appointments->total() }}</strong>
+                {{ $appointments->total() === 1 ? 'booking' : 'bookings' }} on
+                <strong>{{ \Carbon\Carbon::parse($selectedDate)->format('l, M d, Y') }}</strong>
+            </p>
+        @endif
+
         <div class="table-wrap">
 
             <table>
@@ -187,7 +211,7 @@
 
                     <tr>
                         <td colspan="{{ auth()->user()->isAdmin() ? 7 : 6 }}">
-                            {{ $showArchived ? 'No archived appointments.' : 'No appointments found.' }}
+                            {{ $selectedDate ? 'No bookings on this date.' : ($showArchived ? 'No archived appointments.' : 'No appointments found.') }}
                         </td>
                     </tr>
 
@@ -255,6 +279,22 @@
 
     </div>
 </div>
+
+<style>
+    .date-filter { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+    .date-filter label { font-weight:700; color:var(--heading); }
+    .date-filter input[type="date"] {
+        padding:10px 12px; border:1px solid var(--line); border-radius:12px;
+        background:var(--surface); color:var(--heading); font:inherit;
+    }
+    .date-filter-btn {
+        padding:10px 16px; border-radius:12px; border:1px solid var(--line);
+        background:var(--surface-soft); color:var(--heading); font-weight:700; text-decoration:none;
+    }
+    .date-filter-btn.clear { background:var(--mauve); color:#fff; border-color:transparent; }
+    .date-filter-note { margin:0 0 14px; color:var(--heading); }
+    html.dark-mode .date-filter input[type="date"] { color-scheme: dark; }
+</style>
 
 <style>
     .details-button {
