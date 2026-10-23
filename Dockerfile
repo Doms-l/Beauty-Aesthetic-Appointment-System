@@ -1,5 +1,5 @@
 
-# Build React and Vite assets
+# Build frontend assets
 FROM node:22-alpine AS frontend
 
 WORKDIR /app
@@ -12,12 +12,23 @@ COPY public ./public
 COPY vite.config.js ./
 RUN npm run build
 
-# Laravel PHP application
+
+# Install Laravel PHP dependencies
+FROM composer:2 AS vendor
+
+WORKDIR /app
+
+COPY . .
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+
+# Run Laravel application
 FROM richarvey/nginx-php-fpm:3.1.6
 
 WORKDIR /var/www/html
 
 COPY . .
+COPY --from=vendor /app/vendor ./vendor
 COPY --from=frontend /app/public/build ./public/build
 
 ENV WEBROOT=/var/www/html/public
