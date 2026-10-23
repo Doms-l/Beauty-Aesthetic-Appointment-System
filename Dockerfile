@@ -1,5 +1,5 @@
 
-# Build frontend assets
+# Build React and Vite assets
 FROM node:22-alpine AS frontend
 
 WORKDIR /app
@@ -13,7 +13,7 @@ COPY vite.config.js ./
 RUN npm run build
 
 
-# Install Laravel PHP dependencies
+# Install Laravel dependencies
 FROM composer:2 AS vendor
 
 WORKDIR /app
@@ -22,23 +22,23 @@ COPY . .
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 
-# Run Laravel application
-FROM richarvey/nginx-php-fpm:3.1.6
+# Run Laravel using PHP 8.4 and Nginx
+FROM serversideup/php:8.4-fpm-nginx
 
 WORKDIR /var/www/html
 
-COPY . .
-COPY --from=vendor /app/vendor ./vendor
-COPY --from=frontend /app/public/build ./public/build
+COPY --chown=www-data:www-data . .
+COPY --from=vendor --chown=www-data:www-data /app/vendor ./vendor
+COPY --from=frontend --chown=www-data:www-data /app/public/build ./public/build
 
-ENV WEBROOT=/var/www/html/public
 ENV APP_ENV=production
 ENV APP_DEBUG=false
 ENV LOG_CHANNEL=stderr
-ENV RUN_SCRIPTS=true
-ENV REAL_IP_HEADER=1
-ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV NGINX_WEBROOT=/var/www/html/public
 
-EXPOSE 80
+USER root
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R ug+rwX storage bootstrap/cache
+USER www-data
 
-CMD ["/start.sh"]
+EXPOSE 8080
