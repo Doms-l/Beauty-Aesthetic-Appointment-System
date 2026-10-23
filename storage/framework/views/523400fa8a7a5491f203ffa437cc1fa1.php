@@ -519,9 +519,18 @@
 
                 <?php elseif(auth()->user()->isStaff()): ?>
 
-                    <a href="<?php echo e(route('staff.dashboard')); ?>" class="<?php echo e(request()->routeIs('staff.*') ? 'nav-active' : ''); ?>">
-                        Staff Dashboard
-                    </a>
+                    <div class="nav-dropdown">
+
+                        <a href="<?php echo e(route('staff.dashboard')); ?>" class="<?php echo e(request()->routeIs('staff.*') ? 'nav-active' : ''); ?>">
+                            Staff Dashboard
+                        </a>
+
+                        <div class="nav-dropdown-menu">
+                            <a href="<?php echo e(route('staff.dashboard')); ?>">🏠 Today &amp; overview</a>
+                            <a href="<?php echo e(route('staff.appointments')); ?>">🗓️ My appointments</a>
+                        </div>
+
+                    </div>
 
                 <?php endif; ?>
 

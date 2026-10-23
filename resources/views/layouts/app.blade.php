@@ -522,9 +522,18 @@
 
                 @elseif(auth()->user()->isStaff())
 
-                    <a href="{{ route('staff.dashboard') }}" class="{{ request()->routeIs('staff.*') ? 'nav-active' : '' }}">
-                        Staff Dashboard
-                    </a>
+                    <div class="nav-dropdown">
+
+                        <a href="{{ route('staff.dashboard') }}" class="{{ request()->routeIs('staff.*') ? 'nav-active' : '' }}">
+                            Staff Dashboard
+                        </a>
+
+                        <div class="nav-dropdown-menu">
+                            <a href="{{ route('staff.dashboard') }}">🏠 Today &amp; overview</a>
+                            <a href="{{ route('staff.appointments') }}">🗓️ My appointments</a>
+                        </div>
+
+                    </div>
 
                 @endif
 
