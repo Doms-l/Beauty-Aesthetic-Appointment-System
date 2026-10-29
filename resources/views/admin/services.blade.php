@@ -75,6 +75,10 @@
                     </label>
                 </div>
 
+                <label>Sessions <small>(1 = single service, 4 = a 4-session package)</small>
+                    <input type="number" min="1" max="50" name="sessions" value="{{ old('sessions', 1) }}" required>
+                </label>
+
                 <label>Price label <small>(optional, shown to clients, e.g. ₱999 + FREE lashes)</small>
                     <input name="price_display" value="{{ old('price_display') }}" maxlength="60" placeholder="Leave empty to show the price">
                 </label>
@@ -113,6 +117,9 @@
                                 <p>
                                     ₱{{ number_format($service->price, 2) }}
                                     · {{ $service->duration_minutes }} min
+                                    @if($service->is_package)
+                                        · {{ $service->sessions }} sessions
+                                    @endif
                                     · {{ $service->is_available ? 'Available' : 'Hidden' }}
                                 </p>
                                 <small>{{ $service->category }}</small>
@@ -164,6 +171,10 @@
                                     <input type="number" step="0.01" min="0" name="price" value="{{ $service->price }}" required>
                                     <input type="number" min="15" name="duration_minutes" value="{{ $service->duration_minutes }}" required>
                                 </div>
+
+                                <label>Sessions <small>(1 = single service)</small>
+                                    <input type="number" min="1" max="50" name="sessions" value="{{ $service->sessions }}" required>
+                                </label>
 
                                 <input name="price_display" value="{{ $service->price_display }}" maxlength="60" placeholder="Price label shown to clients (optional)">
 

@@ -19,6 +19,7 @@ class Appointment extends Model
         'appointment_time',
         'notes',
         'status',
+        'receipt_number',
         'archived_at',
         'admin_saved_at',
     ];

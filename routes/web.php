@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\PrintController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -151,6 +152,13 @@ Route::middleware(['auth', 'role:staff'])
 
         Route::patch('/appointments/{appointment}/claim', [StaffAppointmentController::class, 'claim'])
             ->name('appointments.claim');
+
+        // printable receipt / package sheet (own appointments only)
+        Route::get('/appointments/{appointment}/receipt', [PrintController::class, 'receipt'])
+            ->name('appointments.receipt');
+
+        Route::get('/appointments/{appointment}/package-sheet', [PrintController::class, 'package'])
+            ->name('appointments.package');
     });
 
 
@@ -191,6 +199,13 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::patch('/appointments/{appointment}/restore', [AdminAppointmentController::class, 'restore'])
             ->name('appointments.restore');
+
+        // printable receipt / package sheet
+        Route::get('/appointments/{appointment}/receipt', [PrintController::class, 'receipt'])
+            ->name('appointments.receipt');
+
+        Route::get('/appointments/{appointment}/package-sheet', [PrintController::class, 'package'])
+            ->name('appointments.package');
 
 
         // SERVICES

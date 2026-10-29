@@ -89,6 +89,7 @@ class ServiceSeeder extends Seeder
                 'name' => 'Free Stemcell Facial',
                 'price' => 3999,
                 'price_display' => '₱3,999 for 4 sessions',
+                'sessions' => 4,
             ],
 
 
@@ -390,6 +391,7 @@ class ServiceSeeder extends Seeder
                     'price' => $service['price'],
                     'price_display' => $service['price_display'],
                     'duration_minutes' => 60,
+                    'sessions' => $service['sessions'] ?? 1,
                     'is_available' => true,
                 ]
             );
