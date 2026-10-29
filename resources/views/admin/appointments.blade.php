@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Manage Appointments | M. Cares')
+@section('title', 'Manage Appointments | M. Care')
 
 @section('content')
 
@@ -119,6 +119,20 @@
                                     data-details="{{ json_encode($details) }}">
                                 View details
                             </button>
+
+                            @php
+                                $isAdminUser = auth()->user()->isAdmin();
+                                $receiptUrl  = $isAdminUser ? route('admin.appointments.receipt', $appointment) : route('staff.appointments.receipt', $appointment);
+                                $packageUrl  = $isAdminUser ? route('admin.appointments.package', $appointment) : route('staff.appointments.package', $appointment);
+                            @endphp
+
+                            @if($appointment->status === 'completed')
+                                <a class="print-link" href="{{ $receiptUrl }}" target="_blank" rel="noopener">🧾 Print receipt</a>
+                            @endif
+
+                            @if($appointment->service->is_package && $appointment->status !== 'cancelled' && ! $appointment->archived_at)
+                                <a class="print-link" href="{{ $packageUrl }}" target="_blank" rel="noopener">📋 Package sheet</a>
+                            @endif
                         </td>
 
                         <td>
@@ -326,6 +340,21 @@
         box-shadow: 0 24px 60px rgba(0, 0, 0, .35);
     }
     .details-card h2 { margin: 4px 0 14px; color: var(--heading); }
+    .print-link {
+        display: block;
+        margin-top: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+        color: #62444D;
+        background: linear-gradient(135deg, #F3BCD2, #FFAFF1);
+        white-space: nowrap;
+    }
+    .print-link:hover { filter: brightness(1.05); }
+
     .details-card h3 { margin: 0 0 6px; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--mauve); }
 
     .details-close {

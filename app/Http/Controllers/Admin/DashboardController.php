@@ -70,6 +70,10 @@ class DashboardController extends Controller
      * is NOT cancelled and NOT archived. Those are never counted
      * anywhere (income, bookings, or service breakdown).
      *
+     * A package (service with more than one session) counts its price
+     * split evenly over its sessions: 3,999 for 4 sessions = 999.75 for
+     * each session, so a finished package adds up to exactly 3,999.
+     *
      * "Earned"   = completed appointments
      * "Expected" = pending / confirmed / rescheduled appointments
      */
@@ -110,7 +114,7 @@ class DashboardController extends Controller
         ];
 
         // One query: every non-cancelled appointment with its service
-        $rows = Appointment::with('service:id,name,price')
+        $rows = Appointment::with('service:id,name,price,sessions')
             ->counted()
             ->get(['id', 'service_id', 'appointment_date', 'status']);
 
@@ -138,7 +142,7 @@ class DashboardController extends Controller
                         continue;
                     }
 
-                    $price = (float) ($row->service->price ?? 0);
+                    $price = (float) ($row->service->per_session_price ?? 0);
 
                     $income += $price;
                     $count++;
@@ -176,7 +180,7 @@ class DashboardController extends Controller
 
                 $byService[$name] ??= ['name' => $name, 'bookings' => 0, 'income' => 0.0];
                 $byService[$name]['bookings']++;
-                $byService[$name]['income'] += (float) ($row->service->price ?? 0);
+                $byService[$name]['income'] += (float) ($row->service->per_session_price ?? 0);
             }
 
             $byService = collect($byService)
@@ -201,7 +205,7 @@ class DashboardController extends Controller
                 }
 
                 $name  = $row->service->name ?? 'Unknown service';
-                $price = (float) ($row->service->price ?? 0);
+                $price = (float) ($row->service->per_session_price ?? 0);
 
                 $currentServices[$name] ??= ['name' => $name, 'bookings' => 0, 'income' => 0.0];
                 $currentServices[$name]['bookings']++;
@@ -238,9 +242,9 @@ class DashboardController extends Controller
             'month'   => end($periods['monthly']['buckets'])['income'],
             'quarter' => end($periods['quarterly']['buckets'])['income'],
             'year'    => end($periods['annual']['buckets'])['income'],
-            'all'     => round($rows->sum(fn ($r) => (float) ($r->service->price ?? 0)), 2),
+            'all'     => round($rows->sum(fn ($r) => (float) ($r->service->per_session_price ?? 0)), 2),
             'earned'  => round($rows->where('status', 'completed')
-                            ->sum(fn ($r) => (float) ($r->service->price ?? 0)), 2),
+                            ->sum(fn ($r) => (float) ($r->service->per_session_price ?? 0)), 2),
         ];
 
         $summary['expected'] = round($summary['all'] - $summary['earned'], 2);

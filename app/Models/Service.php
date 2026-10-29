@@ -18,13 +18,33 @@ class Service extends Model
         'price',
         'price_display',
         'duration_minutes',
+        'sessions',
         'is_available',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'sessions' => 'integer',
         'is_available' => 'boolean',
     ];
+
+    /**
+     * True when one purchase covers more than one session (a package).
+     */
+    public function getIsPackageAttribute(): bool
+    {
+        return (int) $this->sessions > 1;
+    }
+
+    /**
+     * The part of the price that belongs to one session.
+     * A single-session service simply returns its full price,
+     * a package returns price / sessions (e.g. 3999 / 4 = 999.75).
+     */
+    public function getPerSessionPriceAttribute(): float
+    {
+        return (float) $this->price / max(1, (int) $this->sessions);
+    }
 
     /**
      * A service can have many appointments.

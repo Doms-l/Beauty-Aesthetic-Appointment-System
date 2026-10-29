@@ -33,6 +33,7 @@ class ServiceController extends Controller
             'price' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
             'price_display' => ['nullable', 'string', 'max:60'],
             'duration_minutes' => ['required', 'integer', 'min:15', 'max:600'],
+            'sessions' => ['required', 'integer', 'min:1', 'max:50'],
         ]);
 
         unset($validated['image']);
@@ -56,6 +57,7 @@ class ServiceController extends Controller
             'price' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
             'price_display' => ['nullable', 'string', 'max:60'],
             'duration_minutes' => ['required', 'integer', 'min:15', 'max:600'],
+            'sessions' => ['required', 'integer', 'min:1', 'max:50'],
             'is_available' => ['nullable', 'boolean'],
         ]);
 

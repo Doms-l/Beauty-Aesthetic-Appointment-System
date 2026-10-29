@@ -1,6 +1,4 @@
-
-
-<?php $__env->startSection('title', 'Manage Services | M. Cares'); ?>
+<?php $__env->startSection('title', 'Manage Services | M. Care'); ?>
 
 <?php $__env->startSection('content'); ?>
 
@@ -73,6 +71,10 @@
                     </label>
                 </div>
 
+                <label>Sessions <small>(1 = single service, 4 = a 4-session package)</small>
+                    <input type="number" min="1" max="50" name="sessions" value="<?php echo e(old('sessions', 1)); ?>" required>
+                </label>
+
                 <label>Price label <small>(optional, shown to clients, e.g. ₱999 + FREE lashes)</small>
                     <input name="price_display" value="<?php echo e(old('price_display')); ?>" maxlength="60" placeholder="Leave empty to show the price">
                 </label>
@@ -110,6 +112,9 @@
                                     ₱<?php echo e(number_format($service->price, 2)); ?>
 
                                     · <?php echo e($service->duration_minutes); ?> min
+                                    <?php if($service->is_package): ?>
+                                        · <?php echo e($service->sessions); ?> sessions
+                                    <?php endif; ?>
                                     · <?php echo e($service->is_available ? 'Available' : 'Hidden'); ?>
 
                                 </p>
@@ -162,6 +167,10 @@
                                     <input type="number" step="0.01" min="0" name="price" value="<?php echo e($service->price); ?>" required>
                                     <input type="number" min="15" name="duration_minutes" value="<?php echo e($service->duration_minutes); ?>" required>
                                 </div>
+
+                                <label>Sessions <small>(1 = single service)</small>
+                                    <input type="number" min="1" max="50" name="sessions" value="<?php echo e($service->sessions); ?>" required>
+                                </label>
 
                                 <input name="price_display" value="<?php echo e($service->price_display); ?>" maxlength="60" placeholder="Price label shown to clients (optional)">
 

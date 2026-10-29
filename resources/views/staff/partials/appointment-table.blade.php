@@ -44,6 +44,16 @@
                             {{ $payload['canEdit'] ? 'Manage' : 'View details' }}
                         </button>
 
+                        @if(\App\Support\StaffAppointments::isMine($appointment, $staff))
+                            @if($appointment->status === 'completed')
+                                <a class="sa-print" href="{{ route('staff.appointments.receipt', $appointment) }}" target="_blank" rel="noopener">🧾 Print receipt</a>
+                            @endif
+
+                            @if($appointment->service->is_package && $appointment->status !== 'cancelled')
+                                <a class="sa-print" href="{{ route('staff.appointments.package', $appointment) }}" target="_blank" rel="noopener">📋 Package sheet</a>
+                            @endif
+                        @endif
+
                         @if($payload['canClaim'])
                             <form method="POST" action="{{ $payload['claimUrl'] }}" class="inline-form">
                                 @csrf
@@ -69,3 +79,20 @@
         </tbody>
     </table>
 </div>
+
+
+<style>
+    .sa-print {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        color: #62444D;
+        background: linear-gradient(135deg, #F3BCD2, #FFAFF1);
+        white-space: nowrap;
+    }
+    .sa-print:hover { filter: brightness(1.05); }
+</style>
