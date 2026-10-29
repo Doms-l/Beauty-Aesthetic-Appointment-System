@@ -2,7 +2,7 @@
 
 
 
-@section('title', 'M. Cares Beauty Services')
+@section('title', 'M. Care Beauty Services')
 
 
 
@@ -81,7 +81,7 @@
                     <p>
                         Discover personalized aesthetic and beauty services
                         with an easy online appointment experience at
-                        M. Cares Beauty Services.
+                        M. Care Beauty Services.
                     </p>
 
                 </div>
@@ -90,7 +90,7 @@
                 <div class="hero-text-slide" aria-hidden="true">
 
                     <h1>
-                        M. CARES<br>
+                        M. CARE<br>
                         <em>Facial Services</em>
                     </h1>
 
@@ -105,7 +105,7 @@
                 <div class="hero-text-slide" aria-hidden="true">
 
                     <h1>
-                        M. CARES<br>
+                        M. CARE<br>
                         <em>Lash and Brows Services</em>
                     </h1>
 
@@ -120,7 +120,7 @@
                 <div class="hero-text-slide" aria-hidden="true">
 
                     <h1>
-                        M. CARES<br>
+                        M. CARE<br>
                         <em>Other Services</em>
                     </h1>
 
@@ -190,7 +190,7 @@
                 @foreach($heroPhotos['facial'] as $i => $photo)
                     <img class="hero-photo hero-photo-{{ $i + 1 }}"
                          src="{{ $photo }}"
-                         alt="M. Cares facial services">
+                         alt="M. Care facial services">
                 @endforeach
             </div>
 
@@ -199,7 +199,7 @@
                 @foreach($heroPhotos['lash'] as $i => $photo)
                     <img class="hero-photo hero-photo-{{ $i + 1 }}"
                          src="{{ $photo }}"
-                         alt="M. Cares lash and brows services">
+                         alt="M. Care lash and brows services">
                 @endforeach
             </div>
 
@@ -208,14 +208,14 @@
                 @foreach($heroPhotos['other'] as $i => $photo)
                     <img class="hero-photo hero-photo-{{ $i + 1 }}"
                          src="{{ $photo }}"
-                         alt="M. Cares other services">
+                         alt="M. Care other services">
                 @endforeach
             </div>
 
 
             <img src="{{ asset('images/logo.png') }}"
 
-                 alt="M. Cares Beauty Services logo">
+                 alt="M. Care Beauty Services logo">
 
         </div>
 
@@ -551,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 <img
                     src="{{ asset('images/owner.png') }}"
-                    alt="Founder of M. Cares Beauty Services"
+                    alt="Founder of M. Care Beauty Services"
                 >
 
             </div>
@@ -580,7 +580,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 <div>
                     <h3>Founder & Aesthetician</h3>
-                    <p>M. Cares Beauty Services</p>
+                    <p>M. Care Beauty Services</p>
                 </div>
 
             </div>
@@ -594,7 +594,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <h3>A Message from Our Founder</h3>
 
             <p>
-                At M. Cares Beauty Services, we believe that every
+                At M. Care Beauty Services, we believe that every
                 client deserves to feel confident, comfortable,
                 and cared for.
             </p>
@@ -606,7 +606,7 @@ document.addEventListener('DOMContentLoaded', function () {
             </p>
 
             <div class="founder-sign">
-                M. Cares
+                M. Care
                 <span>♡</span>
             </div>
 
@@ -617,13 +617,13 @@ document.addEventListener('DOMContentLoaded', function () {
 </section>
 
 
-{{-- M. Cares Photo Slideshow --}}
+{{-- M. Care Photo Slideshow --}}
 <section class="mcares-slideshow-section">
     <div class="container">
 
         <div class="mcares-slideshow-header">
-            <span class="eyebrow">M. CARES BEAUTY SERVICES</span>
-            <h2>A Look Inside M. Cares</h2>
+            <span class="eyebrow">M. CARE BEAUTY SERVICES</span>
+            <h2>A Look Inside M. Care</h2>
             <p>Experience our space, services, and beauty care.</p>
         </div>
 
@@ -632,42 +632,42 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="mcares-slide active">
                 <img
                     src="{{ asset('images/m.care1.jpg') }}"
-                    alt="M. Cares Beauty Services"
+                    alt="M. Care Beauty Services"
                 >
             </div>
 
             <div class="mcares-slide">
                 <img
                     src="{{ asset('images/m.care2.jpg') }}"
-                    alt="M. Cares Beauty Services"
+                    alt="M. Care Beauty Services"
                 >
             </div>
 
             <div class="mcares-slide">
                 <img
                     src="{{ asset('images/m.care3.jpg') }}"
-                    alt="M. Cares Beauty Services"
+                    alt="M. Care Beauty Services"
                 >
             </div>
 
             <div class="mcares-slide">
                 <img
                     src="{{ asset('images/m.care4.jpg') }}"
-                    alt="M. Cares Beauty Services"
+                    alt="M. Care Beauty Services"
                 >
             </div>
 
             <div class="mcares-slide">
                 <img
                     src="{{ asset('images/m.care5.jpg') }}"
-                    alt="M. Cares Beauty Services"
+                    alt="M. Care Beauty Services"
                 >
             </div>
 
             <div class="mcares-slide">
                 <img
                     src="{{ asset('images/m.care6.jpg') }}"
-                    alt="M. Cares Beauty Services"
+                    alt="M. Care Beauty Services"
                 >
             </div>
 
@@ -773,7 +773,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <div class="achievement-art achievement-photo">
             <img
             src="{{ asset('images/awards.jpg') }}"
-            alt="M. Cares Beauty Services awards and certificates"
+            alt="M. Care Beauty Services awards and certificates"
             width="1200"
             height="900"
             loading="lazy"
@@ -788,7 +788,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-            <h2>M. Cares Beauty Services</h2>
+            <h2>M. Care Beauty Services</h2>
 
 
 
@@ -1028,7 +1028,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         <div class="section-heading">
 
-            <span class="eyebrow">WHY CHOOSE M. CARES</span>
+            <span class="eyebrow">WHY CHOOSE M. CARE</span>
 
             <h2>Your Beauty, Our Priority</h2>
 

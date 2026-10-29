@@ -74,6 +74,10 @@
 
                             <h3><?php echo e($promo->title); ?></h3>
 
+                            <?php if($promo->perk_line): ?>
+                                <p class="promo-perk">&#9201; <?php echo e($promo->perk_line); ?></p>
+                            <?php endif; ?>
+
                         </div>
 
                         <?php if($admin): ?>
@@ -200,6 +204,20 @@
     opacity: 1;
 
     visibility: visible;
+
+}
+
+/* "Only 3 of 10 slots left · Ends ..." */
+
+.promo-slideshow .promo-perk {
+
+    margin: 6px 0 0;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #b4534f;
 
 }
 

@@ -19,8 +19,8 @@ class VerificationCodeMail extends Mailable
     public function envelope(): Envelope
     {
         $subject = $this->purpose === VerificationCodes::PURPOSE_RESET
-            ? 'Your M. Cares password reset code'
-            : 'Your M. Cares email verification code';
+            ? 'Your M. Care password reset code'
+            : 'Your M. Care email verification code';
 
         return new Envelope(subject: $subject);
     }

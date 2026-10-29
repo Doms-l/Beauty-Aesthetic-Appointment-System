@@ -12,7 +12,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable, SoftDeletes;
 
     /** Shown to a banned client. */
-    public const BAN_MESSAGE = 'Your account is banned. Please visit the M. Cares clinic office for further instructions.';
+    public const BAN_MESSAGE = 'Your account is banned. Please visit the M. Care clinic office for further instructions.';
 
     protected $fillable = [
         'first_name',

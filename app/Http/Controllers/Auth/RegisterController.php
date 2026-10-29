@@ -146,7 +146,7 @@ class RegisterController extends Controller
         $request->session()->regenerate();
 
         return redirect()->route('home')
-            ->with('success', 'Welcome to M. Cares! Your email is verified and your account has been created.');
+            ->with('success', 'Welcome to M. Care! Your email is verified and your account has been created.');
     }
 
     /** Send a new code for the pending registration. */

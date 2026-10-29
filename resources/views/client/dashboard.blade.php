@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Client Dashboard | M. Cares')
+@section('title', 'Client Dashboard | M. Care')
 
 @section('content')
 @include('partials.dashboard-slider', [

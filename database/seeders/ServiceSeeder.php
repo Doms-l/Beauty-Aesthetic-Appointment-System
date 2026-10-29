@@ -8,7 +8,7 @@ use Illuminate\Database\Seeder;
 class ServiceSeeder extends Seeder
 {
     /**
-     * Official M. Cares services and prices
+     * Official M. Care services and prices
      * based on the provided clinic pricelist.
      */
     public function run(): void

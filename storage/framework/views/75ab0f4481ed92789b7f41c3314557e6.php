@@ -1,6 +1,6 @@
 
 
-<?php $__env->startSection('title', 'Manage Services | M. Cares'); ?>
+<?php $__env->startSection('title', 'Manage Services | M. Care'); ?>
 
 <?php $__env->startSection('content'); ?>
 

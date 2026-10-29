@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Add fields needed for the M. Cares service pricelist.
+     * Add fields needed for the M. Care service pricelist.
      */
     public function up(): void
     {

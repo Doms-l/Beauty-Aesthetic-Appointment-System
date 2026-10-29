@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Enter Code | M. Cares')
+@section('title', 'Enter Code | M. Care')
 
 @section('content')
 
@@ -8,7 +8,7 @@
     <div class="auth-card">
 
         <div class="auth-logo">
-            <img src="{{ asset('images/logo.png') }}" alt="M. Cares logo">
+            <img src="{{ asset('images/logo.png') }}" alt="M. Care logo">
         </div>
 
         <span class="eyebrow">CHECK YOUR EMAIL</span>

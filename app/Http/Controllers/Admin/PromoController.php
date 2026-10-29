@@ -16,7 +16,7 @@ class PromoController extends Controller
     public function index()
     {
         return view('admin.promo', [
-            'promos' => Promo::query()->with('service')->orderBy('id')->get(),
+            'promos' => Promo::query()->with('service')->withBookedCount()->orderBy('id')->get(),
             'promoServices' => Service::where('category', 'Promo')->orderBy('name')->get(),
         ]);
     }
@@ -30,7 +30,10 @@ class PromoController extends Controller
             'image'     => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'is_active' => ['nullable', 'boolean'],
             'service_id' => ['nullable', 'integer', Rule::exists('services', 'id')->where('category', 'Promo')],
-        ]);
+            'starts_at' => ['nullable', 'date'],
+            'ends_at'   => array_filter(['nullable', 'date', 'after:now', $request->filled('starts_at') ? 'after:starts_at' : null]),
+            'slots'     => ['nullable', 'integer', 'between:1,' . Promo::MAX_SLOTS],
+        ], $this->messages());
 
         Promo::create([
             'service_id' => $validated['service_id'] ?? null,
@@ -38,6 +41,9 @@ class PromoController extends Controller
             'bar_text'  => $validated['bar_text'] ?? null,
             'image'     => $this->saveImage($request->file('image')),
             'is_active' => $request->boolean('is_active'),
+            'starts_at' => $validated['starts_at'] ?? null,
+            'ends_at'   => $validated['ends_at'] ?? null,
+            'slots'     => $validated['slots'] ?? null,
         ]);
 
         return back()->with('success', 'Promo added.');
@@ -53,13 +59,28 @@ class PromoController extends Controller
             'remove_image' => ['nullable', 'boolean'],
             'is_active'    => ['nullable', 'boolean'],
             'service_id'   => ['nullable', 'integer', Rule::exists('services', 'id')->where('category', 'Promo')],
-        ]);
+            'starts_at'    => ['nullable', 'date'],
+            'ends_at'      => array_filter(['nullable', 'date', $request->filled('starts_at') ? 'after:starts_at' : null]),
+            'slots'        => ['nullable', 'integer', 'between:1,' . Promo::MAX_SLOTS],
+        ], $this->messages());
+
+        // never allow fewer slots than the clients who already booked
+        $taken = $promo->slotsTaken();
+
+        if (! empty($validated['slots']) && (int) $validated['slots'] < $taken) {
+            return back()
+                ->withErrors(['slots' => "{$taken} client(s) already booked this promo, so it needs at least {$taken} slots."])
+                ->withInput();
+        }
 
         $data = [
             'service_id' => $validated['service_id'] ?? null,
             'title'     => $validated['title'],
             'bar_text'  => $validated['bar_text'] ?? null,
             'is_active' => $request->boolean('is_active'),
+            'starts_at' => $validated['starts_at'] ?? null,
+            'ends_at'   => $validated['ends_at'] ?? null,
+            'slots'     => $validated['slots'] ?? null,
         ];
 
         if ($request->hasFile('image')) {
@@ -84,6 +105,14 @@ class PromoController extends Controller
         $promo->delete();
 
         return back()->with('success', 'Promo deleted.');
+    }
+
+    private function messages(): array
+    {
+        return [
+            'ends_at.after' => 'The promo must end after it starts (and in the future).',
+            'slots.between' => 'Slots must be a number from 1 to ' . Promo::MAX_SLOTS . '.',
+        ];
     }
 
     private function saveImage(UploadedFile $file): string

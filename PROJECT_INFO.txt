@@ -1,4 +1,4 @@
-M. CARES BEAUTY SERVICES
+M. CARE BEAUTY SERVICES
 Web-Based Aesthetic Clinic Appointment and Management System
 
 This archive contains the complete application source code prepared for local Laravel + MySQL + React/Vite development.

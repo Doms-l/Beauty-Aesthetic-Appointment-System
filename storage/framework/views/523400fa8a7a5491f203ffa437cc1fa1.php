@@ -25,7 +25,7 @@
     >
 
     <title>
-        <?php echo $__env->yieldContent('title', 'M. Cares Beauty Services'); ?>
+        <?php echo $__env->yieldContent('title', 'M. Care Beauty Services'); ?>
     </title>
 
     <link
@@ -138,8 +138,8 @@
 <noscript><style>#mcares-loader { display: none !important; }</style></noscript>
 
 <div id="mcares-loader" role="status" aria-label="Loading">
-    <img class="loader-logo" src="<?php echo e(asset('images/round.png')); ?>" alt="M. Cares Beauty Services">
-    <p class="loader-name">M. Cares Beauty Services</p>
+    <img class="loader-logo" src="<?php echo e(asset('images/round.png')); ?>" alt="M. Care Beauty Services">
+    <p class="loader-name">M. Care Beauty Services</p>
     <div class="loader-bar"><span id="mcares-loader-fill"></span></div>
 </div>
 
@@ -217,7 +217,7 @@
         <?php $__currentLoopData = $barPromos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $barPromo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <a href="<?php echo e($barPromo->bookingUrl()); ?>" class="promo-bar-item <?php echo e($i === 0 ? 'is-active' : ''); ?>">
                 &#127872; <strong>PROMO:</strong>
-                <?php echo e($barPromo->bar_line); ?> &mdash; Book now &rarr;
+                <?php echo e($barPromo->bar_line); ?><?php if($barPromo->perk_line): ?> &middot; <?php echo e($barPromo->perk_line); ?><?php endif; ?> &mdash; Book now &rarr;
             </a>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </div>
@@ -250,11 +250,11 @@
 
             <img
                 src="<?php echo e(asset('images/logo.png')); ?>"
-                alt="M. Cares Beauty Services logo"
+                alt="M. Care Beauty Services logo"
             >
 
             <span>
-                M. CARES<br>
+                M. CARE<br>
                 <small>BEAUTY SERVICES</small>
             </span>
 
@@ -664,13 +664,13 @@
         type="button"
         id="mcares-chat-toggle"
         class="mcares-chat-toggle"
-        aria-label="Open M. Cares chatbot"
+        aria-label="Open M. Care chatbot"
         aria-expanded="false"
     >
 
         <img
             src="<?php echo e(asset('images/CHATBOTV2.gif')); ?>"
-            alt="M. Cares Chatbot"
+            alt="M. Care Chatbot"
             class="mcares-chat-toggle-img"
         >
 
@@ -693,7 +693,7 @@
 
                     <img
                         src="<?php echo e(asset('images/CHATBOTV2.gif')); ?>"
-                        alt="M. Cares Assistant"
+                        alt="M. Care Assistant"
                     >
 
                 </div>
@@ -702,7 +702,7 @@
                 <div>
 
                     <strong>
-                        M. Cares Assistant
+                        M. Care Assistant
                     </strong>
 
                     <small>
@@ -742,7 +742,7 @@
                     <br><br>
 
                     Welcome to
-                    <strong>M. Cares Beauty Services</strong>.
+                    <strong>M. Care Beauty Services</strong>.
 
                     <br><br>
 
@@ -918,12 +918,12 @@
 
             <img
                 src="<?php echo e(asset('images/round.png')); ?>"
-                alt="M. Cares Beauty Services"
+                alt="M. Care Beauty Services"
                 class="footer-logo"
             >
 
             <span class="footer-brand-name">
-                M. CARES
+                M. CARE
                 <small>BEAUTY SERVICES</small>
             </span>
 
@@ -964,7 +964,7 @@
         <div class="footer-copyright">
 
             <p>
-                © <?php echo e(date('Y')); ?> M. Cares Beauty Services.
+                © <?php echo e(date('Y')); ?> M. Care Beauty Services.
                 All rights reserved.
             </p>
 
@@ -2063,7 +2063,7 @@ html.dark-mode .why-item p {
 }
 
 
-/* PHOTO SLIDESHOW ("A Look Inside M. Cares") */
+/* PHOTO SLIDESHOW ("A Look Inside M. Care") */
 
 html.dark-mode .mcares-slideshow-section {
 

@@ -11,7 +11,7 @@ const appointmentRoot = document.getElementById('appointment-picker');
 
 if (appointmentRoot) {
 
-    console.log('M. Cares React app loaded');
+    console.log('M. Care React app loaded');
 
     const services = JSON.parse(
         appointmentRoot.dataset.services || '[]'
@@ -34,7 +34,7 @@ if (appointmentRoot) {
 
 
 // =========================================================
-// M. CARES CHATBOT
+// M. CARE CHATBOT
 // =========================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -512,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ) {
 
             return (
-                'You can reach M. Cares Beauty Services here:\n' +
+                'You can reach M. Care Beauty Services here:\n' +
                 '📞 ' + CLINIC_PHONE + '\n' +
                 '💬 Facebook: ' + CLINIC_FACEBOOK
             );
@@ -681,7 +681,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ) {
 
             return (
-                'Hello! 👋 Welcome to M. Cares Beauty Services. ' +
+                'Hello! 👋 Welcome to M. Care Beauty Services. ' +
                 'How can I help you today?'
             );
         }
@@ -699,7 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return (
                 'You are very welcome! 💗 ' +
                 'We are happy to help. Let us know if you have ' +
-                'another question about M. Cares Beauty Services.'
+                'another question about M. Care Beauty Services.'
             );
         }
 

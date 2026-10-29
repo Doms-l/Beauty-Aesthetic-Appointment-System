@@ -1,4 +1,4 @@
-# M. Cares Beauty Services
+# M. Care Beauty Services
 
 Web-Based Aesthetic Clinic Appointment and Management System built with Laravel, Blade, React, Vite, and MySQL.
 
@@ -18,7 +18,7 @@ Web-Based Aesthetic Clinic Appointment and Management System built with Laravel,
 - CSRF protection, validation, throttling, password hashing, session regeneration
 
 ## Logo and colors
-The supplied M. Cares logo is stored at `public/images/logo.png`.
+The supplied M. Care logo is stored at `public/images/logo.png`.
 
 Palette based on the supplied logo:
 - Soft Blush: #F3BCD2

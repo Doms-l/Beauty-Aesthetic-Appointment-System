@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\Promo;
 use App\Models\Service;
 use App\Models\Staff;
 use App\Models\User;
 use App\Support\ClientTier;
+use App\Support\PromoSlots;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AppointmentController extends Controller
 {
@@ -24,10 +27,12 @@ class AppointmentController extends Controller
         return view('appointments.index', compact('appointments'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        // Get all available services
+        // Get all available services (a promo service disappears once its
+        // promo has ended or all of its slots are taken)
         $services = Service::where('is_available', true)
+            ->whereNotIn('id', Promo::closedServiceIds())
             ->orderBy('category')
             ->orderBy('name')
             ->get();
@@ -37,7 +42,12 @@ class AppointmentController extends Controller
             ->where('is_available', true)
             ->get();
 
-        return view('appointments.create', compact('services', 'staffMembers'));
+        // the promo the client came from: show its slots / end time
+        $promo = $request->filled('promo')
+            ? Promo::withBookedCount()->find($request->integer('promo'))
+            : null;
+
+        return view('appointments.create', compact('services', 'staffMembers', 'promo'));
     }
 
     public function store(Request $request)
@@ -103,16 +113,24 @@ class AppointmentController extends Controller
                 ->withInput();
         }
 
-        Appointment::create([
-            'user_id' => $request->user()->id,
-            'service_id' => $service->id,
-            'staff_id' => $staffId,
-            'with_owner' => $withOwner,
-            'appointment_date' => $validated['appointment_date'],
-            'appointment_time' => $validated['appointment_time'],
-            'notes' => $validated['notes'] ?? null,
-            'status' => 'pending',
-        ]);
+        // Limited promos: the slot is claimed and the booking saved in ONE
+        // transaction, so the last slot can never be sold twice.
+        DB::transaction(function () use ($request, $service, $staffId, $withOwner, $validated) {
+
+            $promo = PromoSlots::claim($service, $request->user());
+
+            Appointment::create([
+                'user_id' => $request->user()->id,
+                'service_id' => $service->id,
+                'promo_id' => $promo?->id,
+                'staff_id' => $staffId,
+                'with_owner' => $withOwner,
+                'appointment_date' => $validated['appointment_date'],
+                'appointment_time' => $validated['appointment_time'],
+                'notes' => $validated['notes'] ?? null,
+                'status' => 'pending',
+            ]);
+        });
 
         return redirect()->route('client.appointments')
             ->with('success', 'Appointment request submitted. Please wait for clinic confirmation.');

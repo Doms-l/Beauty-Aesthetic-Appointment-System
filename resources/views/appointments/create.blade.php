@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Book Appointment | M. Cares')
+@section('title', 'Book Appointment | M. Care')
 
 @section('content')
 
@@ -24,6 +24,21 @@
         @include('partials.client-tier')
 
         @include('partials.perks-banner')
+
+        @isset($promo)
+            @if($promo->isBookable())
+                <div class="promo-notice">
+                    <strong>&#127872; {{ $promo->title }}</strong>
+                    @if($promo->perk_line)<br>{{ $promo->perk_line }}@endif
+                    <br><small>Each client can avail this promo once. Your slot is held when you send the request; cancelling gives it back.</small>
+                </div>
+            @else
+                <div class="promo-notice promo-notice-closed">
+                    <strong>{{ $promo->title }}</strong><br>
+                    {{ $promo->hasEnded() ? 'This promo has ended.' : ($promo->isSoldOut() ? 'All promo slots are taken.' : 'This promo is not available right now.') }}
+                </div>
+            @endif
+        @endisset
 
         <form
     method="POST"
@@ -74,6 +89,11 @@
     </div>
 
 </section>
+
+<style>
+    .promo-notice { margin-bottom: 18px; padding: 14px 18px; border-radius: 16px; border: 1px solid #d6b36a; background: rgba(214, 179, 106, .12); line-height: 1.5; }
+    .promo-notice-closed { border-color: #b4534f; background: rgba(180, 83, 79, .12); }
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

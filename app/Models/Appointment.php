@@ -12,6 +12,7 @@ class Appointment extends Model
     protected $fillable = [
         'user_id',
         'service_id',
+        'promo_id',
         'staff_id',
         'with_owner',
         'appointment_date',
@@ -42,6 +43,12 @@ class Appointment extends Model
     public function staff()
     {
         return $this->belongsTo(Staff::class);
+    }
+
+    /** The promo this booking used a slot of (if any). */
+    public function promo()
+    {
+        return $this->belongsTo(Promo::class);
     }
 
     /**

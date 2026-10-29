@@ -25,7 +25,7 @@
     >
 
     <title>
-        @yield('title', 'M. Cares Beauty Services')
+        @yield('title', 'M. Care Beauty Services')
     </title>
 
     <link
@@ -140,8 +140,8 @@
 <noscript><style>#mcares-loader { display: none !important; }</style></noscript>
 
 <div id="mcares-loader" role="status" aria-label="Loading">
-    <img class="loader-logo" src="{{ asset('images/round.png') }}" alt="M. Cares Beauty Services">
-    <p class="loader-name">M. Cares Beauty Services</p>
+    <img class="loader-logo" src="{{ asset('images/round.png') }}" alt="M. Care Beauty Services">
+    <p class="loader-name">M. Care Beauty Services</p>
     <div class="loader-bar"><span id="mcares-loader-fill"></span></div>
 </div>
 
@@ -221,7 +221,7 @@
         @foreach($barPromos as $i => $barPromo)
             <a href="{{ $barPromo->bookingUrl() }}" class="promo-bar-item {{ $i === 0 ? 'is-active' : '' }}">
                 &#127872; <strong>PROMO:</strong>
-                {{ $barPromo->bar_line }} &mdash; Book now &rarr;
+                {{ $barPromo->bar_line }}@if($barPromo->perk_line) &middot; {{ $barPromo->perk_line }}@endif &mdash; Book now &rarr;
             </a>
         @endforeach
     </div>
@@ -256,11 +256,11 @@
 
             <img
                 src="{{ asset('images/logo.png') }}"
-                alt="M. Cares Beauty Services logo"
+                alt="M. Care Beauty Services logo"
             >
 
             <span>
-                M. CARES<br>
+                M. CARE<br>
                 <small>BEAUTY SERVICES</small>
             </span>
 
@@ -664,7 +664,7 @@
 
 
 {{-- =========================================================
-    M. CARES CHATBOT
+    M. CARE CHATBOT
 ========================================================= --}}
 
 <div class="mcares-chatbot">
@@ -673,13 +673,13 @@
         type="button"
         id="mcares-chat-toggle"
         class="mcares-chat-toggle"
-        aria-label="Open M. Cares chatbot"
+        aria-label="Open M. Care chatbot"
         aria-expanded="false"
     >
 
         <img
             src="{{ asset('images/CHATBOTV2.gif') }}"
-            alt="M. Cares Chatbot"
+            alt="M. Care Chatbot"
             class="mcares-chat-toggle-img"
         >
 
@@ -702,7 +702,7 @@
 
                     <img
                         src="{{ asset('images/CHATBOTV2.gif') }}"
-                        alt="M. Cares Assistant"
+                        alt="M. Care Assistant"
                     >
 
                 </div>
@@ -711,7 +711,7 @@
                 <div>
 
                     <strong>
-                        M. Cares Assistant
+                        M. Care Assistant
                     </strong>
 
                     <small>
@@ -751,7 +751,7 @@
                     <br><br>
 
                     Welcome to
-                    <strong>M. Cares Beauty Services</strong>.
+                    <strong>M. Care Beauty Services</strong>.
 
                     <br><br>
 
@@ -932,12 +932,12 @@
 
             <img
                 src="{{ asset('images/round.png') }}"
-                alt="M. Cares Beauty Services"
+                alt="M. Care Beauty Services"
                 class="footer-logo"
             >
 
             <span class="footer-brand-name">
-                M. CARES
+                M. CARE
                 <small>BEAUTY SERVICES</small>
             </span>
 
@@ -977,7 +977,7 @@
         <div class="footer-copyright">
 
             <p>
-                © {{ date('Y') }} M. Cares Beauty Services.
+                © {{ date('Y') }} M. Care Beauty Services.
                 All rights reserved.
             </p>
 
@@ -2095,7 +2095,7 @@ html.dark-mode .why-item p {
 }
 
 
-/* PHOTO SLIDESHOW ("A Look Inside M. Cares") */
+/* PHOTO SLIDESHOW ("A Look Inside M. Care") */
 
 html.dark-mode .mcares-slideshow-section {
 

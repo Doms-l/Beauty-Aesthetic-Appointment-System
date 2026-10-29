@@ -8,7 +8,7 @@
     <div style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:16px;padding:32px;border:1px solid #f0d9e0;">
 
         <p style="margin:0 0 4px;font-size:12px;letter-spacing:2px;color:#b5657f;font-weight:bold;">
-            M. CARES BEAUTY SERVICES
+            M. CARE BEAUTY SERVICES
         </p>
 
         <h1 style="margin:0 0 16px;font-size:22px;">

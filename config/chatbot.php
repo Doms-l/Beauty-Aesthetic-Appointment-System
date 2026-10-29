@@ -2,7 +2,7 @@
 
 /*
 |--------------------------------------------------------------------------
-| M. Cares chatbot facts
+| M. Care chatbot facts
 |--------------------------------------------------------------------------
 |
 | Everything the chatbot is allowed to say about the clinic, besides the

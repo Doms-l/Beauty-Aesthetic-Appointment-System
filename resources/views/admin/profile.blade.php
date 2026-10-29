@@ -4,7 +4,7 @@
 
 @extends('layouts.app')
 
-@section('title', 'Admin Profile | M. Cares')
+@section('title', 'Admin Profile | M. Care')
 
 @section('content')
 

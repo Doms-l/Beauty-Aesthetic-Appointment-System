@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Login | M. Cares')
+@section('title', 'Login | M. Care')
 
 @section('content')
 
@@ -10,7 +10,7 @@
         <div class="auth-logo">
             <img
                 src="{{ asset('images/logo.png') }}"
-                alt="M. Cares logo"
+                alt="M. Care logo"
             >
         </div>
 

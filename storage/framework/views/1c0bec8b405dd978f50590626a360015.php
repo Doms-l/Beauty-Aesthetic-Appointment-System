@@ -1,4 +1,6 @@
-<?php $__env->startSection('title', 'Services | M. Cares Beauty Services'); ?>
+
+
+<?php $__env->startSection('title', 'Services | M. Care Beauty Services'); ?>
 
 <?php $__env->startSection('content'); ?>
 
@@ -15,11 +17,11 @@
 
 <section class="page-hero">
     <div class="container">
-        <span class="eyebrow">M. CARES BEAUTY SERVICES</span>
+        <span class="eyebrow">M. CARE BEAUTY SERVICES</span>
         <h1>Our Beauty Services</h1>
         <p>
             Explore the beauty treatments and services available
-            at M. Cares Beauty Services.
+            at M. Care Beauty Services.
         </p>
     </div>
 </section>
@@ -34,7 +36,7 @@
             <div class="services-category" id="<?php echo e(\Illuminate\Support\Str::slug($category)); ?>">
 
                 <div class="section-heading">
-                    <span class="eyebrow">M. CARES</span>
+                    <span class="eyebrow">M. CARE</span>
                     <h2><?php echo e($category); ?></h2>
                 </div>
 
@@ -83,7 +85,7 @@
                             <?php if($service->description): ?>
                                 <p><?php echo e($service->description); ?></p>
                             <?php else: ?>
-                                <p>Available at M. Cares Beauty Services.</p>
+                                <p>Available at M. Care Beauty Services.</p>
                             <?php endif; ?>
 
                             <div class="service-meta">

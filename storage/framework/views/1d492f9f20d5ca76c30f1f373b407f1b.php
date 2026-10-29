@@ -1,9 +1,9 @@
-<?php $__env->startSection('title', 'Manage Promos | M. Cares'); ?>
+<?php $__env->startSection('title', 'Manage Promos | M. Care'); ?>
 
 <?php $__env->startSection('content'); ?>
 
 <?php
-    $liveCount = $promos->where('is_active', true)->count();
+    $liveCount = $promos->where('status_label', 'Live')->count();
 ?>
 
 <section class="page-hero">
@@ -57,6 +57,39 @@
 
                 </div>
 
+                <div class="promo-limit-box">
+
+                    <span class="svc-photo-label">How long and how many</span>
+
+                    <label>Promo starts <small>(optional, empty = starts right away)</small>
+                        <input type="datetime-local" name="starts_at" value="<?php echo e(old('starts_at')); ?>">
+                    </label>
+
+                    <label>Promo ends <small>(optional, empty = no end date)</small>
+                        <input type="datetime-local" name="ends_at" value="<?php echo e(old('ends_at')); ?>" data-promo-ends>
+                    </label>
+
+                    <div class="promo-quick" data-promo-quick>
+                        <small>Quick set:</small>
+                        <button type="button" data-days="1">1 day</button>
+                        <button type="button" data-days="3">3 days</button>
+                        <button type="button" data-days="7">1 week</button>
+                        <button type="button" data-days="14">2 weeks</button>
+                        <button type="button" data-days="30">1 month</button>
+                    </div>
+
+                    <label>Promo slots <small>(how many clients can avail it; the promo closes when all slots are taken)</small>
+                        <select name="slots">
+                            <option value="">Unlimited slots</option>
+                            <?php for($n = 1; $n <= \App\Models\Promo::MAX_SLOTS; $n++): ?>
+                                <option value="<?php echo e($n); ?>" <?php if((string) old('slots') === (string) $n): echo 'selected'; endif; ?>><?php echo e($n); ?> <?php echo e($n === 1 ? 'slot' : 'slots'); ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </label>
+
+
+                </div>
+
                 <label>Linked service <small>(a service in the "Promo" category; clients who click this promo go to booking with it selected)</small>
                     <select name="service_id">
                         <option value="">No linked service</option>
@@ -105,9 +138,25 @@
 
                             <div>
                                 <strong><?php echo e($promo->title); ?></strong>
-                                <p><?php echo e($promo->is_active ? 'Live on the website' : 'Hidden'); ?></p>
+                                <p class="promo-state promo-state-<?php echo e(\Illuminate\Support\Str::slug($promo->status_label)); ?>"><?php echo e($promo->status_text); ?></p>
                                 <small>Bar: <?php echo e($promo->bar_line); ?></small>
                                 <br><small>Books: <?php echo e($promo->service?->name ?? 'no linked service'); ?></small>
+                                <br><small>
+                                    Slots:
+                                    <?php if($promo->slots !== null): ?>
+                                        <strong><?php echo e($promo->slotsTaken()); ?> / <?php echo e($promo->slots); ?></strong> booked · <?php echo e($promo->slotsLeft()); ?> left
+                                    <?php else: ?>
+                                        unlimited (<?php echo e($promo->slotsTaken()); ?> booked)
+                                    <?php endif; ?>
+                                </small>
+                                <br><small>
+                                    Runs:
+                                    <?php echo e($promo->starts_at ? $promo->starts_at->format('M j, Y g:i A') : 'now'); ?>
+
+                                    &rarr;
+                                    <?php echo e($promo->ends_at ? $promo->ends_at->format('M j, Y g:i A') : 'no end date'); ?>
+
+                                </small>
                             </div>
 
                         </div>
@@ -153,6 +202,36 @@
                                             Go back to the original poster
                                         </label>
                                     <?php endif; ?>
+
+                                </div>
+
+                                <div class="promo-limit-box">
+
+                                    <label>Promo starts <small>(empty = starts right away)</small>
+                                        <input type="datetime-local" name="starts_at" value="<?php echo e($promo->starts_at?->format('Y-m-d\TH:i')); ?>">
+                                    </label>
+
+                                    <label>Promo ends <small>(empty = no end date)</small>
+                                        <input type="datetime-local" name="ends_at" value="<?php echo e($promo->ends_at?->format('Y-m-d\TH:i')); ?>" data-promo-ends>
+                                    </label>
+
+                                    <div class="promo-quick" data-promo-quick>
+                                        <small>Quick set from now:</small>
+                                        <button type="button" data-days="1">1 day</button>
+                                        <button type="button" data-days="3">3 days</button>
+                                        <button type="button" data-days="7">1 week</button>
+                                        <button type="button" data-days="14">2 weeks</button>
+                                        <button type="button" data-days="30">1 month</button>
+                                    </div>
+
+                                    <label>Promo slots <small>(<?php echo e($promo->slotsTaken()); ?> already booked)</small>
+                                        <select name="slots">
+                                            <option value="">Unlimited slots</option>
+                                            <?php for($n = 1; $n <= \App\Models\Promo::MAX_SLOTS; $n++): ?>
+                                                <option value="<?php echo e($n); ?>" <?php if($promo->slots === $n): echo 'selected'; endif; ?>><?php echo e($n); ?> <?php echo e($n === 1 ? 'slot' : 'slots'); ?></option>
+                                            <?php endfor; ?>
+                                        </select>
+                                    </label>
 
                                 </div>
 
@@ -212,9 +291,9 @@
             <span class="eyebrow">PREVIEW</span>
             <h2>What clients see</h2>
 
-            <?php $__empty_1 = true; $__currentLoopData = $promos->where('is_active', true); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $livePromo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+            <?php $__empty_1 = true; $__currentLoopData = $promos->where('status_label', 'Live'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $livePromo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <div class="promo-bar-preview">
-                    &#127872; <strong>PROMO:</strong> <?php echo e($livePromo->bar_line); ?> &mdash; Book now &rarr;
+                    &#127872; <strong>PROMO:</strong> <?php echo e($livePromo->bar_line); ?><?php echo e($livePromo->perk_line ? ' · ' . $livePromo->perk_line : ''); ?> &mdash; Book now &rarr;
                 </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <p class="promo-status off">No live promos, so no announcement bar and no slideshow.</p>
@@ -230,6 +309,15 @@
 
 
 <style>
+    .promo-limit-box { display: grid; gap: 12px; padding: 14px; border-radius: 16px; border: 1px solid var(--line, #ddd); background: var(--surface-soft, rgba(255,241,247,.04)); }
+    .promo-quick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .promo-quick button { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line, #ccc); background: transparent; color: inherit; font: inherit; font-size: 13px; cursor: pointer; }
+    .promo-quick button:hover { border-color: #e8aecf; }
+    .promo-error { color: #e5484d; font-weight: 600; }
+    .promo-state { font-weight: 700; }
+    .promo-state-live { color: #2e8b57; }
+    .promo-state-ended, .promo-state-fully-booked { color: #b4534f; }
+    .promo-state-scheduled { color: #d6b36a; }
     .promo-check { display: flex; align-items: center; gap: 10px; font-weight: 600; }
     .promo-check input { width: auto; }
     .promo-status { font-weight: 700; margin: 0 0 14px; }
@@ -294,6 +382,31 @@
             img.alt = 'Selected poster';
             box.innerHTML = '';
             box.appendChild(img);
+        });
+
+    });
+</script>
+
+<script>
+    // "Quick set" buttons: end = now + N days, at 11:59 PM
+    document.querySelectorAll('[data-promo-quick]').forEach(function (box) {
+
+        const ends = box.closest('.promo-limit-box').querySelector('[data-promo-ends]');
+
+        box.querySelectorAll('button[data-days]').forEach(function (btn) {
+
+            btn.addEventListener('click', function () {
+
+                const d = new Date();
+                d.setDate(d.getDate() + parseInt(btn.dataset.days, 10));
+                d.setHours(23, 59, 0, 0);
+
+                const pad = function (n) { return String(n).padStart(2, '0'); };
+
+                ends.value = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+                           + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+            });
+
         });
 
     });

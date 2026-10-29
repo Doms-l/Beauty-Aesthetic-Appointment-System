@@ -57,6 +57,10 @@
 
         </a>
 
+        @if($promo->perk_line)
+            <span class="dash-promo-perk">{{ $promo->perk_line }}</span>
+        @endif
+
         @unless($admin)
 
             <a class="promo-cta dash-promo-cta" href="{{ $promo->bookingUrl() }}">
@@ -73,6 +77,30 @@
 
 
 <style>
+
+.dash-promo-perk {
+
+    position: absolute;
+
+    left: 16px;
+
+    bottom: 14px;
+
+    z-index: 3;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    background: rgba(40, 24, 32, .75);
+
+    color: #ffe9a8;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+}
 
 .dash-slider {
 

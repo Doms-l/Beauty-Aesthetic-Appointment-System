@@ -631,7 +631,7 @@
         paper.innerHTML =
             '<div class="sheet-head">' +
                 '<img src="' + esc(LOGO) + '" alt="">' +
-                '<div><h1>M. Cares Beauty Services</h1><p>Income Summary Report</p></div>' +
+                '<div><h1>M. Care Beauty Services</h1><p>Income Summary Report</p></div>' +
                 '<div class="sheet-meta">Generated: ' + esc(GENERATED) + '<br>Report: ' +
                     PICK[period] + '<br>' + esc(cur.range) + '</div>' +
             '</div>' +
@@ -649,7 +649,7 @@
                 '<tfoot><tr><td>Total</td><td class="num">' + cur.bookings + '</td>' +
                     '<td class="num">' + php(cur.total) + '</td></tr></tfoot></table>' +
 
-            '<div class="sheet-foot">M. Cares Beauty Services</div>';
+            '<div class="sheet-foot">M. Care Beauty Services</div>';
     }
 
     // ---------- the real PDF file (library loads only when you download) ----------
@@ -729,7 +729,7 @@
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(20);
         doc.setTextColor.apply(doc, ROSE);
-        doc.text('M. Cares Beauty Services', textX, 58);
+        doc.text('M. Care Beauty Services', textX, 58);
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(12);
@@ -803,7 +803,7 @@
             doc.setFontSize(8);
             doc.setTextColor(150, 140, 144);
             doc.text(
-                'M. Cares Beauty Services — Page ' + i + ' of ' + pages,
+                'M. Care Beauty Services — Page ' + i + ' of ' + pages,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 24,
                 { align: 'center' }
@@ -875,7 +875,7 @@
             const doc = buildPdf(reportPeriod, logo);
 
             const stamp = new Date().toISOString().slice(0, 10);
-            doc.save('MCares-Income-Summary-' + PICK[reportPeriod].replace(' ', '-') + '-' + stamp + '.pdf');
+            doc.save('MCare-Income-Summary-' + PICK[reportPeriod].replace(' ', '-') + '-' + stamp + '.pdf');
 
             setSaved(true);
 

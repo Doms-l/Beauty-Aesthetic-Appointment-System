@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 
-Write-Host '=== M. Cares Beauty Services setup ===' -ForegroundColor Magenta
+Write-Host '=== M. Care Beauty Services setup ===' -ForegroundColor Magenta
 
 Write-Host 'Checking required commands...' -ForegroundColor Cyan
 php -v

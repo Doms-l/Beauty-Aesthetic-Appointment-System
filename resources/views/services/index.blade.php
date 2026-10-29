@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Services | M. Cares Beauty Services')
+@section('title', 'Services | M. Care Beauty Services')
 
 @section('content')
 
@@ -17,11 +17,11 @@
 {{-- PAGE HERO --}}
 <section class="page-hero">
     <div class="container">
-        <span class="eyebrow">M. CARES BEAUTY SERVICES</span>
+        <span class="eyebrow">M. CARE BEAUTY SERVICES</span>
         <h1>Our Beauty Services</h1>
         <p>
             Explore the beauty treatments and services available
-            at M. Cares Beauty Services.
+            at M. Care Beauty Services.
         </p>
     </div>
 </section>
@@ -36,7 +36,7 @@
             <div class="services-category" id="{{ \Illuminate\Support\Str::slug($category) }}">
 
                 <div class="section-heading">
-                    <span class="eyebrow">M. CARES</span>
+                    <span class="eyebrow">M. CARE</span>
                     <h2>{{ $category }}</h2>
                 </div>
 
@@ -85,7 +85,7 @@
                             @if($service->description)
                                 <p>{{ $service->description }}</p>
                             @else
-                                <p>Available at M. Cares Beauty Services.</p>
+                                <p>Available at M. Care Beauty Services.</p>
                             @endif
 
                             <div class="service-meta">

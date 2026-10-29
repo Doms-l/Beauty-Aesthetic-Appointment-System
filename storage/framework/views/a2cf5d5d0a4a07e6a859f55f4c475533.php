@@ -1,4 +1,6 @@
-<?php $__env->startSection('title', 'Manage Appointments | M. Cares'); ?>
+
+
+<?php $__env->startSection('title', 'Manage Appointments | M. Care'); ?>
 
 <?php $__env->startSection('content'); ?>
 

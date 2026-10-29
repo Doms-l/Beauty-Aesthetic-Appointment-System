@@ -1,6 +1,6 @@
  
  
-<?php $__env->startSection('title', 'Admin Dashboard | M. Cares'); ?> 
+<?php $__env->startSection('title', 'Admin Dashboard | M. Care'); ?> 
  
 <?php $__env->startSection('content'); ?> 
 
