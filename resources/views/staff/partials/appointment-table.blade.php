@@ -31,7 +31,13 @@
                     <small>{{ $appointment->user->phone }}</small>
                 </td>
 
-                <td>{{ $appointment->service->name }}</td>
+                <td>
+                    {{ $appointment->service->name }}
+
+                    @if($appointment->is_package && \App\Support\StaffAppointments::isMine($appointment, $staff))
+                        @include('partials.package-sessions', ['appointment' => $appointment])
+                    @endif
+                </td>
 
                 <td>
                     <span class="status {{ $appointment->status }}">{{ ucfirst($appointment->status) }}</span>
@@ -45,7 +51,7 @@
                         </button>
 
                         @if(\App\Support\StaffAppointments::isMine($appointment, $staff))
-                            @if($appointment->status === 'completed')
+                            @if($appointment->status === 'completed' && ! $appointment->is_package)
                                 <a class="sa-print" href="{{ route('staff.appointments.receipt', $appointment) }}" target="_blank" rel="noopener">🧾 Print receipt</a>
                             @endif
 

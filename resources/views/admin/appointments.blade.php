@@ -126,7 +126,8 @@
                                 $packageUrl  = $isAdminUser ? route('admin.appointments.package', $appointment) : route('staff.appointments.package', $appointment);
                             @endphp
 
-                            @if($appointment->status === 'completed')
+                            {{-- a package prints one receipt per finished session (see the Service column) --}}
+                            @if($appointment->status === 'completed' && ! $appointment->is_package)
                                 <a class="print-link" href="{{ $receiptUrl }}" target="_blank" rel="noopener">🧾 Print receipt</a>
                             @endif
 
@@ -140,7 +141,13 @@
                             <small>{{ $appointment->user->phone }}</small>
                         </td>
 
-                        <td>{{ $appointment->service->name }}</td>
+                        <td>
+                            {{ $appointment->service->name }}
+
+                            @if($appointment->is_package)
+                                @include('partials.package-sessions', ['appointment' => $appointment])
+                            @endif
+                        </td>
 
                         <td>
                             <form method="POST"

@@ -124,7 +124,8 @@
                                 $packageUrl  = $isAdminUser ? route('admin.appointments.package', $appointment) : route('staff.appointments.package', $appointment);
                             ?>
 
-                            <?php if($appointment->status === 'completed'): ?>
+                            
+                            <?php if($appointment->status === 'completed' && ! $appointment->is_package): ?>
                                 <a class="print-link" href="<?php echo e($receiptUrl); ?>" target="_blank" rel="noopener">🧾 Print receipt</a>
                             <?php endif; ?>
 
@@ -138,7 +139,14 @@
                             <small><?php echo e($appointment->user->phone); ?></small>
                         </td>
 
-                        <td><?php echo e($appointment->service->name); ?></td>
+                        <td>
+                            <?php echo e($appointment->service->name); ?>
+
+
+                            <?php if($appointment->is_package): ?>
+                                <?php echo $__env->make('partials.package-sessions', ['appointment' => $appointment], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+                            <?php endif; ?>
+                        </td>
 
                         <td>
                             <form method="POST"

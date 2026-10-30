@@ -1,20 +1,21 @@
-{{-- Receipt for ONE completed appointment.
+{{-- Receipt for ONE completed appointment, or ONE completed session of a package.
      Paper: half of a short bond (8.5 x 5.5 in).
-     $appointment, $package (or null), $staffName, $issuedAt --}}
+     $appointment, $package (['sessions', 'session_no'] or null), $receiptNo,
+     $serviceDate, $serviceTime, $staffName, $issuedAt --}}
 @php
     $service  = $appointment->service;
     $client   = $appointment->user;
     $isPack   = $package !== null;
     $peso     = fn ($n) => '₱' . number_format((float) $n, 2);
     $amount   = (float) $service->price;
-    $timeText = \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A');
+    $timeText = \Carbon\Carbon::parse($serviceTime)->format('h:i A');
 @endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receipt {{ $appointment->receipt_number }} | M. Care</title>
+    <title>Receipt {{ $receiptNo }} | M. Care</title>
 
     <style>
         /* half of a short bond: 8.5in wide, 5.5in tall */
@@ -177,14 +178,14 @@
 
         <div class="meta">
             <h2>Acknowledgement Receipt</h2>
-            Receipt No.: <b>{{ $appointment->receipt_number }}</b><br>
+            Receipt No.: <b>{{ $receiptNo }}</b><br>
             Date issued: <b>{{ $issuedAt->format('M d, Y') }}</b>
         </div>
     </div>
 
     <div class="info">
         <div><span>Client</span><b>{{ $client->full_name }}</b></div>
-        <div><span>Service date</span><b>{{ $appointment->appointment_date->format('M d, Y') }} · {{ $timeText }}</b></div>
+        <div><span>Service date</span><b>{{ $serviceDate->format('M d, Y') }} · {{ $timeText }}</b></div>
         <div><span>Contact no.</span><b>{{ $client->phone ?: '-' }}</b></div>
         <div><span>Served by</span><b>{{ $staffName ?: '-' }}</b></div>
     </div>

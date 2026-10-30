@@ -18,7 +18,7 @@ class AppointmentController extends Controller
         $view   = $request->query('view', 'upcoming');
         $status = $request->query('status');
 
-        $query = Appointment::with(['user', 'service', 'staff.user'])
+        $query = Appointment::with(['user', 'service', 'staff.user', 'sessions'])
             ->active()
             ->when($staff, fn ($q) => $q->where('staff_id', $staff->id), fn ($q) => $q->whereRaw('1 = 0'));
 
@@ -64,6 +64,15 @@ class AppointmentController extends Controller
         ]);
 
         $newStatus = $validated['status'];
+
+        // A package completes itself after its last session ("Complete session")
+        $appointment->loadMissing('service');
+
+        if ($newStatus === 'completed'
+            && $appointment->is_package
+            && $appointment->sessions_done < (int) $appointment->service->sessions) {
+            return back()->withErrors(['appointment' => 'This is a package. Use "Complete session" for each visit.']);
+        }
 
         $rescheduled = $validated['appointment_date'] !== $appointment->appointment_date->format('Y-m-d')
             || $validated['appointment_time'] !== \Carbon\Carbon::parse($appointment->appointment_time)->format('H:i');

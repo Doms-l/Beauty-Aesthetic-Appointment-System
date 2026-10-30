@@ -3,30 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
-use App\Support\PackageSessions;
+use App\Models\AppointmentSession;
 use App\Support\StaffAppointments;
 use Illuminate\Http\Request;
 
 /**
- * Printable papers for an appointment:
- *  - receipt (half short bond), only once the appointment is Completed
- *  - package sheet (short bond), for services with more than one session
+ * Printable papers:
+ *  - receipt of a completed single-session service (half short bond)
+ *  - receipt of one completed session of a package (half short bond)
+ *  - package sheet with every finished session (short bond)
  *
- * Admin can print any appointment, staff only the ones assigned to them.
+ * Admin can print anything, staff only the appointments assigned to them.
  */
 class PrintController extends Controller
 {
+    /** Receipt for a normal (single-session) service. */
     public function receipt(Request $request, Appointment $appointment)
     {
         $this->authorizePrint($request, $appointment);
+
+        $appointment->load(['user', 'service', 'staff.user']);
+
+        abort_if(
+            $appointment->is_package,
+            404,
+            'This is a package. Print the receipt of a completed session instead.'
+        );
 
         abort_unless(
             $appointment->status === 'completed',
             403,
             'A receipt can only be printed once the appointment is completed.'
         );
-
-        $appointment->load(['user', 'service', 'staff.user']);
 
         // The receipt number is given once and then never changes
         if (! $appointment->receipt_number) {
@@ -37,38 +45,67 @@ class PrintController extends Controller
             $appointment->saveQuietly();
         }
 
-        $package = PackageSessions::for($appointment);
-
         return view('print.receipt', [
             'appointment' => $appointment,
-            'package'     => $package,
+            'package'     => null,
+            'receiptNo'   => $appointment->receipt_number,
+            'serviceDate' => $appointment->appointment_date,
+            'serviceTime' => $appointment->appointment_time,
             'staffName'   => $this->staffName($appointment),
             'issuedAt'    => now(),
         ]);
     }
 
+    /** Receipt for ONE completed session of a package ("Session 2 of 4"). */
+    public function sessionReceipt(Request $request, AppointmentSession $session)
+    {
+        $appointment = $session->appointment()->with(['user', 'service', 'staff.user'])->firstOrFail();
+
+        $this->authorizePrint($request, $appointment);
+
+        if (! $session->receipt_number) {
+            $session->receipt_number = 'MCP-'
+                . now()->format('Y')
+                . '-'
+                . str_pad((string) $session->id, 6, '0', STR_PAD_LEFT);
+            $session->save();
+        }
+
+        return view('print.receipt', [
+            'appointment' => $appointment,
+            'package'     => [
+                'sessions'   => (int) $appointment->service->sessions,
+                'session_no' => $session->session_no,
+            ],
+            'receiptNo'   => $session->receipt_number,
+            'serviceDate' => $session->session_date,
+            'serviceTime' => $session->session_time,
+            'staffName'   => $session->staff_label,
+            'issuedAt'    => now(),
+        ]);
+    }
+
+    /** Clients Package Sessions sheet, filled from the finished sessions. */
     public function package(Request $request, Appointment $appointment)
     {
         $this->authorizePrint($request, $appointment);
 
-        $appointment->load(['user', 'service', 'staff.user']);
-
-        $package = PackageSessions::for($appointment);
+        $appointment->load(['user', 'service', 'staff.user', 'sessions.staff.user', 'sessions.appointment']);
 
         abort_unless(
-            $package !== null,
+            $appointment->is_package,
             404,
-            'This appointment is not part of a package.'
+            'This appointment is not a package.'
         );
 
-        $bookings = $package['bookings'];
+        $sessions = $appointment->sessions;
 
         return view('print.package', [
             'appointment' => $appointment,
-            'package'     => $package,
+            'total'       => (int) $appointment->service->sessions,
+            'sessions'    => $sessions,
             'staffName'   => $this->staffName($appointment),
-            'startDate'   => optional($bookings->first())->appointment_date,
-            'rowStaff'    => fn (Appointment $a) => $this->staffName($a),
+            'startDate'   => $sessions->first()?->session_date ?? $appointment->appointment_date,
         ]);
     }
 

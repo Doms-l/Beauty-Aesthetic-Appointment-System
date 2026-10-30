@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PrintController;
+use App\Http\Controllers\AppointmentSessionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -20,6 +21,8 @@ use App\Http\Controllers\Admin\SocialLinkController as AdminSocialLinkController
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\AppointmentController as StaffAppointmentController;
+
+Route::model('session', \App\Models\AppointmentSession::class);
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -153,9 +156,18 @@ Route::middleware(['auth', 'role:staff'])
         Route::patch('/appointments/{appointment}/claim', [StaffAppointmentController::class, 'claim'])
             ->name('appointments.claim');
 
-        // printable receipt / package sheet (own appointments only)
+        // package visits + printable receipt / package sheet (own appointments only)
+        Route::post('/appointments/{appointment}/sessions', [AppointmentSessionController::class, 'store'])
+            ->name('appointments.sessions.store');
+
+        Route::patch('/appointments/{appointment}/next-session', [AppointmentSessionController::class, 'schedule'])
+            ->name('appointments.sessions.schedule');
+
         Route::get('/appointments/{appointment}/receipt', [PrintController::class, 'receipt'])
             ->name('appointments.receipt');
+
+        Route::get('/appointments/sessions/{session}/receipt', [PrintController::class, 'sessionReceipt'])
+            ->name('appointments.sessions.receipt');
 
         Route::get('/appointments/{appointment}/package-sheet', [PrintController::class, 'package'])
             ->name('appointments.package');
@@ -200,9 +212,21 @@ Route::middleware(['auth', 'role:admin'])
         Route::patch('/appointments/{appointment}/restore', [AdminAppointmentController::class, 'restore'])
             ->name('appointments.restore');
 
-        // printable receipt / package sheet
+        // package visits + printable receipt / package sheet
+        Route::post('/appointments/{appointment}/sessions', [AppointmentSessionController::class, 'store'])
+            ->name('appointments.sessions.store');
+
+        Route::patch('/appointments/{appointment}/next-session', [AppointmentSessionController::class, 'schedule'])
+            ->name('appointments.sessions.schedule');
+
+        Route::delete('/appointments/{appointment}/sessions/last', [AppointmentSessionController::class, 'undo'])
+            ->name('appointments.sessions.undo');
+
         Route::get('/appointments/{appointment}/receipt', [PrintController::class, 'receipt'])
             ->name('appointments.receipt');
+
+        Route::get('/appointments/sessions/{session}/receipt', [PrintController::class, 'sessionReceipt'])
+            ->name('appointments.sessions.receipt');
 
         Route::get('/appointments/{appointment}/package-sheet', [PrintController::class, 'package'])
             ->name('appointments.package');

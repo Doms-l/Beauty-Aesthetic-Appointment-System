@@ -1,10 +1,9 @@
 {{-- Clients Package Sessions sheet. Paper: short bond (8.5 x 11 in), also fits A4.
-     $appointment, $package, $staffName, $startDate, $rowStaff (callable) --}}
+     $appointment, $total (sessions in the package), $sessions (finished visits),
+     $staffName, $startDate --}}
 @php
     $service  = $appointment->service;
     $client   = $appointment->user;
-    $total    = $package['sessions'];
-    $bookings = $package['bookings'];
     $peso     = fn ($n) => '₱' . number_format((float) $n, 2);
 
     // many sessions (e.g. 10) need tighter rows so the sheet still fits one page
@@ -183,7 +182,7 @@
 
     </div>
 
-    <div class="bar">Clients package · {{ $total }} sessions @if($package['package'] > 1) · Package {{ $package['package'] }} @endif</div>
+    <div class="bar">Clients package · {{ $total }} sessions</div>
 
     <table class="sessions">
         <thead>
@@ -198,18 +197,20 @@
         </thead>
         <tbody>
         @for($i = 0; $i < $total; $i++)
-            @php
-                $b    = $bookings->get($i);
-                $done = $b && $b->status === 'completed';
-            @endphp
+            @php $b = $sessions->get($i); @endphp
             <tr>
                 <td class="n"><span class="no">{{ $i + 1 }}</span></td>
-                <td>{{ $b ? $b->appointment_date->format('M d, Y') : '' }}@unless($b)<span class="blank"></span>@endunless</td>
-                <td>{{ $b ? \Carbon\Carbon::parse($b->appointment_time)->format('h:i A') : '' }}@unless($b)<span class="blank"></span>@endunless</td>
-                <td class="status">
-                    <span class="cb">{{ $done ? '✓' : '' }}</span>{{ $done ? 'Completed' : ($b ? ucfirst($b->status) : 'Pending') }}
+                <td>
+                    @if($b) {{ $b->session_date->format('M d, Y') }}
+                    @elseif($i === $sessions->count() && $appointment->next_session_date) {{ $appointment->next_session_date->format('M d, Y') }}
+                    @else <span class="blank"></span>
+                    @endif
                 </td>
-                <td>{{ $b ? $rowStaff($b) : '' }}@unless($b)<span class="blank"></span>@endunless</td>
+                <td>{{ $b ? \Carbon\Carbon::parse($b->session_time)->format('h:i A') : '' }}@unless($b)<span class="blank"></span>@endunless</td>
+                <td class="status">
+                    <span class="cb">{{ $b ? '✓' : '' }}</span>{{ $b ? 'Completed' : 'Pending' }}
+                </td>
+                <td>{{ $b ? $b->staff_label : '' }}@unless($b)<span class="blank"></span>@endunless</td>
                 <td><span class="blank"></span></td>
             </tr>
         @endfor

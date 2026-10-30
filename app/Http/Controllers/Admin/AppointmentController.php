@@ -25,7 +25,7 @@ class AppointmentController extends Controller
             }
         }
 
-        $appointments = Appointment::with(['user', 'service', 'staff.user'])
+        $appointments = Appointment::with(['user', 'service', 'staff.user', 'sessions'])
             ->when(
                 $showArchived,
                 fn ($q) => $q->whereNotNull('archived_at'),
@@ -56,6 +56,19 @@ class AppointmentController extends Controller
             'status' => ['required', 'in:pending,confirmed,completed,cancelled,rescheduled'],
             'staff_id' => ['nullable', 'exists:staff,id'],
         ]);
+
+        // A package is finished by completing its sessions one by one,
+        // not by picking "Completed" for the whole booking.
+        $appointment->loadMissing('service');
+
+        if ($validated['status'] === 'completed'
+            && $appointment->status !== 'completed'
+            && $appointment->is_package
+            && $appointment->sessions_done < (int) $appointment->service->sessions) {
+            return back()->withErrors([
+                'appointment' => 'This is a package. Use "Complete session" for each visit; the booking completes itself after the last session.',
+            ]);
+        }
 
         // Assigning a staff member replaces the "Owner" request
         if (!empty($validated['staff_id'])) {

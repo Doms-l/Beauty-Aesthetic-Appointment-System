@@ -76,6 +76,10 @@ class StaffAppointments
             if ($status === 'completed' && ! self::canComplete($appointment)) {
                 continue; // cannot complete a future appointment
             }
+
+            if ($status === 'completed' && $appointment->service && $appointment->service->is_package) {
+                continue; // a package completes itself after its last session
+            }
             $statuses[] = ['value' => $status, 'label' => ucfirst($status)];
         }
 

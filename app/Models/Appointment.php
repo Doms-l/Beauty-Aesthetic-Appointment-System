@@ -20,12 +20,14 @@ class Appointment extends Model
         'notes',
         'status',
         'receipt_number',
+        'next_session_date',
         'archived_at',
         'admin_saved_at',
     ];
 
     protected $casts = [
         'appointment_date' => 'date',
+        'next_session_date' => 'date',
         'with_owner' => 'boolean',
         'archived_at' => 'datetime',
         'admin_saved_at' => 'datetime',
@@ -44,6 +46,35 @@ class Appointment extends Model
     public function staff()
     {
         return $this->belongsTo(Staff::class);
+    }
+
+    /** Finished visits of a package booking, in order (session 1, 2, ...). */
+    public function sessions()
+    {
+        return $this->hasMany(AppointmentSession::class)->orderBy('session_no');
+    }
+
+    /** True when this booking is a package (its service has more than one session). */
+    public function getIsPackageAttribute(): bool
+    {
+        return (bool) ($this->service && $this->service->is_package);
+    }
+
+    /** How many sessions of a package booking are already done. */
+    public function getSessionsDoneAttribute(): int
+    {
+        return $this->relationLoaded('sessions')
+            ? $this->sessions->count()
+            : $this->sessions()->count();
+    }
+
+    /** True when a visit can still be logged on this booking. */
+    public function canLogSession(): bool
+    {
+        return $this->is_package
+            && $this->archived_at === null
+            && $this->status !== 'cancelled'
+            && $this->sessions_done < (int) $this->service->sessions;
     }
 
     /** The promo this booking used a slot of (if any). */

@@ -63,6 +63,80 @@ class DashboardController extends Controller
     }
 
 
+    /**
+     * The money entries behind the analytics.
+     *
+     * Normal service: one entry (price), unless cancelled.
+     * Package: one entry per finished session (earned, dated the day it was
+     * done, kept even if the booking is cancelled later) plus one entry per
+     * session still to come (expected, only while the booking is not cancelled).
+     * Archived bookings are never counted.
+     *
+     * @return \Illuminate\Support\Collection<int, object{appointment_date: Carbon, status: string, name: string, amount: float}>
+     */
+    private function incomeEntries()
+    {
+        $appointments = Appointment::with([
+                'service:id,name,price,sessions',
+                'sessions:id,appointment_id,session_date',
+            ])
+            ->whereNull('archived_at')
+            ->get(['id', 'service_id', 'appointment_date', 'next_session_date', 'status']);
+
+        $entries = collect();
+
+        foreach ($appointments as $appointment) {
+
+            $service = $appointment->service;
+            $name    = $service->name ?? 'Unknown service';
+
+            if ($service && $service->is_package) {
+
+                $share = (float) $service->per_session_price;
+
+                foreach ($appointment->sessions as $session) {
+                    $entries->push((object) [
+                        'appointment_date' => $session->session_date,
+                        'status'           => 'completed',
+                        'name'             => $name,
+                        'amount'           => $share,
+                    ]);
+                }
+
+                if ($appointment->status !== 'cancelled') {
+                    $left = max(0, (int) $service->sessions - $appointment->sessions->count());
+
+                    for ($i = 0; $i < $left; $i++) {
+                        $entries->push((object) [
+                            'appointment_date' => ($i === 0 && $appointment->next_session_date)
+                                ? $appointment->next_session_date
+                                : $appointment->appointment_date,
+                            'status'           => 'pending',
+                            'name'             => $name,
+                            'amount'           => $share,
+                        ]);
+                    }
+                }
+
+                continue;
+            }
+
+            if ($appointment->status === 'cancelled') {
+                continue;
+            }
+
+            $entries->push((object) [
+                'appointment_date' => $appointment->appointment_date,
+                'status'           => $appointment->status,
+                'name'             => $name,
+                'amount'           => (float) ($service->price ?? 0),
+            ]);
+        }
+
+        return $entries;
+    }
+
+
     /*
      * INCOME ANALYTICS
      *
@@ -73,6 +147,8 @@ class DashboardController extends Controller
      * A package (service with more than one session) counts its price
      * split evenly over its sessions: 3,999 for 4 sessions = 999.75 for
      * each session, so a finished package adds up to exactly 3,999.
+     * Every session the staff completed is "Earned" on the day it happened;
+     * the sessions still to come are "Expected" on the booking date.
      *
      * "Earned"   = completed appointments
      * "Expected" = pending / confirmed / rescheduled appointments
@@ -113,10 +189,8 @@ class DashboardController extends Controller
             ],
         ];
 
-        // One query: every non-cancelled appointment with its service
-        $rows = Appointment::with('service:id,name,price,sessions')
-            ->counted()
-            ->get(['id', 'service_id', 'appointment_date', 'status']);
+        // One income entry per service (or per session of a package)
+        $rows = $this->incomeEntries();
 
         $periods = [];
 
@@ -142,7 +216,7 @@ class DashboardController extends Controller
                         continue;
                     }
 
-                    $price = (float) ($row->service->per_session_price ?? 0);
+                    $price = (float) $row->amount;
 
                     $income += $price;
                     $count++;
@@ -176,11 +250,11 @@ class DashboardController extends Controller
                     continue;
                 }
 
-                $name = $row->service->name ?? 'Unknown service';
+                $name = $row->name;
 
                 $byService[$name] ??= ['name' => $name, 'bookings' => 0, 'income' => 0.0];
                 $byService[$name]['bookings']++;
-                $byService[$name]['income'] += (float) ($row->service->per_session_price ?? 0);
+                $byService[$name]['income'] += (float) $row->amount;
             }
 
             $byService = collect($byService)
@@ -204,8 +278,8 @@ class DashboardController extends Controller
                     continue;
                 }
 
-                $name  = $row->service->name ?? 'Unknown service';
-                $price = (float) ($row->service->per_session_price ?? 0);
+                $name  = $row->name;
+                $price = (float) $row->amount;
 
                 $currentServices[$name] ??= ['name' => $name, 'bookings' => 0, 'income' => 0.0];
                 $currentServices[$name]['bookings']++;
@@ -242,9 +316,9 @@ class DashboardController extends Controller
             'month'   => end($periods['monthly']['buckets'])['income'],
             'quarter' => end($periods['quarterly']['buckets'])['income'],
             'year'    => end($periods['annual']['buckets'])['income'],
-            'all'     => round($rows->sum(fn ($r) => (float) ($r->service->per_session_price ?? 0)), 2),
+            'all'     => round($rows->sum(fn ($r) => (float) $r->amount), 2),
             'earned'  => round($rows->where('status', 'completed')
-                            ->sum(fn ($r) => (float) ($r->service->per_session_price ?? 0)), 2),
+                            ->sum(fn ($r) => (float) $r->amount), 2),
         ];
 
         $summary['expected'] = round($summary['all'] - $summary['earned'], 2);
