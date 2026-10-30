@@ -303,6 +303,33 @@
                 color: #fff !important;
             }
 
+            /* red number on Admin / Staff Dashboard */
+            .nav-alert-wrap { position: relative; display: inline-flex; }
+            .nav-alert-badge {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                min-width: 20px;
+                height: 20px;
+                padding: 0 5px;
+                border-radius: 999px;
+                background: #e5383b;
+                color: #fff;
+                font-size: 11px;
+                font-weight: 800;
+                line-height: 20px;
+                text-align: center;
+                border: 2px solid var(--nav-badge-ring, #1b171a);
+                pointer-events: none;
+                animation: navAlertPulse 2s ease-in-out infinite;
+            }
+            .nav-alert-badge[hidden] { display: none; }
+            @keyframes navAlertPulse {
+                0%, 100% { transform: scale(1); }
+                50%      { transform: scale(1.12); }
+            }
+            @media (prefers-reduced-motion: reduce) { .nav-alert-badge { animation: none; } }
+
             /* Services hover menu */
             .nav-dropdown {
                 position: relative;
@@ -472,8 +499,10 @@
 
                     <div class="nav-dropdown">
 
-                        <a href="<?php echo e(route('admin.dashboard')); ?>" class="<?php echo e(request()->routeIs('admin.*') && ! request()->routeIs('admin.profile') ? 'nav-active' : ''); ?>">
+                        <?php $navAlert = \App\Support\NavAlerts::for(auth()->user()); ?>
+                        <a href="<?php echo e(route('admin.dashboard')); ?>" class="<?php echo e(request()->routeIs('admin.*') && ! request()->routeIs('admin.profile') ? 'nav-active' : ''); ?>" title="<?php echo e($navAlert['label']); ?>" data-nav-alert-link>
                             Admin Dashboard
+                            <span class="nav-alert-wrap"><span class="nav-alert-badge" data-nav-alert <?php if($navAlert['count'] < 1): ?> hidden <?php endif; ?>><?php echo e($navAlert['count'] > 9 ? '9+' : $navAlert['count']); ?></span></span>
                         </a>
 
                         <div class="nav-dropdown-menu">
@@ -519,8 +548,10 @@
 
                 <?php elseif(auth()->user()->isStaff()): ?>
 
-                    <a href="<?php echo e(route('staff.dashboard')); ?>" class="<?php echo e(request()->routeIs('staff.*') ? 'nav-active' : ''); ?>">
+                    <?php $navAlert = \App\Support\NavAlerts::for(auth()->user()); ?>
+                    <a href="<?php echo e(route('staff.dashboard')); ?>" class="<?php echo e(request()->routeIs('staff.*') ? 'nav-active' : ''); ?>" title="<?php echo e($navAlert['label']); ?>" data-nav-alert-link>
                         Staff Dashboard
+                        <span class="nav-alert-wrap"><span class="nav-alert-badge" data-nav-alert <?php if($navAlert['count'] < 1): ?> hidden <?php endif; ?>><?php echo e($navAlert['count'] > 9 ? '9+' : $navAlert['count']); ?></span></span>
                     </a>
 
                 <?php endif; ?>
@@ -2626,6 +2657,37 @@ document.addEventListener(
 
 
 <?php echo $__env->make('partials.mobile-responsive', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
+<?php if(auth()->guard()->check()): ?>
+<?php if(auth()->user()->isAdmin() || auth()->user()->isStaff()): ?>
+<script>
+    // keep the red number fresh without reloading the page
+    (function () {
+        const badge = document.querySelector('[data-nav-alert]');
+        const link  = document.querySelector('[data-nav-alert-link]');
+        if (!badge) return;
+
+        async function refresh() {
+            if (document.hidden) return;
+            try {
+                const res = await fetch(<?php echo json_encode(route('nav.alerts'), 15, 512) ?>, {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin'
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                badge.textContent = data.count > 9 ? '9+' : data.count;
+                badge.hidden = data.count < 1;
+                if (link) link.title = data.label;
+            } catch (e) { /* offline: keep the old number */ }
+        }
+
+        setInterval(refresh, 30000);
+        document.addEventListener('visibilitychange', refresh);
+    })();
+</script>
+<?php endif; ?>
+<?php endif; ?>
 
 </body>
 

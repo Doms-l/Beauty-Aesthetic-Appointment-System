@@ -7,8 +7,15 @@
     $client   = $appointment->user;
     $isPack   = $package !== null;
     $peso     = fn ($n) => '₱' . number_format((float) $n, 2);
-    $amount   = (float) $service->price;
+    $amount   = $isPack ? (float) $service->per_session_price : (float) $service->price;
     $timeText = \Carbon\Carbon::parse($serviceTime)->format('h:i A');
+@endphp
+@php
+    // Logo is embedded so it always prints, even if the print tab opens before an image file finishes loading
+    $logoFile = public_path('images/logo-print.jpg');
+    $logoSrc  = is_file($logoFile)
+        ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoFile))
+        : asset('images/logo.png');
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -169,7 +176,7 @@
 
     <div class="head">
         <div class="brand">
-            <img src="{{ asset('images/logo.png') }}" alt="M. Care Beauty Services">
+            <img src="{{ $logoSrc }}" alt="M. Care Beauty Services">
             <div>
                 <h1>M. CARE BEAUTY SERVICES</h1>
                 <p>Glow with Confidence, Naturally</p>
@@ -204,7 +211,7 @@
                     @if($isPack)
                         <small>
                             Session {{ $package['session_no'] }} of {{ $package['sessions'] }}
-                            · Package price for {{ $package['sessions'] }} sessions
+                            · Package price {{ $peso($service->price) }} for {{ $package['sessions'] }} sessions
                         </small>
                     @endif
                 </td>
@@ -215,7 +222,7 @@
 
     <div class="total">
         <div>
-            <span>{{ $isPack ? 'PACKAGE PRICE' : 'TOTAL' }}</span>
+            <span>{{ $isPack ? 'SESSION FEE' : 'TOTAL' }}</span>
             <strong>{{ $peso($amount) }}</strong>
         </div>
     </div>

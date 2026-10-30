@@ -73,8 +73,11 @@ class AppointmentSessionController extends Controller
                 ? $user->staffProfile->id
                 : $locked->staff_id;
 
+            // highest number + 1 (not count + 1), so an undo or a gap can never repeat a number
+            $nextNo = (int) $locked->sessions()->max('session_no') + 1;
+
             $locked->sessions()->create([
-                'session_no'   => $done + 1,
+                'session_no'   => $nextNo,
                 'session_date' => $validated['session_date'],
                 'session_time' => $time,
                 'staff_id'     => $staffId,

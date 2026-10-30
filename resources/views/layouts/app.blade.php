@@ -309,6 +309,33 @@
                 color: #fff !important;
             }
 
+            /* red number on Admin / Staff Dashboard */
+            .nav-alert-wrap { position: relative; display: inline-flex; }
+            .nav-alert-badge {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                min-width: 20px;
+                height: 20px;
+                padding: 0 5px;
+                border-radius: 999px;
+                background: #e5383b;
+                color: #fff;
+                font-size: 11px;
+                font-weight: 800;
+                line-height: 20px;
+                text-align: center;
+                border: 2px solid var(--nav-badge-ring, #1b171a);
+                pointer-events: none;
+                animation: navAlertPulse 2s ease-in-out infinite;
+            }
+            .nav-alert-badge[hidden] { display: none; }
+            @keyframes navAlertPulse {
+                0%, 100% { transform: scale(1); }
+                50%      { transform: scale(1.12); }
+            }
+            @media (prefers-reduced-motion: reduce) { .nav-alert-badge { animation: none; } }
+
             /* Services hover menu */
             .nav-dropdown {
                 position: relative;
@@ -476,8 +503,10 @@
 
                     <div class="nav-dropdown">
 
-                        <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.*') && ! request()->routeIs('admin.profile') ? 'nav-active' : '' }}">
+                        @php $navAlert = \App\Support\NavAlerts::for(auth()->user()); @endphp
+                        <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.*') && ! request()->routeIs('admin.profile') ? 'nav-active' : '' }}" title="{{ $navAlert['label'] }}" data-nav-alert-link>
                             Admin Dashboard
+                            <span class="nav-alert-wrap"><span class="nav-alert-badge" data-nav-alert @if($navAlert['count'] < 1) hidden @endif>{{ $navAlert['count'] > 9 ? '9+' : $navAlert['count'] }}</span></span>
                         </a>
 
                         <div class="nav-dropdown-menu">
@@ -522,8 +551,10 @@
 
                 @elseif(auth()->user()->isStaff())
 
-                    <a href="{{ route('staff.dashboard') }}" class="{{ request()->routeIs('staff.*') ? 'nav-active' : '' }}">
+                    @php $navAlert = \App\Support\NavAlerts::for(auth()->user()); @endphp
+                    <a href="{{ route('staff.dashboard') }}" class="{{ request()->routeIs('staff.*') ? 'nav-active' : '' }}" title="{{ $navAlert['label'] }}" data-nav-alert-link>
                         Staff Dashboard
+                        <span class="nav-alert-wrap"><span class="nav-alert-badge" data-nav-alert @if($navAlert['count'] < 1) hidden @endif>{{ $navAlert['count'] > 9 ? '9+' : $navAlert['count'] }}</span></span>
                     </a>
 
                 @endif
@@ -2662,6 +2693,37 @@ document.addEventListener(
 
 
 @include('partials.mobile-responsive')
+
+@auth
+@if(auth()->user()->isAdmin() || auth()->user()->isStaff())
+<script>
+    // keep the red number fresh without reloading the page
+    (function () {
+        const badge = document.querySelector('[data-nav-alert]');
+        const link  = document.querySelector('[data-nav-alert-link]');
+        if (!badge) return;
+
+        async function refresh() {
+            if (document.hidden) return;
+            try {
+                const res = await fetch(@json(route('nav.alerts')), {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin'
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                badge.textContent = data.count > 9 ? '9+' : data.count;
+                badge.hidden = data.count < 1;
+                if (link) link.title = data.label;
+            } catch (e) { /* offline: keep the old number */ }
+        }
+
+        setInterval(refresh, 30000);
+        document.addEventListener('visibilitychange', refresh);
+    })();
+</script>
+@endif
+@endauth
 
 </body>
 

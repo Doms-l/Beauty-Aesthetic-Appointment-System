@@ -9,6 +9,13 @@
     // many sessions (e.g. 10) need tighter rows so the sheet still fits one page
     $rowHeight = $total > 6 ? '0.34in' : '0.43in';
 @endphp
+@php
+    // Logo is embedded so it always prints, even if the print tab opens before an image file finishes loading
+    $logoFile = public_path('images/logo-print.jpg');
+    $logoSrc  = is_file($logoFile)
+        ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoFile))
+        : asset('images/logo.png');
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -153,7 +160,7 @@
 <div class="paper" style="--row-h: {{ $rowHeight }};">
 
     <div class="top">
-        <img src="{{ asset('images/logo.png') }}" alt="M. Care Beauty Services">
+        <img src="{{ $logoSrc }}" alt="M. Care Beauty Services">
 
         <div class="title">
             <p class="c">CLIENTS</p>

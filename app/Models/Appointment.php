@@ -91,6 +91,24 @@ class Appointment extends Model
             : $this->next_session_date;
     }
 
+    /**
+     * Package bookings of a client that have a planned next visit
+     * (today or later). Used for the avatar badge and the profile page.
+     */
+    public static function upcomingPackageVisits(int $userId)
+    {
+        return static::with(['service', 'sessions'])
+            ->where('user_id', $userId)
+            ->whereNotIn('status', ['cancelled', 'completed'])
+            ->whereNull('archived_at')
+            ->whereNotNull('next_session_date')
+            ->whereDate('next_session_date', '>=', today())
+            ->orderBy('next_session_date')
+            ->get()
+            ->filter(fn (Appointment $a) => $a->is_package && $a->canLogSession() && $a->sessions_done >= 1)
+            ->values();
+    }
+
     /** True when a visit can still be logged on this booking. */
     public function canLogSession(): bool
     {

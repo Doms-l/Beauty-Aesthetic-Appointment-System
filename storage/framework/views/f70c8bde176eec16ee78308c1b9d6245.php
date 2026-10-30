@@ -90,7 +90,7 @@
 
 </div>
 
-<?php if (! $__env->hasRenderedOnce('580e427e-a2c3-4c43-bdb2-989648030594')): $__env->markAsRenderedOnce('580e427e-a2c3-4c43-bdb2-989648030594'); ?>
+<?php if (! $__env->hasRenderedOnce('37d8b19c-fad4-4a52-a50a-3b1d9542ea4f')): $__env->markAsRenderedOnce('37d8b19c-fad4-4a52-a50a-3b1d9542ea4f'); ?>
 <style>
     .pkg-box {
         margin-top: 8px;

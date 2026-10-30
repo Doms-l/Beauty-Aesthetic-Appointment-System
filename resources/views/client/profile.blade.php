@@ -29,6 +29,25 @@
 
     <div class="container narrow-panel">
 
+        @if(isset($nextSessions) && $nextSessions->isNotEmpty())
+            <div class="next-sessions-card">
+                <h3>🔔 Your next session{{ $nextSessions->count() > 1 ? 's' : '' }}</h3>
+                @foreach($nextSessions as $visit)
+                    <div class="next-session-row">
+                        <div>
+                            <strong>{{ $visit->service->name }}</strong>
+                            <small>Session {{ $visit->sessions_done + 1 }} of {{ (int) $visit->service->sessions }}</small>
+                        </div>
+                        <div class="next-session-date">
+                            {{ $visit->next_session_date->format('M d, Y') }}
+                            <small>{{ $visit->next_session_date->isToday() ? 'Today' : $visit->next_session_date->diffForHumans(['parts' => 1]) }}</small>
+                        </div>
+                    </div>
+                @endforeach
+                <a href="{{ route('client.appointments') }}" class="next-sessions-link">See full package progress →</a>
+            </div>
+        @endif
+
         <form
             method="POST"
             action="{{ route('client.profile.update') }}"
@@ -372,5 +391,15 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 </script>
+
+
+<style>
+    .next-sessions-card { margin-bottom: 22px; padding: 16px 18px; border-radius: 16px; border: 1px solid #E8AECF; background: rgba(243, 188, 210, .22); color: var(--text); }
+    .next-sessions-card h3 { margin: 0 0 10px; font-size: 17px; }
+    .next-session-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px dotted #E8AECF; }
+    .next-session-row small, .next-session-date small { display: block; color: var(--text-muted); font-size: 12px; }
+    .next-session-date { text-align: right; font-weight: 700; white-space: nowrap; }
+    .next-sessions-link { display: inline-block; margin-top: 8px; font-size: 13px; font-weight: 600; }
+</style>
 
 @endsection

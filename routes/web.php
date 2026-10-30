@@ -98,6 +98,13 @@ Route::middleware('guest')->group(function () {
 });
 
 
+// navbar notification number for staff / admin (refreshed every 30 seconds)
+Route::get('/nav-alerts', function (\Illuminate\Http\Request $request) {
+    abort_unless($request->user()->isAdmin() || $request->user()->isStaff(), 403);
+
+    return response()->json(\App\Support\NavAlerts::for($request->user()));
+})->middleware(['auth', 'throttle:60,1'])->name('nav.alerts');
+
 Route::post('/logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');

@@ -16,7 +16,8 @@ class ProfileController extends Controller
     public function edit(Request $request)
     {
         return view('client.profile', [
-            'user' => $request->user()
+            'user' => $request->user(),
+            'nextSessions' => Appointment::upcomingPackageVisits($request->user()->id),
         ]);
     }
 
