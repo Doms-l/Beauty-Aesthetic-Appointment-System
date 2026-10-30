@@ -90,11 +90,17 @@ class AppointmentController extends Controller
             }
         }
 
+        $wasStatus = $appointment->status;
+
         $appointment->update([
             'status' => $newStatus,
             'appointment_date' => $validated['appointment_date'],
             'appointment_time' => $validated['appointment_time'] . ':00',
         ]);
+
+        if ($newStatus === 'confirmed' && $wasStatus !== 'confirmed') {
+            \App\Support\BookingNotifier::confirmed($appointment);
+        }
 
         return back()->with('success', 'Appointment updated.');
     }

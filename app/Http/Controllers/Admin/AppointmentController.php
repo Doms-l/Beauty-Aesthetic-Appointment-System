@@ -78,7 +78,13 @@ class AppointmentController extends Controller
         // clicking Save marks this row (and only this row) as saved
         $validated['admin_saved_at'] = now();
 
+        $wasStatus = $appointment->status;
+
         $appointment->update($validated);
+
+        if ($validated['status'] === 'confirmed' && $wasStatus !== 'confirmed') {
+            \App\Support\BookingNotifier::confirmed($appointment);
+        }
 
         return back()->with('success', 'Appointment updated successfully.');
     }

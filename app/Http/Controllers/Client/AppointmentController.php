@@ -115,11 +115,11 @@ class AppointmentController extends Controller
 
         // Limited promos: the slot is claimed and the booking saved in ONE
         // transaction, so the last slot can never be sold twice.
-        DB::transaction(function () use ($request, $service, $staffId, $withOwner, $validated) {
+        $appointment = DB::transaction(function () use ($request, $service, $staffId, $withOwner, $validated) {
 
             $promo = PromoSlots::claim($service, $request->user());
 
-            Appointment::create([
+            return Appointment::create([
                 'user_id' => $request->user()->id,
                 'service_id' => $service->id,
                 'promo_id' => $promo?->id,
@@ -131,6 +131,9 @@ class AppointmentController extends Controller
                 'status' => 'pending',
             ]);
         });
+
+        // email the owner and the staff (a mail problem never blocks the booking)
+        \App\Support\BookingNotifier::newBooking($appointment);
 
         return redirect()->route('client.appointments')
             ->with('success', 'Appointment request submitted. Please wait for clinic confirmation.');
