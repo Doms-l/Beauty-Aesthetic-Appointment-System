@@ -18,7 +18,7 @@ class AppointmentController extends Controller
 {
     public function index(Request $request)
     {
-        $appointments = Appointment::with(['service', 'staff.user'])
+        $appointments = Appointment::with(['service', 'staff.user', 'sessions'])
             ->where('user_id', $request->user()->id)
             ->orderByDesc('appointment_date')
             ->orderByDesc('appointment_time')

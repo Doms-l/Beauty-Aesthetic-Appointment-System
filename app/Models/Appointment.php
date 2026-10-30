@@ -68,6 +68,29 @@ class Appointment extends Model
             : $this->sessions()->count();
     }
 
+    /**
+     * The day of the client's next visit for this booking.
+     *  - normal service: the booked day
+     *  - package, nothing done yet: the booked day (session 1)
+     *  - package, in progress: the day the clinic planned for the next
+     *    session, or null while it is not set yet
+     *  - finished / cancelled / archived package: null
+     */
+    public function getNextVisitDateAttribute(): ?\Illuminate\Support\Carbon
+    {
+        if (! $this->is_package) {
+            return $this->appointment_date;
+        }
+
+        if (! $this->canLogSession()) {
+            return null;
+        }
+
+        return $this->sessions_done === 0
+            ? $this->appointment_date
+            : $this->next_session_date;
+    }
+
     /** True when a visit can still be logged on this booking. */
     public function canLogSession(): bool
     {

@@ -17,8 +17,19 @@
                 <span class="eyebrow">NEXT APPOINTMENT</span>
                 @if($upcoming)
                     <h2>{{ $upcoming->service->name }}</h2>
-                    <p>{{ $upcoming->appointment_date->format('F d, Y') }} · {{ \Carbon\Carbon::parse($upcoming->appointment_time)->format('h:i A') }}</p>
+                    @if($upcoming->is_package)
+                        {{-- later sessions only have a planned day, the first one also has the booked time --}}
+                        <p>{{ $upcoming->next_visit_date->format('F d, Y') }}@if($upcoming->sessions_done === 0) · {{ \Carbon\Carbon::parse($upcoming->appointment_time)->format('h:i A') }}@endif</p>
+                        @include('partials.client-package-progress', ['appointment' => $upcoming])
+                    @else
+                        <p>{{ $upcoming->appointment_date->format('F d, Y') }} · {{ \Carbon\Carbon::parse($upcoming->appointment_time)->format('h:i A') }}</p>
+                    @endif
                     <span class="status {{ $upcoming->status }}">{{ ucfirst($upcoming->status) }}</span>
+                @elseif($waitingPackage)
+                    <h2>{{ $waitingPackage->service->name }}</h2>
+                    <p>Your next session date is not set yet.</p>
+                    @include('partials.client-package-progress', ['appointment' => $waitingPackage])
+                    <span class="status {{ $waitingPackage->status }}">{{ ucfirst($waitingPackage->status) }}</span>
                 @else
                     <h2>No upcoming appointment</h2>
                     <p>Book your next beauty service when you're ready.</p>
