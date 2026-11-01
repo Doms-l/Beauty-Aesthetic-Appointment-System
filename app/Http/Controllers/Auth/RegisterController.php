@@ -51,7 +51,13 @@ class RegisterController extends Controller
                 'confirmed',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/',
             ],
+
+            // Data Privacy: the box must be ticked to register
+            'terms' => ['accepted'],
         ], [
+
+            'terms.accepted' =>
+                'You must agree to the Terms and Conditions and Data Privacy Notice to register.',
 
             'phone.digits' =>
                 'Phone number must contain exactly 11 digits.',
@@ -66,6 +72,9 @@ class RegisterController extends Controller
                 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
 
         ]);
+
+        // 'terms' is only a checkbox - it is not a column on the users table.
+        unset($validated['terms']);
 
         // Public registration can only create a client account.
         $validated['role'] = 'client';
