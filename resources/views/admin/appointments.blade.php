@@ -35,6 +35,26 @@
             </div>
         @endif
 
+        {{-- New-request indicator (same number as the red badge in the menu) --}}
+        @if(! $showArchived)
+            @if($newCount > 0)
+                <div class="new-alert">
+                    <span class="new-alert-icon">🔔</span>
+                    <div class="new-alert-text">
+                        <strong>{{ $newCount }} new {{ $newCount === 1 ? 'appointment' : 'appointments' }} to review</strong>
+                        <span>Pending requests are marked <b class="new-pill">NEW</b> below.</span>
+                    </div>
+                    @if($pendingOnly)
+                        <a class="new-alert-btn" href="{{ route('admin.appointments') }}">Show all</a>
+                    @else
+                        <a class="new-alert-btn" href="{{ route('admin.appointments', ['status' => 'pending']) }}">Show only new</a>
+                    @endif
+                </div>
+            @else
+                <div class="new-alert none">✅ No new appointments waiting for review.</div>
+            @endif
+        @endif
+
         @if($errors->any())
             <p style="color:#d64b6b;">{{ $errors->first() }}</p>
         @endif
@@ -112,7 +132,10 @@
 
                         <td>
                             {{ $appointment->appointment_date->format('M d, Y') }}<br>
-                            {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}<br>
+                            {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}
+                            @if($appointment->status === 'pending' && ! $appointment->archived_at && $appointment->appointment_date->gte(today()))
+                                <br><span class="new-pill">NEW</span>
+                            @endif<br>
 
                             <button type="button"
                                     class="details-button"
@@ -300,6 +323,25 @@
 
     </div>
 </div>
+
+<style>
+    .new-alert {
+        display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+        margin:0 0 16px; padding:14px 18px; border-radius:16px;
+        background:rgba(229,56,59,.10); border:1px solid rgba(229,56,59,.45); color:var(--heading);
+    }
+    .new-alert.none { background:var(--surface-soft); border-color:var(--line); font-weight:600; }
+    .new-alert-icon { font-size:1.4rem; }
+    .new-alert-text { display:flex; flex-direction:column; flex:1 1 220px; }
+    .new-alert-btn {
+        padding:9px 16px; border-radius:999px; background:#e5383b; color:#fff;
+        font-weight:700; text-decoration:none;
+    }
+    .new-pill {
+        display:inline-block; margin-top:4px; padding:2px 9px; border-radius:999px;
+        background:#e5383b; color:#fff; font-size:11px; font-weight:800; letter-spacing:.06em;
+    }
+</style>
 
 <style>
     .date-filter { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }

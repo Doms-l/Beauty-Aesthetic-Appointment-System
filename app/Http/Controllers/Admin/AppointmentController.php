@@ -25,6 +25,9 @@ class AppointmentController extends Controller
             }
         }
 
+        // ?status=pending shows only the new requests waiting for review
+        $pendingOnly = $request->input('status') === 'pending' && ! $showArchived;
+
         $appointments = Appointment::with(['user', 'service', 'staff.user', 'sessions'])
             ->when(
                 $showArchived,
@@ -32,12 +35,19 @@ class AppointmentController extends Controller
                 fn ($q) => $q->whereNull('archived_at')
             )
             ->when($selectedDate, fn ($q) => $q->whereDate('appointment_date', $selectedDate))
+            ->when($pendingOnly, fn ($q) => $q->where('status', 'pending')->whereDate('appointment_date', '>=', today()))
             ->latest('appointment_date')
             ->latest('appointment_time')
             ->paginate(15)
             ->withQueryString();
 
         $archivedCount = Appointment::whereNotNull('archived_at')->count();
+
+        // same number as the red badge in the navbar
+        $newCount = Appointment::active()
+            ->where('status', 'pending')
+            ->whereDate('appointment_date', '>=', today())
+            ->count();
 
         $staff = Staff::with('user')->where('is_available', true)->get();
 
@@ -46,7 +56,9 @@ class AppointmentController extends Controller
             'staff',
             'showArchived',
             'archivedCount',
-            'selectedDate'
+            'selectedDate',
+            'pendingOnly',
+            'newCount'
         ));
     }
 
@@ -86,7 +98,11 @@ class AppointmentController extends Controller
             \App\Support\BookingNotifier::confirmed($appointment);
         }
 
-        return back()->with('success', 'Appointment updated successfully.');
+        $message = $appointment->status === 'confirmed'
+            ? 'Appointment confirmed successfully.'
+            : 'Appointment updated successfully.';
+
+        return back()->with('success', $message);
     }
 
     /** Take the "Saved" mark off a row (it goes back to red "Unsaved"). */

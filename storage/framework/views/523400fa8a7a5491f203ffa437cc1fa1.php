@@ -324,6 +324,27 @@
                 animation: navAlertPulse 2s ease-in-out infinite;
             }
             .nav-alert-badge[hidden] { display: none; }
+
+            /* red number next to "Appointments" inside the dropdown */
+            .main-nav .nav-dropdown-menu a.menu-alert-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 14px;
+            }
+            .menu-alert-badge {
+                min-width: 22px;
+                height: 22px;
+                padding: 0 7px;
+                border-radius: 999px;
+                background: #e5383b;
+                color: #fff;
+                font-size: 12px;
+                font-weight: 800;
+                line-height: 22px;
+                text-align: center;
+            }
+            .menu-alert-badge[hidden] { display: none; }
             @keyframes navAlertPulse {
                 0%, 100% { transform: scale(1); }
                 50%      { transform: scale(1.12); }
@@ -506,7 +527,10 @@
                         </a>
 
                         <div class="nav-dropdown-menu">
-                            <a href="<?php echo e(route('admin.appointments')); ?>">🗓️ Appointments</a>
+                            <a href="<?php echo e(route('admin.appointments', ['status' => 'pending'])); ?>" class="menu-alert-item">
+                                🗓️ Appointments
+                                <span class="menu-alert-badge" data-nav-alert-menu <?php if($navAlert['count'] < 1): ?> hidden <?php endif; ?>><?php echo e($navAlert['count'] > 99 ? '99+' : $navAlert['count']); ?></span>
+                            </a>
                             <a href="<?php echo e(route('admin.services')); ?>">💆 Services</a>
                             <a href="<?php echo e(route('admin.staff')); ?>">👥 Staff</a>
                             <a href="<?php echo e(route('admin.clients')); ?>">🚫 Clients / Bans</a>
@@ -640,12 +664,37 @@
 
 <?php if(session('success')): ?>
 
-    <div class="container flash success">
+    <div class="container flash success flash-with-check" role="status">
 
-        <?php echo e(session('success')); ?>
+        
+        <svg class="flash-check" viewBox="0 0 52 52" aria-hidden="true">
+            <circle class="flash-check-circle" cx="26" cy="26" r="23" fill="none"/>
+            <path class="flash-check-mark" fill="none" d="M15 27 l8 8 l15 -17"/>
+        </svg>
 
+        <span class="flash-text"><?php echo e(session('success')); ?></span>
 
     </div>
+
+    <style>
+        .flash-with-check { display:flex; align-items:center; gap:14px; }
+        .flash-check { width:34px; height:34px; flex:0 0 34px; }
+        .flash-check-circle {
+            stroke:#2ecc71; stroke-width:4;
+            stroke-dasharray:145; stroke-dashoffset:145;
+            animation: flashDraw .6s ease-out forwards;
+        }
+        .flash-check-mark {
+            stroke:#2ecc71; stroke-width:5; stroke-linecap:round; stroke-linejoin:round;
+            stroke-dasharray:40; stroke-dashoffset:40;
+            animation: flashDraw .4s .45s ease-out forwards;
+        }
+        .flash-with-check .flash-text { font-weight:600; }
+        @keyframes flashDraw { to { stroke-dashoffset:0; } }
+        @media (prefers-reduced-motion: reduce) {
+            .flash-check-circle, .flash-check-mark { animation:none; stroke-dashoffset:0; }
+        }
+    </style>
 
 <?php endif; ?>
 
@@ -2678,6 +2727,10 @@ document.addEventListener(
                 const data = await res.json();
                 badge.textContent = data.count > 9 ? '9+' : data.count;
                 badge.hidden = data.count < 1;
+                document.querySelectorAll('[data-nav-alert-menu]').forEach(function (m) {
+                    m.textContent = data.count > 99 ? '99+' : data.count;
+                    m.hidden = data.count < 1;
+                });
                 if (link) link.title = data.label;
             } catch (e) { /* offline: keep the old number */ }
         }
