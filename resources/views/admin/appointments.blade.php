@@ -84,30 +84,54 @@
             <p style="color:#d64b6b;">{{ $errors->first() }}</p>
         @endif
 
-        {{-- Pick a day to see only the bookings on it --}}
+        {{-- Pick a day and/or a status to see only those bookings --}}
+        @php
+            $keep = array_filter([
+                'archived' => $showArchived ? 1 : null,
+                'view'     => ($historyOnly ?? false) ? 'history' : null,
+            ]);
+            $statusLabels = [
+                'pending'     => 'Pending',
+                'confirmed'   => 'Confirmed',
+                'completed'   => 'Completed',
+                'rescheduled' => 'Rescheduled',
+                'cancelled'   => 'Cancelled',
+            ];
+        @endphp
+
         <form method="GET" action="{{ route('admin.appointments') }}" class="date-filter">
-            @if($showArchived)
-                <input type="hidden" name="archived" value="1">
-            @endif
-            @if($historyOnly ?? false)
-                <input type="hidden" name="view" value="history">
-            @endif
+            @foreach($keep as $name => $value)
+                <input type="hidden" name="{{ $name }}" value="{{ $value }}">
+            @endforeach
+
             <label for="filter-date">📅 Show bookings on</label>
             <input type="date" id="filter-date" name="date" value="{{ $selectedDate }}"
                    onchange="this.form.submit()">
+
+            <label for="filter-status">Status</label>
+            <select id="filter-status" name="status" class="status-filter" onchange="this.form.submit()">
+                <option value="">All statuses</option>
+                @foreach($statusLabels as $value => $label)
+                    <option value="{{ $value }}" @selected(($statusFilter ?? null) === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
+
             <a class="date-filter-btn"
-               href="{{ route('admin.appointments', array_filter(['archived' => $showArchived ? 1 : null, 'view' => ($historyOnly ?? false) ? 'history' : null, 'date' => now()->toDateString()])) }}">Today</a>
-            @if($selectedDate)
-                <a class="date-filter-btn clear"
-                   href="{{ route('admin.appointments', array_filter(['archived' => $showArchived ? 1 : null, 'view' => ($historyOnly ?? false) ? 'history' : null])) }}">✕ Show all dates</a>
+               href="{{ route('admin.appointments', array_filter($keep + ['date' => now()->toDateString(), 'status' => $statusFilter ?? null])) }}">Today</a>
+
+            @if($selectedDate || ($statusFilter ?? null))
+                <a class="date-filter-btn clear" href="{{ route('admin.appointments', $keep) }}">✕ Clear filters</a>
             @endif
         </form>
 
-        @if($selectedDate)
+        @if($selectedDate || ($statusFilter ?? null))
             <p class="date-filter-note">
                 Showing <strong>{{ $appointments->total() }}</strong>
-                {{ $appointments->total() === 1 ? 'booking' : 'bookings' }} on
-                <strong>{{ \Carbon\Carbon::parse($selectedDate)->format('l, M d, Y') }}</strong>
+                @if($statusFilter ?? null)<strong>{{ strtolower($statusLabels[$statusFilter]) }}</strong>@endif
+                {{ $appointments->total() === 1 ? 'booking' : 'bookings' }}
+                @if($selectedDate)
+                    on <strong>{{ \Carbon\Carbon::parse($selectedDate)->format('l, M d, Y') }}</strong>
+                @endif
             </p>
         @endif
 
@@ -324,7 +348,7 @@
 
                     <tr>
                         <td colspan="{{ auth()->user()->isAdmin() ? 8 : 7 }}">
-                            {{ $selectedDate ? 'No bookings on this date.' : ($showArchived ? 'No archived appointments.' : 'No appointments found.') }}
+                            {{ ($selectedDate || ($statusFilter ?? null)) ? 'No bookings match these filters.' : ($showArchived ? 'No archived appointments.' : 'No appointments found.') }}
                         </td>
                     </tr>
 
@@ -417,6 +441,10 @@
     .price-cell small { font-weight:500; color:var(--mauve); }
     .date-filter { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
     .date-filter label { font-weight:700; color:var(--heading); }
+    .date-filter select.status-filter {
+        padding:10px 12px; border:1px solid var(--line); border-radius:12px;
+        background:var(--surface); color:var(--heading); font:inherit; width:auto; margin:0;
+    }
     .date-filter input[type="date"] {
         padding:10px 12px; border:1px solid var(--line); border-radius:12px;
         background:var(--surface); color:var(--heading); font:inherit;

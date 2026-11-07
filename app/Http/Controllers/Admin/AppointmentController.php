@@ -33,7 +33,12 @@ class AppointmentController extends Controller
         }
 
         // ?status=pending shows only the new requests waiting for review
-        $pendingOnly = $request->input('status') === 'pending' && ! $showArchived;
+        // ?status=pending|confirmed|completed|rescheduled|cancelled (the status dropdown)
+        $statusFilter = in_array($request->input('status'), ['pending', 'confirmed', 'completed', 'rescheduled', 'cancelled'], true)
+            ? $request->input('status')
+            : null;
+
+        $pendingOnly = $statusFilter === 'pending' && ! $showArchived;
 
         // ?view=history shows only finished (Completed) or already-past bookings
         $historyOnly = $request->input('view') === 'history' && ! $showArchived;
@@ -48,7 +53,7 @@ class AppointmentController extends Controller
                 fn ($q) => $q->whereNull('archived_at')
             )
             ->when($selectedDate, fn ($q) => $q->whereDate('appointment_date', $selectedDate))
-            ->when($pendingOnly, fn ($q) => $q->where('status', 'pending')->whereDate('appointment_date', '>=', today()))
+            ->when($statusFilter, fn ($q) => $q->where('status', $statusFilter))
             ->when($historyOnly, fn ($q) => $q->where(
                 fn ($w) => $w->where('status', 'completed')->orWhereDate('appointment_date', '<', today())
             ))
@@ -100,6 +105,7 @@ class AppointmentController extends Controller
             'archivedCount',
             'selectedDate',
             'pendingOnly',
+            'statusFilter',
             'historyOnly',
             'historyCount',
             'newCount',

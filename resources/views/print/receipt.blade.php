@@ -7,7 +7,8 @@
     $client   = $appointment->user;
     $isPack   = $package !== null;
     $peso     = fn ($n) => '₱' . number_format((float) $n, 2);
-    $amount   = $isPack ? (float) $service->per_session_price : (float) $service->price;
+    // always the FULL price - a package is never divided by its sessions on the receipt
+    $amount   = (float) $service->price;
 
     // services the admin added to the same visit (never on a package)
     $extras   = ($isPack || ! \App\Support\WalkInSupport::ready()) ? collect() : $appointment->extras()->with('service')->get();
@@ -214,8 +215,8 @@
                     {{ $service->name }}
                     @if($isPack)
                         <small>
-                            Session {{ $package['session_no'] }} of {{ $package['sessions'] }}
-                            · Package price {{ $peso($service->price) }} for {{ $package['sessions'] }} sessions
+                            Package of {{ $package['sessions'] }} sessions
+                            · Session {{ $package['session_no'] }} of {{ $package['sessions'] }}
                         </small>
                     @endif
                 </td>
@@ -232,7 +233,7 @@
 
     <div class="total">
         <div>
-            <span>{{ $isPack ? 'SESSION FEE' : 'TOTAL' }}</span>
+            <span>TOTAL</span>
             <strong>{{ $peso($grand) }}</strong>
         </div>
     </div>
