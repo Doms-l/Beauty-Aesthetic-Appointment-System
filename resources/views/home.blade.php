@@ -762,6 +762,58 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+{{-- AWARDS SLIDESHOW (changes every 5 seconds) --}}
+<style>
+    .achievements-section .award-slides {
+        position: relative;
+        width: 100%;
+        max-width: 300px;
+        height: 230px;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #fbf4ee;
+    }
+    .achievements-section .achievement-photo .award-slides img.award-slide {
+        position: absolute;
+        inset: 0;
+        width: 100% !important;
+        max-width: none !important;
+        height: 100% !important;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity .9s ease;
+    }
+    .achievements-section .achievement-photo .award-slides img.award-slide.is-badge {
+        object-fit: contain;
+    }
+    .achievements-section .achievement-photo .award-slides img.award-slide.is-active {
+        opacity: 1;
+    }
+    @media (max-width: 850px) {
+        .achievements-section .award-slides { max-width: 320px; height: 240px; }
+    }
+    @media (max-width: 600px) {
+        .achievements-section .award-slides { max-width: 270px; height: 200px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .achievements-section .achievement-photo .award-slides img.award-slide { transition: none; }
+    }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var box = document.getElementById('awardSlides');
+    if (!box) return;
+    var slides = box.querySelectorAll('.award-slide');
+    if (slides.length < 2) return;
+    var current = 0;
+    setInterval(function () {
+        slides[current].classList.remove('is-active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('is-active');
+    }, 5000);
+});
+</script>
+
 {{-- AWARDS AND ACHIEVEMENTS --}}
 
 <section class="achievements-section">
@@ -771,13 +823,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         <div class="achievement-art achievement-photo">
-            <img
-            src="{{ asset('images/awards.jpg') }}"
-            alt="M. Care Beauty Services awards and certificates"
-            width="1200"
-            height="900"
-            loading="lazy"
-        >
+            @php
+                $awardSlides = [
+                    ['images/awards.jpg', 'M. Care Beauty Services awards and certificates', 'photo'],
+                    ['images/awards/01-certified-ivt-nurse.jpg', 'Certified IVT Nurse', 'badge'],
+                    ['images/awards/02-certified-aesthetician.jpg', 'Certified Aesthetician', 'badge'],
+                    ['images/awards/03-certified-advance-facial-treatments-specialist.jpg', 'Certified Advance Facial Treatments Specialist', 'badge'],
+                    ['images/awards/04-certified-spmu-artist.jpg', 'Certified SPMU Artist', 'badge'],
+                    ['images/awards/05-master-lash-artist.jpg', 'Master Lash Artist', 'badge'],
+                    ['images/awards/06-medical-aesthetician.jpg', 'Medical Aesthetician', 'badge'],
+                    ['images/awards/07-nad-mccm-premier-product-workshop-participant.jpg', 'NAD+ & MCCM Premier Product Workshop Participant', 'badge'],
+                ];
+            @endphp
+            <div class="award-slides" id="awardSlides">
+                @foreach ($awardSlides as $i => $slide)
+                    <img
+                        class="award-slide {{ $i === 0 ? 'is-active' : '' }} {{ $slide[2] === 'badge' ? 'is-badge' : '' }}"
+                        src="{{ asset($slide[0]) }}"
+                        alt="{{ $slide[1] }}"
+                        {{ $i === 0 ? '' : 'loading=lazy' }}
+                    >
+                @endforeach
+            </div>
         </div>
 
         <div class="achievement-content">
