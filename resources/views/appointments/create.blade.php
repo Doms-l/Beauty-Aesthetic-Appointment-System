@@ -52,6 +52,8 @@
         id="appointment-picker"
         data-services='@json($services)'
         data-selected-service="{{ request('service') }}"
+        data-max-services="{{ $maxServices ?? 1 }}"
+        data-level-name="{{ $levelName ?? 'Member' }}"
     ></div>
 
     @include('partials.provider-picker')

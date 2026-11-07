@@ -213,6 +213,16 @@ Route::middleware(['auth', 'role:admin'])
         Route::patch('/appointments/{appointment}/unsave', [AdminAppointmentController::class, 'unsave'])
             ->name('appointments.unsave');
 
+        // walk-in + extra services on a visit (admin only)
+        Route::post('/appointments/walk-in', [AdminAppointmentController::class, 'storeWalkIn'])
+            ->name('appointments.walkin');
+
+        Route::post('/appointments/{appointment}/extras', [AdminAppointmentController::class, 'addExtra'])
+            ->name('appointments.extras.add');
+
+        Route::delete('/appointments/extras/{extra}', [AdminAppointmentController::class, 'removeExtra'])
+            ->name('appointments.extras.remove');
+
         Route::patch('/appointments/{appointment}/archive', [AdminAppointmentController::class, 'archive'])
             ->name('appointments.archive');
 

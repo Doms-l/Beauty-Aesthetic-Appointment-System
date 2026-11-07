@@ -28,6 +28,8 @@ if (appointmentRoot) {
         <AppointmentPicker
             services={services}
             selectedService={selectedService}
+            maxServices={parseInt(appointmentRoot.dataset.maxServices || '1', 10)}
+            levelName={appointmentRoot.dataset.levelName || 'Member'}
         />
     );
 }

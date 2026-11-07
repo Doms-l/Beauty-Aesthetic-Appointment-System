@@ -29,6 +29,12 @@ class ClientTier
         return (int) $this->level[$setting];
     }
 
+    /** How many services this level may put in one booking. */
+    public function maxServices(): int
+    {
+        return max(1, (int) ($this->level['max_services'] ?? 1));
+    }
+
     /** Completed visits still needed for the next level (null at the top). */
     public function visitsToNext(): ?int
     {

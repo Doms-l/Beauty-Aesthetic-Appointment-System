@@ -25,9 +25,17 @@
         {{-- Active / Archive switch (admin only) --}}
         @if(auth()->user()->isAdmin())
             <div class="dashboard-actions" style="margin-bottom:16px;">
-                @if($showArchived)
+                @if(! $showArchived && ($walkInReady ?? false))
+                    <button type="button" class="primary-button" id="open-walkin">➕ Add walk-in</button>
+                @endif
+                @if($showArchived || ($historyOnly ?? false))
                     <a class="primary-button" href="{{ route('admin.appointments') }}">← Back to appointments</a>
                 @else
+                    <a class="primary-button" href="{{ route('admin.appointments', ['view' => 'history']) }}">
+                        ✅ Completed &amp; past ({{ $historyCount ?? 0 }})
+                    </a>
+                @endif
+                @if(! $showArchived && ! ($historyOnly ?? false))
                     <a class="primary-button" href="{{ route('admin.appointments', ['archived' => 1]) }}">
                         🗄 View archive ({{ $archivedCount }})
                     </a>
@@ -35,8 +43,25 @@
             </div>
         @endif
 
+        @if(auth()->user()->isAdmin() && ! ($walkInReady ?? false))
+            <div class="new-alert">
+                <span class="new-alert-icon">⚠️</span>
+                <div class="new-alert-text">
+                    <strong>Walk-in and Add service are not turned on yet</strong>
+                    <span>Run <code>php artisan migrate</code> in the project folder, then refresh this page.</span>
+                </div>
+            </div>
+        @endif
+
         {{-- New-request indicator (same number as the red badge in the menu) --}}
-        @if(! $showArchived)
+        @if($historyOnly ?? false)
+            <p class="date-filter-note">
+                ✅ Showing <strong>completed and past bookings</strong>, newest first
+                (<strong>{{ $appointments->total() }}</strong> {{ $appointments->total() === 1 ? 'booking' : 'bookings' }}).
+            </p>
+        @endif
+
+        @if(! $showArchived && ! ($historyOnly ?? false))
             @if($newCount > 0)
                 <div class="new-alert">
                     <span class="new-alert-icon">🔔</span>
@@ -64,14 +89,17 @@
             @if($showArchived)
                 <input type="hidden" name="archived" value="1">
             @endif
+            @if($historyOnly ?? false)
+                <input type="hidden" name="view" value="history">
+            @endif
             <label for="filter-date">📅 Show bookings on</label>
             <input type="date" id="filter-date" name="date" value="{{ $selectedDate }}"
                    onchange="this.form.submit()">
             <a class="date-filter-btn"
-               href="{{ route('admin.appointments', array_filter(['archived' => $showArchived ? 1 : null, 'date' => now()->toDateString()])) }}">Today</a>
+               href="{{ route('admin.appointments', array_filter(['archived' => $showArchived ? 1 : null, 'view' => ($historyOnly ?? false) ? 'history' : null, 'date' => now()->toDateString()])) }}">Today</a>
             @if($selectedDate)
                 <a class="date-filter-btn clear"
-                   href="{{ route('admin.appointments', array_filter(['archived' => $showArchived ? 1 : null])) }}">✕ Show all dates</a>
+                   href="{{ route('admin.appointments', array_filter(['archived' => $showArchived ? 1 : null, 'view' => ($historyOnly ?? false) ? 'history' : null])) }}">✕ Show all dates</a>
             @endif
         </form>
 
@@ -92,6 +120,7 @@
                         <th>Date</th>
                         <th>Client</th>
                         <th>Service</th>
+                        <th>Price</th>
                         <th>Status</th>
                         <th>Staff</th>
                         <th>Save</th>
@@ -111,13 +140,15 @@
                         // everything the "Details" window shows for this request
                         $details = [
                             'client'     => $appointment->user->full_name,
-                            'email'      => $appointment->user->email,
+                            'email'      => $appointment->user->is_walk_in ? 'Walk-in (no account)' : $appointment->user->email,
                             'phone'      => $appointment->user->phone ?: '-',
                             'level'      => $clientTier->name() . ' (' . $clientTier->completed . ' completed ' . ($clientTier->completed === 1 ? 'visit' : 'visits') . ')',
                             'cancelled'  => (int) $appointment->user->cancel_strikes . ' of ' . config('loyalty.cancel_ban_limit', 3),
-                            'service'    => $appointment->service->name,
+                            'service'    => $appointment->service->name . $appointment->extra_items->map(fn ($e) => ' + ' . $e->service->name)->implode(''),
                             'category'   => $appointment->service->category ?: '-',
-                            'price'      => $appointment->service->display_price,
+                            'price'      => $appointment->extra_items->isEmpty()
+                                ? $appointment->service->display_price
+                                : '₱' . number_format($appointment->total_price, 2) . ' total (' . $appointment->service->display_price . $appointment->extra_items->map(fn ($e) => ' + ₱' . number_format((float) $e->price, 0))->implode('') . ')',
                             'duration'   => $appointment->service->duration_minutes ? $appointment->service->duration_minutes . ' minutes' : '-',
                             'date'       => $appointment->appointment_date->format('l, M d, Y'),
                             'time'       => \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A'),
@@ -135,6 +166,9 @@
                             {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}
                             @if($appointment->status === 'pending' && ! $appointment->archived_at && $appointment->appointment_date->gte(today()))
                                 <br><span class="new-pill">NEW</span>
+                            @endif
+                            @if($appointment->is_walk_in)
+                                <br><span class="walkin-pill">WALK-IN</span>
                             @endif<br>
 
                             <button type="button"
@@ -167,8 +201,43 @@
                         <td>
                             {{ $appointment->service->name }}
 
+                            {{-- services added to this same visit --}}
+                            @foreach($appointment->extra_items as $extra)
+                                <br><small class="extra-line">+ {{ $extra->service->name }}</small>
+                            @endforeach
+
+                            @if(auth()->user()->isAdmin() && ($walkInReady ?? false) && ! $appointment->is_package && ! $appointment->archived_at && ($appointment->canChangeExtras() || $appointment->extra_items->isNotEmpty()))
+                                @php
+                                    $extrasData = [
+                                        'title'    => $appointment->user->full_name . ' · ' . $appointment->service->name,
+                                        'addUrl'   => route('admin.appointments.extras.add', $appointment),
+                                        'canEdit'  => $appointment->canChangeExtras(),
+                                        'main'     => ['name' => $appointment->service->name, 'price' => (float) $appointment->service->price],
+                                        'extras'   => $appointment->extra_items->map(fn ($e) => [
+                                            'name'      => $e->service->name,
+                                            'price'     => (float) $e->price,
+                                            'removeUrl' => route('admin.appointments.extras.remove', $e),
+                                        ])->values(),
+                                    ];
+                                @endphp
+                                <br>
+                                <button type="button" class="extras-button" data-extras="{{ json_encode($extrasData) }}">
+                                    {{ $appointment->canChangeExtras() ? '＋ Add service' : 'View services' }}
+                                </button>
+                            @endif
+
                             @if($appointment->is_package)
                                 @include('partials.package-sessions', ['appointment' => $appointment])
+                            @endif
+                        </td>
+
+                        {{-- price in its own column (total of the visit when services were added) --}}
+                        <td class="price-cell">
+                            @if($appointment->extra_items->isNotEmpty())
+                                <strong>₱{{ number_format($appointment->total_price, 2) }}</strong>
+                                <br><small>{{ $appointment->extra_items->count() + 1 }} services</small>
+                            @else
+                                {{ $appointment->service->display_price }}
                             @endif
                         </td>
 
@@ -254,7 +323,7 @@
                 @empty
 
                     <tr>
-                        <td colspan="{{ auth()->user()->isAdmin() ? 7 : 6 }}">
+                        <td colspan="{{ auth()->user()->isAdmin() ? 8 : 7 }}">
                             {{ $selectedDate ? 'No bookings on this date.' : ($showArchived ? 'No archived appointments.' : 'No appointments found.') }}
                         </td>
                     </tr>
@@ -344,6 +413,8 @@
 </style>
 
 <style>
+    .price-cell { white-space:nowrap; font-weight:700; color:var(--heading); }
+    .price-cell small { font-weight:500; color:var(--mauve); }
     .date-filter { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
     .date-filter label { font-weight:700; color:var(--heading); }
     .date-filter input[type="date"] {
@@ -456,6 +527,251 @@
         100% { transform: scale(1); }
     }
 </style>
+
+
+@if(auth()->user()->isAdmin() && ($walkInReady ?? false))
+
+{{-- ===== Add service to a visit ===== --}}
+<div id="extras-modal" class="details-modal" hidden>
+    <div class="details-backdrop" data-close-extras></div>
+
+    <div class="details-card" role="dialog" aria-modal="true" aria-labelledby="extras-title">
+        <button type="button" class="details-close" data-close-extras aria-label="Close">&times;</button>
+
+        <span class="eyebrow">SAME VISIT</span>
+        <h2 id="extras-title">Services in this visit</h2>
+        <p class="muted" id="extras-sub"></p>
+
+        <div class="details-group">
+            <h3>Services</h3>
+            <ul class="extras-list" id="extras-list"></ul>
+            <div class="extras-total"><span>Total</span><strong id="extras-total"></strong></div>
+        </div>
+
+        <form method="POST" id="extras-add-form" class="details-group extras-add">
+            @csrf
+            <h3>Add another service</h3>
+            <select name="service_id" required>
+                <option value="">-- Choose a service --</option>
+                @foreach($extraServices->groupBy('category') as $category => $items)
+                    <optgroup label="{{ $category ?: 'Other' }}">
+                        @foreach($items as $item)
+                            <option value="{{ $item->id }}">{{ $item->name }} — ₱{{ number_format((float) $item->price, 0) }}</option>
+                        @endforeach
+                    </optgroup>
+                @endforeach
+            </select>
+            <button class="primary-button" type="submit">Add to this visit</button>
+            <p class="muted">Same client, same date and time. It does not count as a new booking.</p>
+        </form>
+
+        <p class="muted" id="extras-locked" hidden>This visit is closed, so its services can no longer be changed.</p>
+
+        {{-- used by the little remove (x) buttons --}}
+        <form method="POST" id="extras-remove-form" hidden>
+            @csrf
+            @method('DELETE')
+        </form>
+    </div>
+</div>
+
+
+{{-- ===== Walk-in ===== --}}
+<div id="walkin-modal" class="details-modal" hidden>
+    <div class="details-backdrop" data-close-walkin></div>
+
+    <div class="details-card" role="dialog" aria-modal="true" aria-labelledby="walkin-title">
+        <button type="button" class="details-close" data-close-walkin aria-label="Close">&times;</button>
+
+        <span class="eyebrow">AT THE CLINIC</span>
+        <h2 id="walkin-title">Add walk-in</h2>
+        <p class="muted">For a customer who came in without booking online. Client level limits do not apply.</p>
+
+        <form method="POST" action="{{ route('admin.appointments.walkin') }}" class="walkin-form">
+            @csrf
+
+            <div class="walkin-modes">
+                <label><input type="radio" name="client_mode" value="existing" {{ old('client_mode', 'existing') === 'existing' ? 'checked' : '' }}> Registered client</label>
+                <label><input type="radio" name="client_mode" value="new" {{ old('client_mode') === 'new' ? 'checked' : '' }}> No account</label>
+            </div>
+
+            <div data-mode="existing">
+                <label>Client
+                    <select name="user_id">
+                        <option value="">-- Choose a client --</option>
+                        @foreach($walkInClients as $c)
+                            <option value="{{ $c->id }}" @selected(old('user_id') == $c->id)>{{ trim($c->first_name . ' ' . $c->last_name) }}{{ $c->phone ? ' · ' . $c->phone : '' }}</option>
+                        @endforeach
+                    </select>
+                </label>
+            </div>
+
+            <div data-mode="new" hidden>
+                <div class="walkin-grid">
+                    <label>First name <input type="text" name="first_name" value="{{ old('first_name') }}" maxlength="100"></label>
+                    <label>Last name <input type="text" name="last_name" value="{{ old('last_name') }}" maxlength="100"></label>
+                </div>
+                <label>Phone (optional)
+                    <input type="tel" name="phone" value="{{ old('phone') }}" maxlength="11" inputmode="numeric" placeholder="09XXXXXXXXX"
+                           oninput="this.value = this.value.replace(/\D/g, '').slice(0, 11);">
+                </label>
+            </div>
+
+            <label>Service
+                <select name="service_id" required>
+                    <option value="">-- Choose a service --</option>
+                    @foreach(\App\Models\Service::where('is_available', true)->orderBy('category')->orderBy('name')->get(['id', 'name', 'category', 'price'])->groupBy('category') as $category => $items)
+                        <optgroup label="{{ $category ?: 'Other' }}">
+                            @foreach($items as $item)
+                                <option value="{{ $item->id }}" @selected(old('service_id') == $item->id)>{{ $item->name }} — ₱{{ number_format((float) $item->price, 0) }}</option>
+                            @endforeach
+                        </optgroup>
+                    @endforeach
+                </select>
+            </label>
+
+            <label>Served by
+                <select name="provider">
+                    <option value="any">Any available</option>
+                    <option value="owner" @selected(old('provider') === 'owner')>The Owner</option>
+                    @foreach($staff as $member)
+                        <option value="{{ $member->id }}" @selected(old('provider') == $member->id)>{{ $member->user->full_name }}</option>
+                    @endforeach
+                </select>
+            </label>
+
+            <div class="walkin-grid">
+                <label>Date <input type="date" name="appointment_date" value="{{ old('appointment_date', now()->toDateString()) }}" min="{{ now()->toDateString() }}" required></label>
+                <label>Time <input type="time" name="appointment_time" value="{{ old('appointment_time', now()->format('H:i')) }}" required></label>
+            </div>
+
+            <label>Status
+                <select name="status">
+                    <option value="confirmed" @selected(old('status', 'confirmed') === 'confirmed')>Confirmed (customer is here)</option>
+                    <option value="completed" @selected(old('status') === 'completed')>Completed (already done)</option>
+                    <option value="pending"   @selected(old('status') === 'pending')>Pending</option>
+                </select>
+            </label>
+
+            <label>Notes (optional)
+                <textarea name="notes" rows="2" maxlength="1000">{{ old('notes') }}</textarea>
+            </label>
+
+            @if($errors->has('walk_in') || $errors->hasAny(['user_id','first_name','last_name','phone','service_id','appointment_date','appointment_time']))
+                <p class="walkin-error">{{ $errors->first() }}</p>
+            @endif
+
+            <button class="primary-button full" type="submit">Save walk-in</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .extras-button {
+        margin-top: 6px; padding: 5px 12px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700;
+        border: 1px solid var(--line); background: var(--surface-soft); color: var(--heading);
+    }
+    .extras-button:hover { background: var(--mauve); color: #fff; border-color: var(--mauve); }
+    .extra-line { color: var(--mauve); font-weight: 700; }
+    .extra-total { color: var(--heading); font-weight: 800; }
+    .walkin-pill {
+        display:inline-block; margin-top:4px; padding:2px 9px; border-radius:999px;
+        background:#2f8f6b; color:#fff; font-size:11px; font-weight:800; letter-spacing:.06em;
+    }
+    .extras-list { list-style:none; margin:0 0 8px; padding:0; }
+    .extras-list li { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 0; border-bottom:1px dashed var(--line); }
+    .extras-list li span.price { margin-left:auto; font-weight:700; }
+    .extras-remove { border:0; background:transparent; color:#d64b6b; font-size:20px; line-height:1; cursor:pointer; }
+    .extras-total { display:flex; justify-content:space-between; font-size:1.05rem; }
+    .extras-add select, .walkin-form select, .walkin-form input, .walkin-form textarea { width:100%; margin:4px 0 10px; }
+    .walkin-form label { display:block; font-weight:600; }
+    .walkin-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .walkin-modes { display:flex; gap:18px; margin-bottom:10px; }
+    .walkin-modes input { width:auto; margin:0 6px 0 0; }
+    .walkin-error { color:#d64b6b; margin:0 0 10px; }
+    .walkin-form [hidden] { display:none; }
+    #walkin-modal .details-card { max-height: 92vh; overflow-y: auto; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    var peso = function (n) { return '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+
+    function bindModal(modal, closeAttr) {
+        function close() { modal.hidden = true; document.body.style.overflow = ''; }
+        function open()  { modal.hidden = false; document.body.style.overflow = 'hidden'; }
+        modal.querySelectorAll('[' + closeAttr + ']').forEach(function (el) { el.addEventListener('click', close); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) { close(); } });
+        return { open: open, close: close };
+    }
+
+    // ----- add service to a visit -----
+    var extrasModal = document.getElementById('extras-modal');
+    var extras = bindModal(extrasModal, 'data-close-extras');
+
+    document.querySelectorAll('.extras-button').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var d = {};
+            try { d = JSON.parse(button.dataset.extras); } catch (e) {}
+
+            document.getElementById('extras-sub').textContent = d.title || '';
+            var list = document.getElementById('extras-list');
+            list.innerHTML = '';
+            var total = Number(d.main.price);
+
+            function row(name, price, removeUrl) {
+                var li = document.createElement('li');
+                var n = document.createElement('span'); n.textContent = name;
+                var p = document.createElement('span'); p.className = 'price'; p.textContent = peso(price);
+                li.appendChild(n); li.appendChild(p);
+                if (removeUrl && d.canEdit) {
+                    var x = document.createElement('button');
+                    x.type = 'button'; x.className = 'extras-remove'; x.title = 'Remove'; x.innerHTML = '&times;';
+                    x.addEventListener('click', function () {
+                        if (!confirm('Remove ' + name + ' from this visit?')) { return; }
+                        var f = document.getElementById('extras-remove-form');
+                        f.action = removeUrl;
+                        f.submit();
+                    });
+                    li.appendChild(x);
+                }
+                list.appendChild(li);
+            }
+
+            row(d.main.name, d.main.price, null);
+            (d.extras || []).forEach(function (e) { row('+ ' + e.name, e.price, e.removeUrl); total += Number(e.price); });
+            document.getElementById('extras-total').textContent = peso(total);
+
+            var addForm = document.getElementById('extras-add-form');
+            addForm.action = d.addUrl;
+            addForm.hidden = !d.canEdit;
+            document.getElementById('extras-locked').hidden = !!d.canEdit;
+
+            extras.open();
+        });
+    });
+
+    // ----- walk-in -----
+    var walkinModal = document.getElementById('walkin-modal');
+    var walkin = bindModal(walkinModal, 'data-close-walkin');
+    var openBtn = document.getElementById('open-walkin');
+    if (openBtn) { openBtn.addEventListener('click', walkin.open); }
+
+    function syncMode() {
+        var mode = walkinModal.querySelector('input[name="client_mode"]:checked').value;
+        walkinModal.querySelectorAll('[data-mode]').forEach(function (box) { box.hidden = box.dataset.mode !== mode; });
+    }
+    walkinModal.querySelectorAll('input[name="client_mode"]').forEach(function (r) { r.addEventListener('change', syncMode); });
+    syncMode();
+
+    @if($errors->has('walk_in') || $errors->hasAny(['user_id','first_name','last_name','phone','service_id','appointment_date','appointment_time']))
+        walkin.open();
+    @endif
+});
+</script>
+
+@endif
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

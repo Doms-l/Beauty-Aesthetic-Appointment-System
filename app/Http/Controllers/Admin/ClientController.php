@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\WalkInSupport;
 use App\Support\ClientTier;
 use Illuminate\Http\Request;
 
@@ -15,6 +16,7 @@ class ClientController extends Controller
         $search = trim((string) $request->query('q', ''));
 
         $clients = User::where('role', 'client')
+            ->when(WalkInSupport::ready(), fn ($q) => $q->where('is_walk_in', false))
             ->when($onlyBanned, fn ($q) => $q->whereNotNull('banned_at'))
             ->when($search !== '', function ($q) use ($search) {
                 $q->where(function ($w) use ($search) {
@@ -30,7 +32,7 @@ class ClientController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $bannedCount = User::where('role', 'client')->whereNotNull('banned_at')->count();
+        $bannedCount = User::where('role', 'client')->when(WalkInSupport::ready(), fn ($q) => $q->where('is_walk_in', false))->whereNotNull('banned_at')->count();
 
         return view('admin.clients', compact('clients', 'onlyBanned', 'search', 'bannedCount'));
     }

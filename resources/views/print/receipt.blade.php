@@ -8,6 +8,10 @@
     $isPack   = $package !== null;
     $peso     = fn ($n) => '₱' . number_format((float) $n, 2);
     $amount   = $isPack ? (float) $service->per_session_price : (float) $service->price;
+
+    // services the admin added to the same visit (never on a package)
+    $extras   = ($isPack || ! \App\Support\WalkInSupport::ready()) ? collect() : $appointment->extras()->with('service')->get();
+    $grand    = $amount + (float) $extras->sum('price');
     $timeText = \Carbon\Carbon::parse($serviceTime)->format('h:i A');
 @endphp
 @php
@@ -217,13 +221,19 @@
                 </td>
                 <td class="num">{{ $peso($amount) }}</td>
             </tr>
+            @foreach($extras as $extra)
+                <tr>
+                    <td>{{ $extra->service->name }}</td>
+                    <td class="num">{{ $peso($extra->price) }}</td>
+                </tr>
+            @endforeach
         </tbody>
     </table>
 
     <div class="total">
         <div>
             <span>{{ $isPack ? 'SESSION FEE' : 'TOTAL' }}</span>
-            <strong>{{ $peso($amount) }}</strong>
+            <strong>{{ $peso($grand) }}</strong>
         </div>
     </div>
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Service;
 use App\Models\User;
+use App\Support\WalkInSupport;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -14,7 +15,9 @@ class DashboardController extends Controller
     {
         $today = Appointment::whereDate('appointment_date', today())->count();
         $pending = Appointment::where('status', 'pending')->count();
-        $clients = User::where('role', 'client')->count();
+        $clients = User::where('role', 'client')
+            ->when(WalkInSupport::ready(), fn ($q) => $q->where('is_walk_in', false))
+            ->count();
         $services = Service::where('is_available', true)->count();
 
         $appointments = Appointment::with(['user', 'service'])
@@ -40,10 +43,46 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // services added to a visit count as bookings too
+        $extraCounts = WalkInSupport::ready()
+            ? \App\Models\AppointmentExtra::query()
+                ->select('service_id')
+                ->selectRaw('COUNT(*) as total_bookings')
+                ->whereHas('appointment', fn ($q) => $q->counted())
+                ->groupBy('service_id')
+                ->get()
+                ->keyBy('service_id')
+            : collect();
+
+        if ($extraCounts->isNotEmpty()) {
+            $all = Appointment::with('service')
+                ->select('service_id')
+                ->selectRaw('COUNT(*) as total_bookings')
+                ->counted()
+                ->groupBy('service_id')
+                ->get()
+                ->keyBy('service_id');
+
+            foreach ($extraCounts as $serviceId => $row) {
+                if ($all->has($serviceId)) {
+                    $all[$serviceId]->total_bookings += $row->total_bookings;
+                } else {
+                    $row->setRelation('service', Service::find($serviceId));
+                    $all[$serviceId] = $row;
+                }
+            }
+
+            $popularServices = $all->filter(fn ($r) => $r->service)
+                ->sortByDesc('total_bookings')
+                ->take(5)
+                ->values();
+        }
+
         $incomeAnalytics = $this->incomeAnalytics();
 
         // names for the raffle wheel ("Load registered clients")
         $raffleClients = User::where('role', 'client')
+            ->when(WalkInSupport::ready(), fn ($q) => $q->where('is_walk_in', false))
             ->get()
             ->pluck('full_name')
             ->filter()
@@ -79,6 +118,7 @@ class DashboardController extends Controller
         $appointments = Appointment::with([
                 'service:id,name,price,sessions',
                 'sessions:id,appointment_id,session_date',
+                ...(WalkInSupport::ready() ? ['extras:id,appointment_id,service_id,price', 'extras.service:id,name'] : []),
             ])
             ->whereNull('archived_at')
             ->get(['id', 'service_id', 'appointment_date', 'next_session_date', 'status']);
@@ -131,6 +171,16 @@ class DashboardController extends Controller
                 'name'             => $name,
                 'amount'           => (float) ($service->price ?? 0),
             ]);
+
+            // services the admin added to this same visit
+            foreach ($appointment->extra_items as $extra) {
+                $entries->push((object) [
+                    'appointment_date' => $appointment->appointment_date,
+                    'status'           => $appointment->status,
+                    'name'             => $extra->service->name ?? 'Unknown service',
+                    'amount'           => (float) $extra->price,
+                ]);
+            }
         }
 
         return $entries;

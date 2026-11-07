@@ -15,6 +15,7 @@ class Appointment extends Model
         'promo_id',
         'staff_id',
         'with_owner',
+        'is_walk_in',
         'appointment_date',
         'appointment_time',
         'notes',
@@ -29,6 +30,7 @@ class Appointment extends Model
         'appointment_date' => 'date',
         'next_session_date' => 'date',
         'with_owner' => 'boolean',
+        'is_walk_in' => 'boolean',
         'archived_at' => 'datetime',
         'admin_saved_at' => 'datetime',
     ];
@@ -46,6 +48,35 @@ class Appointment extends Model
     public function staff()
     {
         return $this->belongsTo(Staff::class);
+    }
+
+    /** Extra services the admin added to this same visit. */
+    public function extras()
+    {
+        return $this->hasMany(AppointmentExtra::class)->orderBy('id');
+    }
+
+    /** Extra services of this visit (empty list until the migration has been run). */
+    public function getExtraItemsAttribute()
+    {
+        return \App\Support\WalkInSupport::ready() ? $this->extras : collect();
+    }
+
+    /** Admin can add / remove extra services only while the visit is still open. */
+    public function canChangeExtras(): bool
+    {
+        return \App\Support\WalkInSupport::ready()
+            && ! $this->archived_at
+            && in_array($this->status, ['pending', 'confirmed', 'rescheduled'], true)
+            && ! $this->is_package;
+    }
+
+    /** Main service price + every extra service (single-session bookings). */
+    public function getTotalPriceAttribute(): float
+    {
+        $main = $this->service ? (float) $this->service->price : 0.0;
+
+        return $main + (float) $this->extra_items->sum('price');
     }
 
     /** Finished visits of a package booking, in order (session 1, 2, ...). */

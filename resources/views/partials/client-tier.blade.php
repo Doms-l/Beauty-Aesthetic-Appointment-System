@@ -23,6 +23,9 @@
         upcoming {{ $tier->limit('max_active') === 1 ? 'appointment' : 'appointments' }} at a time,
         {{ $tier->limit('max_per_day') }} requests per day,
         and bookings up to {{ $tier->limit('advance_days') }} days ahead.
+        @if($tier->maxServices() > 1)
+            You can add up to {{ $tier->maxServices() }} services to one booking.
+        @endif
     </p>
 
     @if (auth()->user()->cancel_strikes > 0)

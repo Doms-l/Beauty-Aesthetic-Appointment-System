@@ -25,6 +25,9 @@
         upcoming <?php echo e($tier->limit('max_active') === 1 ? 'appointment' : 'appointments'); ?> at a time,
         <?php echo e($tier->limit('max_per_day')); ?> requests per day,
         and bookings up to <?php echo e($tier->limit('advance_days')); ?> days ahead.
+        <?php if($tier->maxServices() > 1): ?>
+            You can add up to <?php echo e($tier->maxServices()); ?> services to one booking.
+        <?php endif; ?>
     </p>
 
     <?php if(auth()->user()->cancel_strikes > 0): ?>

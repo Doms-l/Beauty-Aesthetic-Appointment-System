@@ -10,6 +10,7 @@ use App\Models\Staff;
 use App\Models\User;
 use App\Support\ClientTier;
 use App\Support\PromoSlots;
+use App\Support\WalkInSupport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,7 @@ class AppointmentController extends Controller
 {
     public function index(Request $request)
     {
-        $appointments = Appointment::with(['service', 'staff.user', 'sessions'])
+        $appointments = Appointment::with(array_merge(['service', 'staff.user', 'sessions'], \App\Support\WalkInSupport::ready() ? ['extras.service'] : []))
             ->where('user_id', $request->user()->id)
             ->orderByDesc('appointment_date')
             ->orderByDesc('appointment_time')
@@ -47,13 +48,20 @@ class AppointmentController extends Controller
             ? Promo::withBookedCount()->find($request->integer('promo'))
             : null;
 
-        return view('appointments.create', compact('services', 'staffMembers', 'promo'));
+        // how many services this client's level may put in one booking
+        $tier = ClientTier::for($request->user());
+        $maxServices = WalkInSupport::ready() ? $tier->maxServices() : 1;
+        $levelName = $tier->name();
+
+        return view('appointments.create', compact('services', 'staffMembers', 'promo', 'maxServices', 'levelName'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'service_id' => ['required', 'integer', 'exists:services,id'],
+            'extra_service_ids' => ['nullable', 'array', 'max:5'],
+            'extra_service_ids.*' => ['integer', 'distinct', 'exists:services,id'],
             'appointment_date' => ['required', 'date', 'after_or_equal:today'],
             'appointment_time' => ['required', 'date_format:H:i'],
             'provider' => ['nullable', 'string', 'max:20'],
@@ -63,6 +71,41 @@ class AppointmentController extends Controller
         $service = Service::whereKey($validated['service_id'])
             ->where('is_available', true)
             ->firstOrFail();
+
+        // More than one service in the same booking (one visit)
+        $extraServices = collect();
+        $extraIds = collect($validated['extra_service_ids'] ?? [])->map(fn ($id) => (int) $id)->unique()->values();
+
+        if ($extraIds->isNotEmpty()) {
+            $tier = ClientTier::for($request->user());
+
+            if (! WalkInSupport::ready()) {
+                return back()->withErrors(['service_id' => 'Booking several services is not available yet.'])->withInput();
+            }
+
+            if ($extraIds->count() + 1 > $tier->maxServices()) {
+                return back()->withErrors([
+                    'service_id' => "As a {$tier->name()} you can book up to {$tier->maxServices()} "
+                        . ($tier->maxServices() === 1 ? 'service' : 'services') . ' in one visit.',
+                ])->withInput();
+            }
+
+            if ($service->is_package || $service->category === 'Promo') {
+                return back()->withErrors(['service_id' => 'A package or promo service must be booked on its own.'])->withInput();
+            }
+
+            $extraServices = Service::whereIn('id', $extraIds)
+                ->where('is_available', true)
+                ->whereNotIn('id', Promo::closedServiceIds())
+                ->get();
+
+            $invalid = $extraServices->count() !== $extraIds->count()
+                || $extraServices->contains(fn ($s) => $s->is_package || $s->category === 'Promo' || $s->id === $service->id);
+
+            if ($invalid) {
+                return back()->withErrors(['service_id' => 'One of the added services cannot be booked together. Please choose single-session, non-promo services.'])->withInput();
+            }
+        }
 
         // Booking limits depend on the client's level (Member / Glow / VIP).
         // This protects the clinic from fake or spam bookings.
@@ -115,11 +158,11 @@ class AppointmentController extends Controller
 
         // Limited promos: the slot is claimed and the booking saved in ONE
         // transaction, so the last slot can never be sold twice.
-        $appointment = DB::transaction(function () use ($request, $service, $staffId, $withOwner, $validated) {
+        $appointment = DB::transaction(function () use ($request, $service, $staffId, $withOwner, $validated, $extraServices) {
 
             $promo = PromoSlots::claim($service, $request->user());
 
-            return Appointment::create([
+            $appointment = Appointment::create([
                 'user_id' => $request->user()->id,
                 'service_id' => $service->id,
                 'promo_id' => $promo?->id,
@@ -130,6 +173,17 @@ class AppointmentController extends Controller
                 'notes' => $validated['notes'] ?? null,
                 'status' => 'pending',
             ]);
+
+            // the extra services share this visit (price is copied for the receipt)
+            foreach ($extraServices as $extra) {
+                \App\Models\AppointmentExtra::create([
+                    'appointment_id' => $appointment->id,
+                    'service_id'     => $extra->id,
+                    'price'          => $extra->price,
+                ]);
+            }
+
+            return $appointment;
         });
 
         // email the owner and the staff (a mail problem never blocks the booking)

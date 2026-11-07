@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Book Appointment | M. Care'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -53,6 +51,8 @@
         id="appointment-picker"
         data-services='<?php echo json_encode($services, 15, 512) ?>'
         data-selected-service="<?php echo e(request('service')); ?>"
+        data-max-services="<?php echo e($maxServices ?? 1); ?>"
+        data-level-name="<?php echo e($levelName ?? 'Member'); ?>"
     ></div>
 
     <?php echo $__env->make('partials.provider-picker', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>

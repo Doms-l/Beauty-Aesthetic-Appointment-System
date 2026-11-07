@@ -13,6 +13,7 @@
 |                   (pending / confirmed / rescheduled, from today on)
 |  max_per_day      booking requests that can be sent in one day
 |  advance_days     how far ahead a booking date can be
+|  max_services     services a client can put in ONE booking (one visit)
 */
 
 return [
@@ -30,6 +31,7 @@ return [
             'max_active' => 1,
             'max_per_day' => 2,
             'advance_days' => 14,
+            'max_services' => 2,
             'perks' => 'Online booking and appointment history.',
         ],
 
@@ -39,6 +41,7 @@ return [
             'max_active' => 3,
             'max_per_day' => 3,
             'advance_days' => 30,
+            'max_services' => 3,
             'perks' => 'More bookings at once and priority booking.',
         ],
 
@@ -48,6 +51,7 @@ return [
             'max_active' => 5,
             'max_per_day' => 5,
             'advance_days' => 60,
+            'max_services' => 4,
             'perks' => 'The highest booking limits and first access to promos.',
         ],
 
