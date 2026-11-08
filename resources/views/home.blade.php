@@ -1227,4 +1227,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+@include('partials.clinic-map')
+
 @endsection
