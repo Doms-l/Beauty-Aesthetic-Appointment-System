@@ -4101,3 +4101,37 @@ details summary {
         min-width: 100px;
     }
 }
+
+/* Chatbot direction pictures */
+.mcares-chat-bubble.mcares-chat-directions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    white-space: normal;
+}
+
+.mcares-direction-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.mcares-direction-card span {
+    display: block;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.mcares-direction-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, .12);
+}
+
+.mcares-chat-directions small {
+    opacity: .7;
+    font-size: 11px;
+}

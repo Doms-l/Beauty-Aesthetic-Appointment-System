@@ -375,6 +375,80 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+    // direction pictures the chatbot sends with the location answer
+    const DIRECTION_IMAGES = [
+        {
+            src: '/images/directions/from-tacloban-javier.png',
+            label: '🚗 Coming from Javier or Tacloban',
+        },
+        {
+            src: '/images/directions/from-abuyog-proper.png',
+            label: '🚗 Coming from Abuyog proper',
+        },
+    ];
+
+    // true when the client is asking where the clinic is
+    function asksForLocation(message) {
+
+        const text = message.toLowerCase();
+
+        const isLocation =
+            mentionsAny(text, LOCATION_WORDS) ||
+            LOCATION_WORDS_OTHER.some(function (word) {
+                return text.includes(word);
+            });
+
+        // "where can I book?" / "how much...where" are not location questions
+        return (
+            isLocation &&
+            !mentionsAny(text, BOOKING_WORDS) &&
+            !mentionsAny(text, PRICE_WORDS)
+        );
+    }
+
+    // adds a bot bubble with the direction pictures (tap to enlarge)
+    function addDirectionImages() {
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mcares-chat-message bot';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'mcares-chat-bubble mcares-chat-directions';
+
+        DIRECTION_IMAGES.forEach(function (item) {
+
+            const figure = document.createElement('a');
+            figure.className = 'mcares-direction-card';
+            figure.href = item.src;
+            figure.target = '_blank';
+            figure.rel = 'noopener';
+
+            const caption = document.createElement('span');
+            caption.textContent = item.label;
+
+            const img = document.createElement('img');
+            img.src = item.src;
+            img.alt = item.label;
+            img.loading = 'lazy';
+            img.addEventListener('load', function () {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+
+            figure.appendChild(caption);
+            figure.appendChild(img);
+            bubble.appendChild(figure);
+        });
+
+        const hint = document.createElement('small');
+        hint.textContent = 'Tap a picture to enlarge it.';
+        bubble.appendChild(hint);
+
+        wrapper.appendChild(bubble);
+        chatMessages.appendChild(wrapper);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+
     // finds the service(s) the client is asking about
     // (the longest / most specific match wins)
     function findServices(question) {
@@ -823,6 +897,11 @@ document.addEventListener('DOMContentLoaded', () => {
             response,
             'bot'
         );
+
+        // location question -> also send the direction pictures
+        if (asksForLocation(cleanMessage)) {
+            addDirectionImages();
+        }
 
         chatHistory.push(
             { role: 'user', content: cleanMessage },
